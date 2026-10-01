@@ -1,7 +1,0 @@
-interface:
-  display_name: "Formalize Lean Theory"
-  short_description: "Route formalization and lesson curation"
-  default_prompt: "Use $formalize-lean-theory to route this paper-facing Lean formalization or explicit lesson-curation request through the correct project phase and gates."
-
-policy:
-  allow_implicit_invocation: true
