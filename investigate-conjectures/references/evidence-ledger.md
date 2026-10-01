@@ -22,7 +22,7 @@ Maintain one record per central claim:
 ### C-<number>: <short name>
 
 - Statement:
-- Claim-ladder rung:
+- Role in claim map:
 - Status:
 - Scope and assumptions:
 - Supporting evidence:
@@ -68,7 +68,7 @@ When a result changes:
 
 Examples of legitimate supersession:
 
-- a parity or indexing correction invalidates an old comparison;
+- an indexing or convention correction invalidates an old comparison;
 - a well-conditioned replication overturns a numerically confounded trend;
 - a stronger matched control defeats the earlier baseline inference;
 - a proof audit finds a missing hypothesis;
@@ -82,17 +82,18 @@ For apparently conflicting artifacts, compare:
 
 | Dimension | Questions |
 |---|---|
-| Target | Are they answering the same conjecture and observables? |
-| Scope | Are data class, horizon, and limit order identical? |
-| Approximation axis | Are they varying the same cutoff or resolution? |
-| Reference | Do they compare against the same ground truth? |
-| Numerics | Did either fail conditioning or replication gates? |
+| Target | Are they answering the same question about the same objects? |
+| Definitions | Do central terms and conventions have the same meaning? |
+| Assumptions | Are they granting the same hypotheses? |
+| Quantifiers and scope | Do they make the same statement over the same domain? |
+| Evidence basis | Do they use comparable sources, data, references, or standards? |
+| Validity | Did either fail a logical, numerical, or empirical validity gate? |
 | Method | Did one repair a known flaw in the other? |
-| Claim level | Is one empirical while the other asserts convergence? |
+| Claim role | Are they both theoretical, empirical, mechanistic, or otherwise comparable? |
 
 Often the correct resolution is two scoped claims, not one winner.
 
-## 6. Causal update
+## 6. Evidence update
 
 After each meaningful result, add:
 
@@ -101,7 +102,7 @@ After each meaningful result, add:
 
 - New evidence:
 - Validity scope:
-- Mechanism affected:
+- Claims or mechanisms affected:
 - Claims upgraded:
 - Claims downgraded:
 - Claims unchanged and why:
@@ -133,9 +134,9 @@ Write an authoritative report in this order:
 
 1. current bottom line;
 2. canonical contract and sharp conjecture;
-3. exact causal or mathematical skeleton;
+3. exact mathematical or causal skeleton;
 4. strongest theoretical support;
-5. empirical evidence and validity scope;
+5. empirical or computational evidence and validity scope, when present;
 6. adversarial alternatives and matched controls;
 7. established, supported, disfavored, falsified, and open claims;
 8. supersession note for materially changed conclusions;
@@ -150,7 +151,7 @@ When an approach fails, inventory separately:
 - exact identities that remain valid;
 - useful representations or algorithms;
 - counterexamples and no-go results;
-- causal mechanisms exposed;
+- mechanisms or structural insights exposed;
 - assumptions shown necessary;
 - conclusions that must be discarded.
 

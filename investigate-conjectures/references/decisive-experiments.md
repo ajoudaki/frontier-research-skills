@@ -6,24 +6,27 @@ Read this reference only when computation is authorized or the user requests an 
 
 State:
 
-- \(H_1\): the mechanism or conjecture-supported prediction;
-- \(H_0\): the strongest viable mundane or structural alternative;
+- \(H_1\): the prediction supported by the conjecture or proposed explanation;
+- \(H_0\): the strongest viable competing explanation or alternative;
 - the observation on which they disagree;
-- the claim-ladder rung affected by each outcome.
+- the exact claims affected by each outcome.
 
 Prefer hypotheses with different predictions, not merely different narratives after the fact.
 
-## 2. Choose the smallest mechanism-preserving testbed
+## 2. Choose the smallest discriminating testbed
 
-Use the smallest setting that retains every disputed ingredient. Create a mechanism map:
+Use the smallest setting that preserves the distinction between the competing
+hypotheses. Create a testbed map:
 
-| Ingredient | Why required | How preserved | What simplification removes |
+| Element | Why required | How preserved | What may be simplified |
 |---|---|---|---|
-| Disputed interaction | Creates the predicted effect | Exact testbed component | Irrelevant ambient complexity |
-| Alternative mechanism | Gives the control a fair chance | Matched nuisance parameter | Straw-man behavior |
-| Observable | Separates predictions | Primary metric | Insensitive diagnostics |
+| Disputed factor | Makes the predictions differ | Explicit testbed component | Irrelevant surrounding complexity |
+| Strongest alternative | Gives the competing account a fair chance | Matched control or condition | Weaker straw-man alternatives |
+| Observation | Distinguishes the outcomes | Primary metric or decision rule | Insensitive diagnostics |
 
-Do not use a toy problem merely because it is cheap. Explain why removing scale, dimension, samples, layers, or geometry does not remove the mechanism at issue.
+Do not use a toy problem merely because it is cheap. Explain why every
+simplification leaves the disputed distinction and required validity conditions
+intact.
 
 ## 3. Rank by decision value
 
@@ -34,7 +37,7 @@ Compare candidate tests using:
 \;\propto\;
 \frac{\text{logical leverage}\times
 \text{expected uncertainty reduction}\times
-\text{mechanism fidelity}}
+\text{test fidelity}}
 {\text{cost}\times\text{confounding risk}}.
 \]
 
@@ -46,9 +49,9 @@ Before implementation or execution, freeze:
 
 ### Scientific design
 
-- canonical model and exact simplifications;
+- canonical question, tested system, and exact simplifications;
 - \(H_0\), \(H_1\), and any third outcome;
-- primary observable and error normalization;
+- primary measurement or metric and any normalization;
 - strongest matched baseline;
 - causal ablation or stress, if needed;
 - pass, fail, and inconclusive thresholds;
@@ -56,9 +59,9 @@ Before implementation or execution, freeze:
 
 ### Numerical validity
 
-- discretization or solver tolerance;
-- conditioning threshold;
-- common-reference construction;
+- resolution, discretization, solver, or measurement tolerance as applicable;
+- conditioning or numerical-stability threshold when relevant;
+- reference or ground-truth definition;
 - seed or scramble policy;
 - replication trigger;
 - diagnostic quantities that invalidate interpretation;
@@ -79,15 +82,21 @@ When applicable, compare:
 
 1. a naive control only as a sanity check;
 2. the strongest nuisance-matched alternative;
-3. a mechanism-removing ablation;
-4. the proposed causal or nonlinear model;
-5. the real or high-fidelity reference.
+3. an ablation or stress targeted at the disputed distinction;
+4. the proposed explanation, intervention, method, or model;
+5. a direct measurement, accepted benchmark, or higher-fidelity reference when
+   one exists.
 
-Fit nuisance parameters using only information the alternative is legitimately allowed to know. Do not tune a control on the future target trajectory.
+Fit nuisance parameters using only information the alternative is legitimately
+allowed to know. Do not tune a control on observations reserved for evaluation
+or on conclusion-dependent information.
 
 ## 6. Stress from theory
 
-Choose a stress that amplifies the predicted disagreement based on prior algebra, symmetry, scaling, or qualitative dynamics. Avoid searching a large grid for a favorable case and presenting the winner as confirmatory evidence.
+Choose a stress that amplifies the predicted disagreement based on prior
+reasoning, structure, symmetry, invariance, scaling, or qualitative predictions.
+Avoid searching a large grid for a favorable case and presenting the winner as
+confirmatory evidence.
 
 If a pilot is needed only for numerical validity:
 
@@ -116,7 +125,11 @@ Classify the result:
 - **Fail:** contradicts the prediction while satisfying every validity gate.
 - **Inconclusive:** falls in the indifference region or violates a validity gate.
 
-Then update only the claims named in the preregistration. A pass can reject a nuisance explanation without proving hierarchy convergence. A fail can kill one witness without disproving broad finite-representation existence.
+Then update only the claims named in the preregistration. A pass supports the
+specified prediction and may reject the tested alternative; it does not establish
+logically stronger claims. A fail rejects the named prediction within the valid
+test scope and refutes the broad conjecture only when that prediction was a
+necessary consequence of it.
 
 ## Compact preregistration template
 
@@ -125,7 +138,7 @@ Then update only the claims named in the preregistration. A pass can reject a nu
 
 ### H1 / H0
 
-### Mechanism preserved by the testbed
+### Distinction preserved by the testbed
 
 ### Primary metric and matched control
 
