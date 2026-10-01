@@ -1,0 +1,11 @@
+interface:
+  display_name: "Investigate Conjectures"
+  short_description: "Adversarial, bounded conjecture research"
+  default_prompt: "Use $investigate-conjectures to formulate, test, or run a bounded multi-route proof search for this conjecture."
+policy:
+  allow_implicit_invocation: false
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas

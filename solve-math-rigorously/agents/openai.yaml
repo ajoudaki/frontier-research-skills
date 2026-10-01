@@ -1,0 +1,12 @@
+interface:
+  display_name: Solve Mathematics Rigorously
+  short_description: Compact, complete, and rigorous math solutions
+  default_prompt: Use $solve-math-rigorously to solve this mathematical problem with
+    a complete, carefully checked argument.
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true

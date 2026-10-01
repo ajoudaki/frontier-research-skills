@@ -1,0 +1,4 @@
+interface:
+  display_name: "Handoff Codex Project Tasks"
+  short_description: "Safely move Codex tasks between projects and hosts"
+  default_prompt: "Use $handoff-codex-project-tasks to preflight and safely move selected Codex tasks to another saved project."
