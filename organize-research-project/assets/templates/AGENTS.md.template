@@ -1,0 +1,47 @@
+# {{PROJECT_NAME}} research instructions
+
+Use the project's versioned `RESEARCH_WORKFLOW.md` for locations, ownership,
+evidence requirements, and acceptance policy. Updating a global skill does not
+automatically change the adopted project workflow.
+
+## Select the task and its inputs
+
+- For research, identify the assigned study and read its current README plus
+  the relevant maintained sources. A materially different question normally
+  starts a new study; routine corrections and validation continue the same one.
+- For a bounded worker or independent reviewer, follow the explicit assignment
+  and its source boundary. Report missing inputs instead of retrieving more
+  provisional research. Required operating instructions remain available.
+- For a read-only question, inspect only its relevant permitted sources.
+- For maintenance, use assigned paths and preserve concurrent work.
+- For promotion, read the complete local acceptance policy and its required
+  evidence before declaring a candidate ready for integration.
+
+Studies organize investigations; tasks organize conversations and work. Do not
+read another study's provisional findings merely because they appear relevant.
+Use only explicitly authorized cross-study inputs, preserving their versions,
+provisional status, and any resulting limits on independence.
+
+## Preserve scientific and operational boundaries
+
+Keep scientific validity, checking status, and adoption status distinct. A
+self-check is not an independent review. Accepted theory and code must contain
+their actual arguments, implementation, and reproduction dependencies.
+
+Keep one useful current record per study; link to evidence rather than copying
+it into several administrative documents. Retain negative results and label
+superseded conclusions. Trace generated results and figures to actual inputs,
+source, configurations, and runs under the local storage policy.
+
+Use familiar domain notation and agreed conventions, define central objects,
+and make mathematical passages self-contained for their requested scope. Use
+specialized research, proof, teaching, or review skills when applicable; they
+do not replace this project's source boundaries or acceptance requirements.
+
+Follow the local ownership and Git coordination policy. Do not overwrite or
+stage another contributor's changes. A workflow, old plan, or directory layout
+does not by itself authorize new experiments, wider access, or integration of
+an unchecked scientific claim.
+
+Read the relevant adopted rules again when they change. Respect authorization
+already given for a concrete action; do not request it again for the same scope.

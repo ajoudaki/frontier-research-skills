@@ -1,0 +1,42 @@
+# {{STUDY_NAME}}
+
+## Question and scope
+
+{{QUESTION_AND_SCOPE}}
+
+State the scientific object, observable or target, assumptions, exclusions,
+and intended decision at the level needed for this investigation.
+
+## Sources, ownership, and authorization
+
+- Permitted scientific inputs and their versions: {{PERMITTED_INPUTS}}
+- Contributors, write assignments, and any independent roles: {{OWNERSHIP}}
+- Authorized work and resource limits: {{AUTHORIZED_WORK}}
+- Generated-output namespace and retrieval: {{STUDY_OUTPUTS}}
+
+Record any authorized provisional dependency from another study and how it
+affects independence. Do not infer wider access from a link in another source.
+
+## Current findings and evidence
+
+{{CURRENT_FINDINGS}}
+
+For each material claim, distinguish scientific status, checking status, and
+adoption status. Link the precise argument or method, actual evidence, input
+versions, and checks performed. State unresolved gaps and the scope of any
+negative result. Use existing claim records rather than duplicating them here.
+
+## Reproduction
+
+{{REPRODUCTION}}
+
+Link source, configuration, retained inputs, commands, runs, validity criteria,
+and figures. Distinguish planned work from executed checks and failed runs.
+
+## Corrections, integration, and next action
+
+{{CURRENT_ACTION}}
+
+Identify superseded conclusions, their replacements, and affected dependencies
+when relevant. For accepted additions, link the reviewed candidate, decision,
+destination, and accepted revision. Record the next authorized step or closure.

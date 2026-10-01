@@ -1,0 +1,117 @@
+# {{PROJECT_NAME}} research workflow
+
+Local workflow revision: {{WORKFLOW_REVISION}}
+
+Adopted from `organize-research-project`: {{SKILL_REVISION}}
+
+This file is the project's adopted workflow. Its policies and source boundaries
+apply alongside current user instructions. Changes to the originating skill
+require deliberate local adoption; record deviations and affected open work.
+
+## Locations and authority
+
+Paths are relative to the project root unless explicitly absolute or remote.
+
+| Role | Location |
+|---|---|
+| Maintained theory entry point | {{THEORY_ENTRY}} |
+| Shared definitions or notation contract | {{NOTATION_CONTRACT}} |
+| Reusable code and reproduction entry point | {{CODE_ENTRY}} |
+| Studies and current records | {{STUDIES_ROOT}} |
+| Exploratory runs | {{RUNS_ROOT}} |
+| Accepted-result reproductions | {{ACCEPTED_RUNS_ROOT}} |
+
+Declare an empty or unavailable entry point explicitly. Treat superseded
+material as historical evidence, with its status and replacement identified;
+recency alone does not establish scientific authority.
+
+## Study identity and source boundaries
+
+Use the study explicitly assigned by the user. Otherwise continue the current
+study only while its scientific question and scope remain the same. A materially
+different question normally receives a new study. Several tasks may share a
+study with explicit ownership; one task may coordinate several studies with
+separate scientific contexts.
+
+A study's default inputs are its own source and evidence, the maintained theory
+and code, their designated reproduction inputs, and authorized external sources.
+Other studies' unpromoted findings are not established dependencies. Cross-study
+use requires explicit authorization and a record of source version, provisional
+status, and any loss of independence. Do not bypass this boundary through
+summaries, Git history, generated products, or another contributor.
+
+For an independent attempt, use only its agreed problem and common inputs. For
+an independent review, supply the frozen candidate and full dependencies without
+author discussion or earlier verdicts. Fresh folders or agents alone do not
+establish independence. Disclose exposure that compromises the required scope.
+
+## Keep one current record
+
+Use each study's existing README or equivalent. Record the question, scope,
+permitted sources, owners, results and evidence links, checks, unresolved gaps,
+run recipes, and next authorized action. Preserve useful existing records.
+
+Track scientific status, checking status, and adoption status separately.
+Calling a result internally checked requires its actual argument or method,
+identified inputs, executed relevant checks, outcomes, and remaining limits.
+Empirical checking includes execution from recorded inputs, not only inspection
+of an old plot. Keep useful negative and partial results even if never promoted.
+
+## Experiments and generated products
+
+Storage, retrieval, and retention policy:
+
+{{STORAGE_POLICY}}
+
+Before an authorized experiment, record its question, controls, metrics, validity
+criteria, seeds or replication rule, budget, and stopping condition. Scale this
+record to the work; ordinary regression tests do not require a new campaign.
+
+Give each evidential execution a fresh run identifier and namespace within the
+chosen store. Preserve input identity and retrievability, code revision plus
+relevant dirty changes, configuration, command and working directory, relevant
+environment and numerical settings, exit status, checks, and output locations.
+Version essential source, proof, and hand-written configuration outside transient
+output storage. A hash identifies bytes but cannot replace retaining inputs.
+
+Trace each reported figure or table to its runs and analysis source. Moving
+artifacts requires verifying the destination and updating references. Redrawing
+a stored plot is not a fresh reproduction of its upstream experiment. Preserve
+failed and interrupted runs with their actual status.
+
+## Promotion into maintained theory and code
+
+Required review roles, depth, acceptance authority, and authorization:
+
+{{ACCEPTANCE_POLICY}}
+
+For each candidate, assess relevance, duplication, and coherent placement.
+Prepare its precise claims, assumptions, full arguments, reusable source,
+verification, and empirical reproduction recipes. Freeze the candidate and its
+dependencies with actual content identities and a neutral review assignment.
+
+Complete the policy's independent reviews and integration checks. Retain input
+identities, scope, findings, executed checks, and unresolved objections. Missing
+inputs or required reviews remain gaps. Build and reproduce the assembled
+addition using maintained inputs, without study-only scripts or private history.
+
+Present the concrete checked package to the designated authority when approval
+is required and not already given. After authorization, recheck dependencies and
+concurrent work, integrate that package, verify correspondence, and record the
+accepted revision and destinations in the originating study. Review alone does
+not grant integration permission; prior explicit authorization need not be asked
+for again. Partial acceptance must identify which claims remain blocked.
+
+Scientific changes reopen the affected checks under this policy. Reuse a prior
+review only for the same inputs and scope. Formatting-only maintenance receives
+proportionate checks and cannot introduce unreviewed scientific changes.
+
+## Ownership, concurrency, and handoff
+
+{{CONCURRENCY_POLICY}}
+
+At checkpoints, update the study's current record and next authorized action.
+Do not reopen a closed campaign from an old plan. When a correction supersedes a
+claim, retain the old evidence with its status, identify the replacement, and
+recheck affected downstream dependencies. Record workflow changes and their
+effective scope without rewriting historical evidence or approval.

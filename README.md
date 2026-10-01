@@ -1,17 +1,18 @@
 # Personal Codex skills
 
-This repository versions seven skills:
+This repository versions eight skills:
 
 - `explain-with-canonical-notation`: canonical notation and self-contained mathematical presentation.
 - `teach-technical-math`: source-grounded mathematical teaching.
 - `solve-math-rigorously`: rigorous standalone mathematics and proofs.
 - `investigate-conjectures`: mathematical and computational research workflows.
+- `organize-research-project`: modular project organization, study isolation, promotion, and reproducible artifacts.
 - `review-ai-paper`: evidence-backed reviews of AI research papers.
 - `handoff-codex-project-tasks`: Codex project and task handoffs.
 - `formalize-lean-theory`: DLTLean-dependent routing for source-faithful Lean formalization.
 
-Each skill folder includes its `SKILL.md` and supporting resources. The first
-six skills are maintained here. Their installed personal folders at
+Each skill folder includes its `SKILL.md` and supporting resources. All skills
+except the Lean snapshot are maintained here. Their installed personal folders at
 `/home/amir/.codex/skills/<skill-name>` link directly to the matching folders in
 this repository, so edits through either path affect the same files. The Lean
 skill is a separate versioned import, described below.
@@ -29,7 +30,7 @@ not establish that the instructions produce the intended behavior.
 
 ## Installation scope
 
-The six linked personal installations are available across projects. Activation
+The seven linked personal installations are available across projects. Activation
 depends on the task, explicit invocation, and project instructions such as PDE's
 `AGENTS.md`. Existing activation settings are preserved. Keep machine
 configuration and credentials outside this repository.
@@ -39,6 +40,16 @@ here. Codex may list those alongside the personal versions; creating this
 repository does not disable them.
 
 Built-in `.system` skills and plugin-managed skills are outside this repo.
+
+## Project organization skill
+
+Use `$organize-research-project` to set up, adapt, or audit a large research
+project. Its [entry point](organize-research-project/SKILL.md) selects focused
+[references](organize-research-project/references/) and provides reusable
+[project templates](organize-research-project/assets/templates/). Scientific
+investigation, proof, teaching, and review remain separate skill responsibilities.
+Adopted project workflows are versioned locally; updating this skill does not
+automatically rewrite another project's policies.
 
 ## Lean skill import
 
