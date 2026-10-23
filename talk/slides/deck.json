@@ -3,9 +3,9 @@
   "createdOnFiles": {"v": 1, "at": "2026-10-12T12:00:00Z"},
   "lists": "css",
   "title": "Research with AI Agents",
-  "order": ["cover", "transition", "hard", "bottleneck", "setup", "agents", "question", "core", "humans", "close"],
+  "order": ["cover", "bottleneck", "setup", "agents", "question", "core", "humans", "close"],
   "sections": {
-    "s1": {"description": "Motivation and the problem: the bottleneck becomes you.", "start": "cover"},
+    "s1": {"description": "The problem: smart models fail beautifully, and the bottleneck becomes you.", "start": "cover"},
     "s2": {"description": "The basics, many agents, and keeping them honest.", "start": "setup"},
     "s3": {"description": "A trusted core, readable results, and the conclusion.", "start": "core"}
   },
