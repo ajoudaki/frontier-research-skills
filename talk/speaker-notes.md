@@ -1,6 +1,6 @@
 # Research with AI Agents: speaker notes
 
-## 1. Doing research with AI agents
+## 1. Many agents, one question
 Hi everyone, I'm Amir. I want to share how I do research with AI agents these days: what went wrong, and the hacky tactics that fixed most of it for me. None of this is a principled framework. It's practical, and everything I show is in a repo you can use, linked at the end.
 
 ## 2. We have to learn new ways of writing theory, papers and code.
