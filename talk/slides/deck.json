@@ -3,15 +3,16 @@
   "createdOnFiles": {"v": 1, "at": "2026-10-12T12:00:00Z"},
   "lists": "css",
   "title": "Research with AI Agents",
-  "order": ["cover", "hard", "setup", "bottleneck", "audits", "question", "core", "leash", "humans", "close"],
+  "order": ["cover", "hard", "setup", "bottleneck", "audits", "question", "core", "leash", "humans", "repo", "close"],
   "sections": {
     "s1": {"description": "Why research with AI is hard, and the basic setup.", "start": "cover"},
     "s2": {"description": "Raising signal-to-noise: audits, faithful questions, an established core.", "start": "bottleneck"},
-    "s3": {"description": "Keeping control, and closing.", "start": "leash"}
+    "s3": {"description": "Keeping control, the repo, and closing.", "start": "leash"}
   },
   "faces": {
     "source-serif-4": {"family": "Source Serif 4", "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&display=swap"},
-    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"}
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"},
+    "ibm-plex-mono": {"family": "IBM Plex Mono", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap"}
   },
   "designSystems": []
 }
