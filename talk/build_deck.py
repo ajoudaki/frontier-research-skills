@@ -164,7 +164,7 @@ __SLIDES__
 def main():
     deck = json.loads((SLIDES / "deck.json").read_text())
     sections = [(SLIDES / "slides" / f"{sid}.html").read_text().strip() for sid in deck["order"]]
-    html = TEMPLATE.replace("__TITLE__", "Open research with AI agents")
+    html = TEMPLATE.replace("__TITLE__", "Open-ended research with AI agents")
     html = html.replace("__SLIDES__", "\n".join(sections))
     OUT.write_text(html)
     print(f"wrote {OUT} ({len(sections)} slides)")
