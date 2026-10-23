@@ -3,11 +3,11 @@
   "createdOnFiles": {"v": 1, "at": "2026-10-12T12:00:00Z"},
   "lists": "css",
   "title": "Research with AI Agents",
-  "order": ["cover", "hard", "setup", "bottleneck", "audits", "core", "question", "humans", "repo", "close"],
+  "order": ["cover", "transition", "hard", "bottleneck", "setup", "question", "audits", "core", "humans", "close"],
   "sections": {
-    "s1": {"description": "Why research with AI is hard, and the basics of agents and skills.", "start": "cover"},
-    "s2": {"description": "Raising signal-to-noise: audits, an established core, faithful questions.", "start": "bottleneck"},
-    "s3": {"description": "Readable output, the repo, and closing.", "start": "humans"}
+    "s1": {"description": "Motivation and the problem: the bottleneck becomes you.", "start": "cover"},
+    "s2": {"description": "The basics, then four filters on the pile.", "start": "setup"},
+    "s3": {"description": "Conclusion: every trick is a filter, and a skill.", "start": "close"}
   },
   "faces": {
     "source-serif-4": {"family": "Source Serif 4", "href": "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&display=swap"},
