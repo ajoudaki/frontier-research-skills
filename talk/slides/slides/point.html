@@ -1,30 +1,31 @@
 <section id="point" data-transition="fade" style="background:#F6F4EF;color:#1B1F2A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
 <div style="display:flex;flex-direction:column;gap:16px">
 <p style="font-size:24px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B04A33">05 · One question</p>
-<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#1B1F2A">Formulate first, then solve.</h2>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#1B1F2A">Formulate, solve, then learn.</h2>
 </div>
 <p style="font-size:32px;line-height:1.4;color:#4A4F5C">Even many agents downgrade an open question, drift from it, and lose it between hand-offs.</p>
-<div data-build-in="rise 1" style="position:absolute;top:381.6px;left:128px;width:776px;display:flex;flex-direction:column;gap:14px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-left:8px solid #B04A33;border-radius:16px">
-<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B04A33">1 · Formulate</p>
-<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#B04A33;background:#F3E3DC;padding:6px 16px;border-radius:8px">investigate-conjectures</p>
-<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Precise:</b> freeze it as a contract.</p>
-<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Vague:</b> formulate it, faithful to the spirit, and check it for ways to cheat.</p>
-<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Before a claim counts:</b> separate checks rebuild every step and hunt for counterexamples.</p>
-</div>
-<x-shape kind="arrow-right" data-build-in="fade 3" style="position:absolute;top:558.8px;left:928px;background:#B04A33;width:64px;height:32px"></x-shape>
-<div data-build-in="rise 3" style="position:absolute;top:414.6px;left:1016px;width:776px;display:flex;flex-direction:column;gap:14px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-radius:16px">
-<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B04A33">2 · Solve</p>
-<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#B04A33;background:#F3E3DC;padding:6px 16px;border-radius:8px">solve-math-rigorously</p>
-<p style="font-size:24px;line-height:1.4;color:#1B1F2A">Only once the question is locked.</p>
-<p style="font-size:24px;line-height:1.4;color:#1B1F2A">The strongest reading, never a straw man.</p>
-<p style="font-size:24px;line-height:1.4;color:#1B1F2A">Every step shown; every cited theorem's assumptions checked.</p>
-</div>
-<div data-build-in="rise 2" style="position:absolute;top:807.6px;left:128px;width:1664px;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:16px">
-<p style="font-size:24px;color:#6B6F7A">Ways to cheat it checks for:</p>
-<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">an easier target</p>
-<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">a weakened “for all”</p>
-<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">a proxy</p>
-<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">one example for a class</p>
-</div>
-<aside>We start with a targeted question. Even a well-scoped research question is usually still open, not exactly pinned down, and when you give it to AI agents it very often gets downgraded. An agent finds a special case or a counterexample by exploiting an assumption you didn't forbid, or solves a much weaker subproblem and presents it as the main result. Little tweaks that kill the question. With many agents it can get worse: the mistakes propagate and reinforce each other, and the goal drifts from what you intended. So the first skill, investigate-conjectures, formulates the problem before any attempt is made. It uses its own intelligence to find a precise formulation, faithful to your original question, with no lazy way to solve it without solving the real problem. What you get isn't a solution. It's a sharpened conjecture, frozen as a contract. Then the second skill, solve-math-rigorously, takes the strongest reading of that problem, tries to fully resolve it, and audits the proposed solution before presenting it.</aside>
+  <div data-build-in="rise 1" style="position:absolute; top:381.6px; left:128px; width:500px; display:flex; flex-direction:column; gap:14px; padding:40px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">1 · Formulate</p>
+    <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">formulate-problem</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a"><b>Precise:</b> freeze it as a contract.</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a"><b>Vague:</b> formulate it, faithful to the spirit, and check it for ways to cheat.</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a"><b>Before a claim counts:</b> separate checks rebuild every step and hunt for counterexamples.</p>
+  </div>
+  <x-shape kind="arrow-right" data-build-in="fade 2" style="position:absolute; top:500px; left:644px; width:48px; height:24px; background:#b04a33"></x-shape>
+  <div data-build-in="rise 2" style="position:absolute; top:381.6px; left:708px; width:500px; display:flex; flex-direction:column; gap:14px; padding:40px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">2 · Solve</p>
+    <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">solve-problem</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a">Only once the question is locked.</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a">The strongest reading, never a straw man.</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a">Every step shown; every cited theorem's assumptions checked.</p>
+  </div>
+  <x-shape kind="arrow-right" data-build-in="fade 3" style="position:absolute; top:500px; left:1224px; width:48px; height:24px; background:#b04a33"></x-shape>
+  <div data-build-in="rise 3" style="position:absolute; top:381.6px; left:1288px; width:500px; display:flex; flex-direction:column; gap:14px; padding:40px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">3 · Learn</p>
+    <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">teach-material</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a">Teaches the result, or any paper, one block at a time.</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a">Every symbol defined before it's used.</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a">Confused? It rebuilds the explanation, not a one-line patch.</p>
+  </div>
+<aside>We start with a single, targeted question. Even a well-scoped research question is usually still open, not exactly pinned down, and when you give it to AI agents it very often gets downgraded. An agent finds a special case or a counterexample by exploiting an assumption you didn't forbid, or solves a much weaker subproblem and presents it as the main result. Little tweaks that kill the question. With many agents it can get worse: the mistakes propagate and reinforce each other, and the goal drifts from what you intended. So the first skill, formulate-problem, formulates the problem before any attempt is made. It finds a precise formulation, faithful to your original question, with no lazy way to solve it without solving the real problem, and freezes it as a contract. Then the second skill, solve-problem, takes the strongest reading of that problem, tries to fully resolve it, and audits the proposed solution before presenting it. After these two stages, it's much more likely that we solved the right problem, and that the proof is correct. But we still have to understand it, as efficiently as possible, and the output can be very hard to read: dozens of symbols encoding something simple, in weird notation. That's the third skill, teach-material. It teaches me the result one block at a time, defines every symbol before it's used, and when I'm confused, it rebuilds the explanation instead of patching it. That's one question. Now let's zoom out to a whole project.</aside>
 </section>

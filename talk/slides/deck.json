@@ -14,7 +14,6 @@
     "map",
     "point",
     "project",
-    "humans",
     "close"
   ],
   "sections": {
@@ -31,8 +30,8 @@
       "start": "map"
     },
     "s4": {
-      "description": "Readable results and the conclusion.",
-      "start": "humans"
+      "description": "The conclusion.",
+      "start": "close"
     }
   },
   "faces": {
