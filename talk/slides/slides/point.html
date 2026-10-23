@@ -1,0 +1,32 @@
+<section id="point" data-transition="fade" style="background:#F6F4EF;color:#1B1F2A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B04A33">06 · One question</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#1B1F2A">Formulate first, then solve.</h2>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#4A4F5C">Even many agents downgrade an open question, drift from it, and lose it between hand-offs.</p>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-left:8px solid #B04A33;border-radius:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B04A33">1 · Formulate</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#B04A33;background:#F3E3DC;padding:6px 16px;border-radius:8px">investigate-conjectures</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Precise:</b> freeze it as a contract.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Vague:</b> formulate it, faithful to the spirit, and check it for ways to cheat.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Before a claim counts:</b> separate checks rebuild every step and hunt for counterexamples.</p>
+</div>
+<x-shape kind="arrow-right" style="background:#B04A33;width:64px;height:32px"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-radius:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B04A33">2 · Solve</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#B04A33;background:#F3E3DC;padding:6px 16px;border-radius:8px">solve-math-rigorously</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A">Only once the question is locked.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A">The strongest reading, never a straw man.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A">Every step shown; every cited theorem's assumptions checked.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:16px">
+<p style="font-size:24px;color:#6B6F7A">Ways to cheat it checks for:</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">an easier target</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">a weakened “for all”</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">a proxy</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">one example for a class</p>
+</div>
+<aside>Let's zoom into one question first. Even with many agents, an open question gets downgraded: give an agent an open problem and it finds a special case, a counterexample, or an assumption you didn't forbid, and solves that instead. Little tweaks that kill the question. And as work passes from agent to agent, the original goal drifts. So stage one, investigate-conjectures, formulates before anything is solved. If the question is already precise, it freezes it as a contract that every agent checks itself against. Usually it isn't, so the model uses its own intelligence to formulate it, faithful to the spirit of your question, and checks the formulation against a list of ways to cheat: an easier target, a weakened "for all", a proxy, one example standing in for a whole class. And before any claim counts, separate checks attack it: one rebuilds every step, another hunts for counterexamples. Stage two, solve-math-rigorously, only starts once the question is locked. It takes the strongest reasonable reading, never a straw man, shows every step, and checks the assumptions of every theorem it cites. That saves you the endless back-and-forth of "this isn't what I asked" and "that's cheating".</aside>
+</section>
