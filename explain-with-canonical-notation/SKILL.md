@@ -1,6 +1,6 @@
 ---
 name: explain-with-canonical-notation
-description: Use when explaining, deriving, writing, or reviewing mathematics, including neural-network research, proofs, research notes, and scientific interpretations of experiments. Govern symbol introduction, explicit definitions, self-contained presentation, and compact canonical notation, with specialized conventions for neural networks, training flows, and response-memory closures. Applies beyond teaching; skip purely operational work with no mathematical content.
+description: Use when explaining, deriving, writing, or reviewing mathematics, including proofs, research notes, and scientific interpretations of experiments. Govern symbol introduction, explicit definitions, self-contained presentation, and compact canonical notation. Applies beyond teaching; skip purely operational work with no mathematical content.
 ---
 
 # Explain with canonical notation
@@ -21,10 +21,8 @@ a comprehensive source audit, extra tool use, or a fixed lesson pace, and does
 not cancel source-reading requirements of an applicable workflow. Preserve the
 user's requested scope and existing authorization.
 
-For neural networks or response-memory closures, read
-[the domain conventions](references/neural-response-memory.md). For other
-subjects, use their own established objects and conventions; do not impose
-neural-network notation on them.
+Use each subject's own established objects and conventions; do not impose one
+field's notation on another.
 
 ## Explanatory principles
 
@@ -67,7 +65,7 @@ convention once.
 Follow the user's explicitly requested or previously agreed conventions.
 Otherwise preserve the applicable project notation contract and source notation;
 use established domain notation for new objects. When translating, give the exact
-correspondence, including signs, normalization, scales, and learning-rate factors.
+correspondence, including signs, normalization, scales, and constant factors.
 Do not silently modify the model or rename unrelated existing material to fit a
 preferred notation.
 
@@ -87,9 +85,8 @@ For a complete construction, adapt this order to the subject:
 5. Observables and exact derived relationships.
 6. Any approximation and its guarantees or limitations.
 
-For a neural-network construction, include the forward pass, residuals, and
-loss before the training equations. For other domains, use the corresponding
-natural operations instead of forcing this vocabulary.
+Adapt these steps to the domain's natural operations instead of forcing this
+vocabulary.
 
 Show the origin of each important term by the necessary substitution,
 differentiation, or logical step. Explain how recursively computed quantities

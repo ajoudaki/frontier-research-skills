@@ -63,7 +63,7 @@ Make the block self-contained for its present conceptual burden, not for the ent
 
 ## Enforce notation and type discipline
 
-Use a small, stable notation. Follow the user's explicitly requested or previously agreed conventions. Otherwise preserve the applicable project notation contract and prefer the source's symbols unless they collide or obscure meaning. When translating notation, state the exact correspondence and preserve the model, assumptions, normalization, and learning-rate factors.
+Use a small, stable notation. Follow the user's explicitly requested or previously agreed conventions. Otherwise preserve the applicable project notation contract and prefer the source's symbols unless they collide or obscure meaning. When translating notation, state the exact correspondence and preserve the model, assumptions, normalization, and constant factors.
 
 Define every symbol before using it. For each object, state as relevant:
 
