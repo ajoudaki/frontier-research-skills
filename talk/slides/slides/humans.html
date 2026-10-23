@@ -1,24 +1,22 @@
-<section id="humans" data-transition="fade" style="background:#F6F4EF;color:#1B1F2A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<section id="humans" data-transition="fade" style="background:#F6F4EF;color:#1B1F2A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
 <div style="display:flex;flex-direction:column;gap:16px">
-<p style="font-size:24px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B04A33">08 · Humans and plumbing</p>
-<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#1B1F2A">Make them talk to you. Load only what's needed.</h2>
+<p style="font-size:24px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B04A33">07 · Readable output</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#1B1F2A">Make them explain it to you.</h2>
 </div>
+<p style="font-size:32px;line-height:1.4;color:#4A4F5C">Models invent dozens of symbols to say in a line what takes pages. We can't hold that in our heads.</p>
 <div style="display:flex;flex-direction:row;gap:32px">
 <div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FDFCF9;padding:48px;border:1px solid #DCD6CA;border-radius:16px">
-<x-icon name="GraduationCap" style="color:#B04A33;width:56px;height:56px"></x-icon>
-<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:44px;font-weight:600;color:#1B1F2A">Skills that teach me</h3>
-<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Models juggle compressed symbols we can't hold in our heads.</p>
-<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Familiar notation, every symbol defined, one block at a time.</p>
-<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Confused? Rebuild the explanation, don't patch it.</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;color:#B04A33;background:#F3E3DC;padding:6px 20px;border-radius:8px">explain-with-canonical-notation</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:44px;font-weight:600;color:#1B1F2A">Clear notation</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Familiar symbols, each one defined before it's used.</p>
+<p style="font-size:24px;line-height:1.4;color:#4A4F5C">No private alphabet of aliases to decode.</p>
 </div>
 <div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FDFCF9;padding:48px;border:1px solid #DCD6CA;border-radius:16px">
-<x-icon name="Link" style="color:#B04A33;width:56px;height:56px"></x-icon>
-<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:44px;font-weight:600;color:#1B1F2A">Route the context</h3>
-<p style="font-size:24px;line-height:1.4;color:#4A4F5C">AGENTS.md is always loaded, so keep it small.</p>
-<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Everything else is routed: one 100-page paper, only when it's needed.</p>
-<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Version and test your skills like code.</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;color:#B04A33;background:#F3E3DC;padding:6px 20px;border-radius:8px">teach-technical-math</p>
+<h3 style="font-family:'Source Serif 4', Georgia, serif;font-size:44px;font-weight:600;color:#1B1F2A">A patient teacher</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Teaches a paper or report one block at a time.</p>
+<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Confused? It rebuilds the block instead of patching a sentence.</p>
 </div>
 </div>
-<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#6B6F7A"><span style="color:#B04A33">repo ›</span> explain-with-canonical-notation · teach-technical-math</p>
-<aside>Two smaller things that make a big difference. First, reading. Model output is full of compressed notation: they'll invent dozens of new symbols to say something that would take pages, and that's very hard for a human to follow. So I have skills whose job is to teach me: familiar notation, every symbol defined, one block at a time. In the repo, those are explain-with-canonical-notation and teach-technical-math. Second, routing. A skill is just a markdown file, and it can be hierarchical. Say I want a skill for Tensor Programs: that's six papers, around a hundred pages each. I don't want all of that loaded into every prompt. So the skill has a table that says: if you need this, load that file. You can see the same pattern in the repo: investigate-conjectures keeps a short SKILL.md that tells the agent which of its five reference files to read, and when. AGENTS.md is always read, so keep it small. Everything else loads only when it's needed.</aside>
+<aside>One more thing that matters a lot: reading. Model output is full of compressed notation. They'll invent dozens of new symbols to say in a line what would take pages, and no human can hold that in their head. So I have skills whose only job is to make the model explain things to me. explain-with-canonical-notation makes it use familiar notation and define every symbol before using it, instead of a private alphabet of aliases. teach-technical-math teaches me a paper, or a report the agents wrote, one block at a time. And when I'm confused, it rebuilds the whole explanation instead of patching one sentence. Basically, you write skills that teach the model how to talk to you.</aside>
 </section>

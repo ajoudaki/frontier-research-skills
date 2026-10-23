@@ -1,6 +1,6 @@
 # Reusable Codex skills
 
-This repository versions seven independently packaged skills:
+This repository versions six independently packaged skills:
 
 - `explain-with-canonical-notation`: canonical notation and self-contained mathematical presentation.
 - `teach-technical-math`: source-grounded mathematical teaching.
@@ -8,7 +8,6 @@ This repository versions seven independently packaged skills:
 - `investigate-conjectures`: mathematical and computational research workflows.
 - `organize-research-project`: modular project organization, study isolation, promotion, and reproducible artifacts.
 - `review-ai-paper`: evidence-backed reviews of AI research papers.
-- `handoff-codex-project-tasks`: Codex project and task handoffs.
 
 Each top-level skill directory contains its `SKILL.md` and any supporting
 resources needed by that skill. The packages do not assume a particular user,
