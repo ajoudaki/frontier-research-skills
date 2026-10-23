@@ -14,7 +14,11 @@
     "map",
     "point",
     "project",
-    "close"
+    "close",
+    "formulate",
+    "solve",
+    "teach",
+    "review"
   ],
   "sections": {
     "s1": {

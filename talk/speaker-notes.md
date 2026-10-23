@@ -23,3 +23,15 @@ Most open-ended research questions aren't a single question. You start from one 
 
 ## 8. Simple ideas, a big difference, and just the beginning.
 So to wrap up. All the ideas I've shared are very simple, but for me they made an enormous difference. And this is clearly just the beginning: there's so much room to improve and to fully leverage the models we already have. The table shows all the skills I mentioned, and they're in the repo. Feel free to use them, improve them, and add your own tricks for your domain. Thanks.
+
+## 9. Seal the loopholes first.
+Let's look closer at each skill, starting with formulate-problem. A research question usually starts vague. Before anyone tries to solve it, the skill writes a research contract: the objects and definitions, the admissible domain, the order of the quantifiers, the conclusion and its scope, what counts as evidence, and which substitutions are forbidden. Only then does it state a sharp conjecture. And then it attacks its own statement, looking for the ways an agent could cheat: an easier target, a definition that drifts, a 'for all' quietly weakened to 'there exists', a proxy metric, or one example passed off as a whole class. Every loophole it finds gets closed, and the result is frozen as a contract, so no later step can quietly change the question.
+
+## 10. Every step, checked.
+solve-problem picks up that frozen question. It first takes the strongest reasonable reading, never a straw man. Before a long proof, it lays out the plan: the lemmas and how they combine. Then it derives every nontrivial step. When it relies on an external theorem, it states the exact form it needs and checks every hypothesis against the actual objects. It tests edge cases: zero, the boundary, degenerate cases. Then it audits its own draft, and any step that leans on 'clearly' gets a real derivation. Only then does the answer go out, and it answers exactly the question in the contract.
+
+## 11. Light up every symbol.
+The third stage is teach-material. Here's the kind of formula an agent might hand you: dozens of symbols packed into one line. The skill teaches it one block at a time. Each block introduces one new object, with its type, before using it, and as each block lands, another symbol in the formula becomes something you understand. Every claim carries its status: exact, an assumption, or a heuristic. And when you're confused, it doesn't append a one-line patch: it rebuilds the whole block. By the end, every symbol is lit.
+
+## 12. A ledger of claims.
+Finally, review-paper. It reads the whole paper and lifts out the three to five claims that matter most. For each one, it gathers evidence: it re-derives the key proofs, it retrieves the cited papers and checks that each citation is used correctly, and it audits the code for leakage and unfair baselines. It rates the plausibility of a conclusion separately from the soundness of its argument. Each flaw gets a severity, fatal, major or minor, and a fatal flaw cascades to every claim that depends on it. The verdict says whether the central message stands, and the confidence reflects only what was actually checked.
