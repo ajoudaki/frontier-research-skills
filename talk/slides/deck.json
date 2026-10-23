@@ -11,13 +11,11 @@
     "bottleneck",
     "setup",
     "agents",
-    "question",
-    "core",
-    "humans",
-    "close",
     "map",
     "point",
-    "project"
+    "project",
+    "humans",
+    "close"
   ],
   "sections": {
     "s1": {
@@ -25,12 +23,16 @@
       "start": "cover"
     },
     "s2": {
-      "description": "The basics, many agents, and keeping them honest.",
+      "description": "The basics and many agents.",
       "start": "setup"
     },
     "s3": {
-      "description": "A trusted core, readable results, and the conclusion.",
-      "start": "core"
+      "description": "Two scales: one question, then a whole project.",
+      "start": "map"
+    },
+    "s4": {
+      "description": "Readable results and the conclusion.",
+      "start": "humans"
     }
   },
   "faces": {
