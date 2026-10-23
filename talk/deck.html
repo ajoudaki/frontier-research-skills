@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open research with AI agents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+  html, body { margin: 0; height: 100%; background: #0f1218; overflow: hidden; }
+  #stage {
+    position: absolute; left: 50%; top: 50%;
+    width: 1920px; height: 1080px; transform-origin: 0 0;
+  }
+  #stage * { margin: 0; padding: 0; box-sizing: border-box; }
+  #stage section {
+    position: absolute; inset: 0; width: 1920px; height: 1080px;
+    overflow: hidden; display: flex; flex-direction: column;
+    color: #1b1f2a; font-family: 'IBM Plex Sans', Arial, sans-serif;
+    opacity: 0; visibility: hidden;
+    transition: opacity 450ms ease, visibility 0s linear 450ms;
+  }
+  #stage section.current {
+    opacity: 1; visibility: visible;
+    transition: opacity 450ms ease, visibility 0s;
+  }
+  #stage div { display: flex; flex-direction: column; }
+  #stage p { font-size: 32px; line-height: 1.4; font-weight: 400; }
+  #stage h1 { font-size: 96px; line-height: 1.1; font-weight: 600; }
+  #stage h2 { font-size: 64px; line-height: 1.15; font-weight: 600; }
+  #stage h3 { font-size: 44px; line-height: 1.2; font-weight: 600; }
+  #stage a { color: inherit; text-decoration: underline; }
+  #stage svg { flex: none; }
+  /* The Slides editor draws one uniform border, so match its look. */
+  #stage [style*="border-left:8px"],
+  #stage [style*="border-left: 8px"] { border-left: 1px solid #dcd6ca !important; }
+  #stage aside { display: none; }
+  #stage x-shape { display: block; flex: none; }
+  #stage x-shape[kind="arrow-right"] {
+    clip-path: polygon(0 30%, 60% 30%, 60% 0, 100% 50%, 60% 100%, 60% 70%, 0 70%);
+  }
+  #stage [data-build-in] {
+    transition: opacity 500ms ease, translate 500ms cubic-bezier(.2, .7, .2, 1);
+  }
+  #stage [data-build-in].pending { opacity: 0; }
+  #stage [data-build-in^="rise"].pending { translate: 0 32px; }
+  body.static #stage section,
+  body.static #stage [data-build-in] { transition: none !important; }
+  #notes {
+    position: fixed; left: 0; right: 0; bottom: 0; max-height: 40vh;
+    overflow: auto; padding: 16px 24px; display: none;
+    background: rgba(15, 18, 24, .92); color: #f6f4ef;
+    font: 18px/1.5 'IBM Plex Sans', Arial, sans-serif;
+  }
+  body.show-notes #notes { display: block; }
+  #counter {
+    position: fixed; right: 16px; bottom: 12px; display: none;
+    color: #8a90a0; font: 14px 'IBM Plex Sans', Arial, sans-serif;
+  }
+  body.show-notes #counter { display: block; }
+</style>
+</head>
+<body>
+<div id="stage">
+<section id="cover" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; justify-content:center; padding:128px; background:#1b1f2a">
+  <h1 style="font-family:'Source Serif 4', Georgia, serif; font-size:120px; font-weight:600; line-height:1.05; color:#f6f4ef">Open research<br>with AI agents</h1>
+  <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:44px; line-height:1.3; color:#c9ccd3">Using today's most capable models on hard, open questions<br>without losing control</p>
+  <div style="position:absolute; bottom:96px; left:128px; width:1664px; display:flex; flex-direction:column; gap:12px">
+    <x-shape kind="line" style="width:120px; height:4px; flex:0 0 auto; background:#e9a27f"></x-shape>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:48px; font-weight:600; color:#f6f4ef">Amir Joudaki</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; color:#e9a27f">October 12, 2026</p>
+  </div>
+  <aside>Hi everyone, I'm Amir. Today's models are smart enough to do real research, but using them on open questions is surprisingly hard: they produce far more than we can check, and their mistakes are silent. In this short talk I'll share the practical habits I developed to do it without losing control. It isn't a principled framework, just what worked for me, mostly in theoretical research, and everything is in a repo linked at the end.</aside>
+</section>
+<section id="bottleneck" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; padding:128px 128px 160px; background:#1b1f2a">
+  <div style="width:920px; display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#e9a27f">01 · The problem</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:72px; font-weight:600; line-height:1.1; color:#f6f4ef">Smart models fail beautifully.</h2>
+  </div>
+  <p data-build-in="rise 1" style="position:absolute; top:384px; left:128px; width:920px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; line-height:1.4; color:#c9ccd3"><span style="color:#e9a27f">1</span>  We're handing more and more research to very capable models.</p>
+  <p data-build-in="rise 2" style="position:absolute; top:489.6px; left:128px; width:920px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; line-height:1.4; color:#c9ccd3"><span style="color:#e9a27f">2</span>  Research fails silently: the prose, the figures, even the math look great, while one hidden assumption sinks it.</p>
+  <p data-build-in="rise 3" style="position:absolute; top:595.2px; left:128px; width:920px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; line-height:1.4; color:#c9ccd3"><span style="color:#e9a27f">3</span>  And there's far more output than we can check. The bottleneck becomes you.</p>
+  <p data-build-in="rise 5" style="position:absolute; top:732.8px; left:128px; width:920px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:44px; line-height:1.3; color:#f6f4ef">How do you raise the <span style="color:#e9a27f">signal-to-noise</span> ratio, and stay in control?</p>
+  <svg data-build-in="fade 4" xmlns="http://www.w3.org/2000/svg" aria-label="A haystack of grey straws with three small orange gems hidden inside" viewBox="0 0 432 560" style="position:absolute; top:0; right:24.55px; width:816.38px; height:880.16px"><line x1="150" y1="266" x2="187" y2="270" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="166" y1="222" x2="190" y2="222" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="56" y1="433" x2="95" y2="431" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="245" y1="320" x2="271" y2="330" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="138" y1="279" x2="109" y2="288" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="68" y1="463" x2="98" y2="456" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="240" y1="393" x2="204" y2="393" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="248" y1="339" x2="281" y2="334" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="60" y1="444" x2="25" y2="444" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="257" y1="219" x2="292" y2="220" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="377" y1="467" x2="407" y2="478" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="157" y1="321" x2="133" y2="321" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="381" y1="478" x2="416" y2="483" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="271" y1="518" x2="238" y2="510" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="38" y1="499" x2="67" y2="492" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="316" y1="307" x2="279" y2="314" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="60" y1="461" x2="97" y2="462" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="293" y1="516" x2="255" y2="511" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="61" y1="426" x2="91" y2="430" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="128" y1="255" x2="95" y2="257" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="385" y1="499" x2="415" y2="499" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="178" y1="322" x2="155" y2="323" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="396" y1="503" x2="417" y2="497" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="230" y1="503" x2="267" y2="506" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="85" y1="388" x2="55" y2="391" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="346" y1="519" x2="318" y2="519" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="68" y1="434" x2="98" y2="428" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="384" y1="486" x2="416" y2="477" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="394" y1="515" x2="364" y2="510" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="162" y1="277" x2="129" y2="276" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="330" y1="481" x2="354" y2="485" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="162" y1="217" x2="137" y2="227" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="288" y1="507" x2="249" y2="509" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="60" y1="423" x2="34" y2="424" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="208" y1="402" x2="243" y2="410" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="368" y1="494" x2="332" y2="487" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="324" y1="367" x2="295" y2="360" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="300" y1="293" x2="329" y2="285" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="330" y1="336" x2="299" y2="328" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="88" y1="437" x2="114" y2="427" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="191" y1="477" x2="212" y2="482" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="139" y1="305" x2="107" y2="303" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="53" y1="498" x2="20" y2="487" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="228" y1="359" x2="198" y2="371" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="319" y1="316" x2="348" y2="308" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="284" y1="381" x2="322" y2="381" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="122" y1="335" x2="92" y2="328" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="195" y1="390" x2="229" y2="390" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="219" y1="455" x2="254" y2="455" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="373" y1="509" x2="350" y2="514" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="176" y1="298" x2="153" y2="295" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="322" y1="496" x2="299" y2="502" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="390" y1="480" x2="358" y2="468" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="398" y1="516" x2="362" y2="526" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="156" y1="274" x2="134" y2="277" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="194" y1="191" x2="163" y2="195" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="72" y1="508" x2="94" y2="504" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="45" y1="507" x2="80" y2="501" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="181" y1="368" x2="146" y2="367" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="134" y1="465" x2="159" y2="459" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="266" y1="457" x2="286" y2="451" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="199" y1="297" x2="166" y2="296" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="226" y1="262" x2="250" y2="254" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="105" y1="367" x2="132" y2="363" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="131" y1="467" x2="149" y2="474" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="221" y1="264" x2="188" y2="265" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="391" y1="487" x2="417" y2="481" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="181" y1="306" x2="200" y2="299" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="190" y1="205" x2="153" y2="200" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="253" y1="419" x2="274" y2="412" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="31" y1="511" x2="6" y2="514" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="111" y1="328" x2="141" y2="324" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="122" y1="463" x2="144" y2="456" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="177" y1="292" x2="209" y2="295" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="275" y1="433" x2="243" y2="423" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="86" y1="471" x2="122" y2="475" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="303" y1="470" x2="336" y2="460" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="62" y1="412" x2="90" y2="415" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="238" y1="395" x2="268" y2="398" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="200" y1="206" x2="229" y2="216" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="307" y1="383" x2="283" y2="377" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="116" y1="434" x2="92" y2="435" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="315" y1="426" x2="348" y2="429" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="124" y1="453" x2="146" y2="450" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="211" y1="511" x2="241" y2="501" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="294" y1="318" x2="334" y2="317" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="146" y1="252" x2="116" y2="253" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="400" y1="509" x2="420" y2="516" stroke="#3A4152" stroke-width="4" stroke-linecap="round"/><line x1="83" y1="439" x2="111" y2="449" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="360" y1="478" x2="332" y2="483" stroke="#4A5060" stroke-width="4" stroke-linecap="round"/><line x1="31" y1="513" x2="6" y2="514" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="158" y1="309" x2="183" y2="316" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="342" y1="354" x2="375" y2="366" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><line x1="124" y1="277" x2="152" y2="275" stroke="#6B7282" stroke-width="4" stroke-linecap="round"/><line x1="311" y1="483" x2="347" y2="477" stroke="#5A6070" stroke-width="4" stroke-linecap="round"/><polygon points="170,317 181,330 170,343 159,330" fill="#E9A27F"/><polygon points="268,237 279,250 268,263 257,250" fill="#E9A27F"/><polygon points="300,417 311,430 300,443 289,430" fill="#E9A27F"/></svg>
+  <p data-build-in="fade 4" style="position:absolute; top:885.21px; right:128px; width:537.22px; height:91.11px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:45px; text-align:center; color:#8a90a0">A few gems, a lot of hay.</p>
+  <aside>Let's start with where we are today. We're in the middle of a fundamental transition: from writing every line of code, paper and theory ourselves, to delegating much more research to very capable models. The transition is hard, because in research, agents fail silently, and the smarter they get, the harder those failures are to catch. The text looks flawless, the figures look great, even the math looks great at a glance. But the real failure is hidden on page 12, in some assumption that quietly absorbs all the complexity. On top of that, they produce code, theory and papers far faster than we can read. So we end up with a pile of results that may contain some gems, but finding them takes an enormous amount of time: a gem in a haystack. And noise isn't only mistakes: a result can be correct but irrelevant. You lose so much control that it can defeat the purpose of using them at all.</aside>
+</section>
+<section id="setup" data-transition="fade" style="display:flex; flex-direction:column; gap:32px; padding:128px 128px 160px; background:#f6f4ef">
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">02 · The basics</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">Most of the value is in the basics.</h2>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; line-height:1.4; color:#4a4f5c">Not my invention. It's the 80/20: just learn these.</p>
+  </div>
+  <div data-build-in="rise 1" style="position:absolute; top:349.6px; left:128px; width:820px; display:flex; flex-direction:column; gap:16px; padding:48px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+    <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:44px; font-weight:600; color:#1b1f2a">A coding agent, not a chat</h3>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; line-height:1.4; color:#4a4f5c">Codex or Claude Code inside your repo: papers, code and results already in context.</p>
+  </div>
+  <div data-build-in="rise 2" style="position:absolute; top:349.6px; left:972px; width:820px; display:flex; flex-direction:column; gap:16px; padding:48px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+    <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:44px; font-weight:600; color:#1b1f2a">One always-on machine</h3>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; line-height:1.4; color:#4a4f5c">Everything in one place. Connect from anywhere; agents work overnight.</p>
+  </div>
+  <div data-build-in="rise 3" style="position:absolute; top:638.6px; left:128px; width:1664px; display:flex; flex-direction:row; gap:24px">
+    <div style="display:flex; flex-direction:column; gap:12px; flex:1; padding:32px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:32px; font-weight:600; color:#1b1f2a">Skills</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Instructions the agent loads only when a task needs them.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; flex:1; padding:32px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:32px; font-weight:600; color:#1b1f2a">AGENTS.md / CLAUDE.md</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Project rules, read at the start of every session.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; flex:1; padding:32px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:32px; font-weight:600; color:#1b1f2a">Routing</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Reference files opened only when needed.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; flex:1; padding:32px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:32px; font-weight:600; color:#1b1f2a">Subagents</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Fresh agents with a clean context. More on the next slide.</p>
+    </div>
+  </div>
+  <aside>It starts with some very basic techniques. None of this slide is my invention, but these simple things make a tremendous difference: the perfect 80/20. Two matter most. First, leave the chat interface and use a coding agent that runs directly in your repo. Then the theory, the LaTeX, the code, even the results and figures are all in context, and you stop uploading things back and forth. Second, run everything on one always-on machine, a central workstation where everything lives. Agents can work overnight and wait for runs to finish, and even if you dispatch jobs elsewhere, everything comes back to one place. Then a few more basics many researchers don't use: skills; AGENTS.md or CLAUDE.md, which every agent reads, so you don't repeat your prompts; routing, so a large skill is split into files and nothing unnecessary gets loaded; and subagents, which come next.</aside>
+</section>
+<section id="agents" data-transition="fade" style="background:#F6F4EF;color:#1B1F2A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B04A33">03 · Many agents</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#1B1F2A">Many agents beat one long thread.</h2>
+<div style="display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px">
+<p style="font-size:24px;color:#6B6F7A">Built into</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;color:#B04A33;background:#F3E3DC;padding:6px 20px;border-radius:8px">investigate-conjectures</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:28px;color:#B04A33;background:#F3E3DC;padding:6px 20px;border-radius:8px">organize-research-project</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#4A4F5C">Not for speed: same tokens, same rate limits. Ask ten people once, not one person ten times.</p>
+<div data-build-in="rise 1" style="position:absolute;top:432.8px;left:128px;width:816px;display:flex;flex-direction:column;gap:16px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-radius:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#6B6F7A">One long thread</p>
+<svg aria-label="A single thread of twelve steps; the third step is a mistake and every step after it is tinted by it" style="width:720px;height:150px" width="720" height="150" viewBox="0 0 720 150"><line x1="8" y1="75" x2="712" y2="75" stroke="#A9A293" stroke-width="3"/><rect x="20" y="55" width="40" height="40" rx="6" fill="#C9C3B5"/><rect x="78" y="55" width="40" height="40" rx="6" fill="#C9C3B5"/><rect x="136" y="55" width="40" height="40" rx="6" fill="#B04A33"/><rect x="194" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="252" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="310" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="368" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="426" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="484" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="542" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="600" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/><rect x="658" y="55" width="40" height="40" rx="6" fill="#E3B7A6"/></svg>
+<div style="width:720px;display:flex;flex-direction:row">
+<p style="flex:1;font-size:24px;color:#B04A33">one mistake</p>
+<p style="flex:2;font-size:24px;text-align:right;color:#6B6F7A">…and it never recovers</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Everything piles up in one context. Once something goes wrong, everything after it inherits the mistake.</p>
+</div>
+<div data-build-in="rise 2" style="position:absolute;top:432.8px;left:976px;width:816px;display:flex;flex-direction:column;gap:16px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-left:8px solid #B04A33;border-radius:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B04A33">Many fresh agents</p>
+<svg aria-label="A main agent connected to four fresh agents; three missed the flaw and one caught it" style="width:720px;height:150px" width="720" height="150" viewBox="0 0 720 150"><line x1="360" y1="44" x2="90" y2="118" stroke="#C9C3B5" stroke-width="3"/><line x1="360" y1="44" x2="270" y2="118" stroke="#C9C3B5" stroke-width="3"/><line x1="360" y1="44" x2="450" y2="118" stroke="#B04A33" stroke-width="4"/><line x1="360" y1="44" x2="630" y2="118" stroke="#C9C3B5" stroke-width="3"/><circle cx="360" cy="30" r="20" fill="#1B1F2A"/><circle cx="90" cy="122" r="20" fill="#FDFCF9" stroke="#A9A293" stroke-width="3"/><circle cx="270" cy="122" r="20" fill="#FDFCF9" stroke="#A9A293" stroke-width="3"/><circle cx="450" cy="122" r="22" fill="#B04A33"/><polyline points="439,122 447,131 462,113" fill="none" stroke="#FDFCF9" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="630" cy="122" r="20" fill="#FDFCF9" stroke="#A9A293" stroke-width="3"/></svg>
+<div style="width:720px;display:flex;flex-direction:row">
+<p style="flex:1;font-size:24px;text-align:center;color:#6B6F7A">missed</p>
+<p style="flex:1;font-size:24px;text-align:center;color:#6B6F7A">missed</p>
+<p style="flex:1;font-size:24px;font-weight:600;text-align:center;color:#B04A33">caught it</p>
+<p style="flex:1;font-size:24px;text-align:center;color:#6B6F7A">missed</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#4A4F5C">Each starts clean and sees only its own folder. Their errors are independent, so it only takes one to catch the flaw.</p>
+</div>
+<aside>Beyond the basics, here's one conceptual point I think many people still underestimate: multiple agents are fundamentally more powerful than one long thread. Not because they're faster. You pay for the tokens either way, and you're rate-limited. The difference is conceptual. A single thread accumulates everything: every dead end, every earlier claim, every sentiment, enthusiasm or pessimism. Once it makes an early mistake, everything is anchored to it, and telling it to be unbiased can't undo that. It doesn't know how. Separate agents get a clean, independent start, especially if you isolate them and decide mechanically what they see. Run four agents, ideally prompted for diversity, and three may miss a flaw while the fourth catches it. You can also give them roles, different angles of attack at the same time. It's asking ten people instead of asking one person ten times. Most of the skills in this repo build on this, so let me go through a few.</aside>
+</section>
+<section id="map" data-transition="magic" style="display:flex; flex-direction:column; gap:40px; padding:128px 128px 160px; background:#f6f4ef">
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">04 · Two scales</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">One question, or a whole project.</h2>
+  </div>
+  <div data-build-in="rise 1" style="position:absolute; top:296.8px; left:128px; width:1664px; display:flex; flex-direction:row; gap:24px; align-items:center">
+    <div style="width:300px; display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:32px; font-weight:600; color:#1b1f2a">One question</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#6b6f7a">a single, targeted point</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1; padding:28px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">Formulate</p>
+      <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">investigate-conjectures</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">A vague question → a sharp conjecture</p>
+    </div>
+    <x-shape kind="arrow-right" style="width:64px; height:32px; background:#b04a33"></x-shape>
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1; padding:28px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">Solve</p>
+      <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">solve-math-rigorously</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">A formal question → a rigorous solution</p>
+    </div>
+  </div>
+  <p data-build-in="rise 1" style="position:absolute; top:507.6px; left:452px; width:1340px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#6b6f7a">↑ every thrust in a project runs this pair</p>
+  <div data-build-in="rise 2" style="position:absolute; top:561.2px; left:128px; width:1664px; display:flex; flex-direction:row; gap:24px; align-items:center">
+    <div style="width:300px; display:flex; flex-direction:column; gap:4px">
+      <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:32px; font-weight:600; color:#1b1f2a">A whole project</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#6b6f7a">one big, open question</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1; padding:28px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">Develop</p>
+      <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">organize-research-project</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Many thrusts → one trusted core</p>
+    </div>
+    <x-shape kind="arrow-right" style="width:64px; height:32px; background:#b04a33"></x-shape>
+    <div style="display:flex; flex-direction:column; gap:10px; flex:1; padding:28px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">Audit</p>
+      <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">review-ai-paper</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">A finished paper → a cold, rigorous audit</p>
+    </div>
+  </div>
+  <p data-build-in="rise 2" style="position:absolute; top:772px; left:452px; width:1340px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#6b6f7a">↺ a review's findings can start the next round</p>
+  <aside>They come at two scales. Sometimes you have a targeted, well-scoped question. For that there are two skills: investigate-conjectures sharpens the question, and solve-math-rigorously solves it. But most open research isn't a single question. It's one big open question you push in many directions. For that, organize-research-project develops the project, and review-ai-paper audits the finished paper.</aside>
+</section>
+<section id="point" data-transition="fade" style="background:#F6F4EF;color:#1B1F2A;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#B04A33">05 · One question</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#1B1F2A">Formulate first, then solve.</h2>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#4A4F5C">Even many agents downgrade an open question, drift from it, and lose it between hand-offs.</p>
+<div data-build-in="rise 1" style="position:absolute;top:381.6px;left:128px;width:776px;display:flex;flex-direction:column;gap:14px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-left:8px solid #B04A33;border-radius:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B04A33">1 · Formulate</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#B04A33;background:#F3E3DC;padding:6px 16px;border-radius:8px">investigate-conjectures</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Precise:</b> freeze it as a contract.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Vague:</b> formulate it, faithful to the spirit, and check it for ways to cheat.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A"><b>Before a claim counts:</b> separate checks rebuild every step and hunt for counterexamples.</p>
+</div>
+<x-shape kind="arrow-right" data-build-in="fade 2" style="position:absolute;top:558.8px;left:928px;background:#B04A33;width:64px;height:32px"></x-shape>
+<div data-build-in="rise 2" style="position:absolute;top:414.6px;left:1016px;width:776px;display:flex;flex-direction:column;gap:14px;background:#FDFCF9;padding:40px;border:1px solid #DCD6CA;border-radius:16px">
+<p style="font-size:24px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#B04A33">2 · Solve</p>
+<p style="font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#B04A33;background:#F3E3DC;padding:6px 16px;border-radius:8px">solve-math-rigorously</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A">Only once the question is locked.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A">The strongest reading, never a straw man.</p>
+<p style="font-size:24px;line-height:1.4;color:#1B1F2A">Every step shown; every cited theorem's assumptions checked.</p>
+</div>
+<div data-build-in="rise 3" style="position:absolute;top:807.6px;left:128px;width:1664px;display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:16px">
+<p style="font-size:24px;color:#6B6F7A">Ways to cheat it checks for:</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">an easier target</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">a weakened “for all”</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">a proxy</p>
+<p style="font-size:24px;color:#1B1F2A;background:#ECE8DF;padding:10px 24px;border-radius:32px">one example for a class</p>
+</div>
+<aside>We start with a targeted question. Even a well-scoped research question is usually still open, not exactly pinned down, and when you give it to AI agents it very often gets downgraded. An agent finds a special case or a counterexample by exploiting an assumption you didn't forbid, or solves a much weaker subproblem and presents it as the main result. Little tweaks that kill the question. With many agents it can get worse: the mistakes propagate and reinforce each other, and the goal drifts from what you intended. So the first skill, investigate-conjectures, formulates the problem before any attempt is made. It uses its own intelligence to find a precise formulation, faithful to your original question, with no lazy way to solve it without solving the real problem. What you get isn't a solution. It's a sharpened conjecture, frozen as a contract. Then the second skill, solve-math-rigorously, takes the strongest reading of that problem, tries to fully resolve it, and audits the proposed solution before presenting it.</aside>
+</section>
+<section id="project" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; padding:128px 128px 160px; background:#f6f4ef">
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">06 · A whole project</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">Develop in isolation, then audit cold.</h2>
+  </div>
+  <svg aria-label="A central research question with studies thrusting out from it. Studies A, B and C passed the promotion gate and sit inside a shaded region, the established core." style="position:absolute; top:300px; left:128px; width:700px; height:470px" width="700" height="470" viewBox="0 0 700 470"><ellipse cx="215" cy="240" rx="195" ry="210" fill="#F3E3DC" stroke="#B04A33" stroke-width="3"/><line x1="300" y1="240" x2="183.3" y2="138.9" stroke="#B04A33" stroke-width="3"/><polygon points="172.7,129.7 188.5,132.9 178.1,144.9" fill="#B04A33"/><line x1="300" y1="240" x2="138.7" y2="259.7" stroke="#B04A33" stroke-width="3"/><polygon points="124.8,261.4 137.7,251.8 139.7,267.6" fill="#B04A33"/><line x1="300" y1="240" x2="216.6" y2="349.9" stroke="#B04A33" stroke-width="3"/><polygon points="208.1,361.1 210.2,345.1 223,354.7" fill="#B04A33"/><circle cx="150" cy="110" r="28" fill="#B04A33"/><circle cx="95" cy="265" r="28" fill="#B04A33"/><circle cx="190" cy="385" r="28" fill="#B04A33"/><circle cx="300" cy="240" r="62" fill="#1B1F2A"/></svg>
+  <svg data-build-in="fade 1" aria-label="Three more studies outside the core: one not checked yet, two that failed the promotion gate, marked with a cross." style="position:absolute; top:300px; left:128px; width:700px; height:470px" width="700" height="470" viewBox="0 0 700 470"><line x1="351.9" y1="206.1" x2="493.2" y2="114" stroke="#A9A293" stroke-width="3"/><polygon points="504.9,106.4 497.6,120.7 488.8,107.3" fill="#A9A293"/><line x1="362" y1="242.1" x2="556" y2="248.5" stroke="#A9A293" stroke-width="3"/><polygon points="570,249 555.7,256.5 556.3,240.5" fill="#A9A293"/><line x1="350.9" y1="275.4" x2="493.9" y2="374.9" stroke="#A9A293" stroke-width="3"/><polygon points="505.4,382.9 489.3,381.5 498.5,368.3" fill="#A9A293"/><circle cx="530" cy="90" r="28" fill="#FDFCF9" stroke="#A9A293" stroke-width="3" stroke-dasharray="6 5"/><circle cx="600" cy="250" r="28" fill="#4A4F5C"/><line x1="589" y1="239" x2="611" y2="261" stroke="#FDFCF9" stroke-width="5" stroke-linecap="round"/><line x1="611" y1="239" x2="589" y2="261" stroke="#FDFCF9" stroke-width="5" stroke-linecap="round"/><circle cx="530" cy="400" r="28" fill="#4A4F5C"/><line x1="519" y1="389" x2="541" y2="411" stroke="#FDFCF9" stroke-width="5" stroke-linecap="round"/><line x1="541" y1="389" x2="519" y2="411" stroke="#FDFCF9" stroke-width="5" stroke-linecap="round"/></svg>
+  <p style="position:absolute; top:511px; left:366px; width:124px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:22px; line-height:1.3; text-align:center; color:#f6f4ef">Research<br>question</p>
+  <p style="position:absolute; top:393px; left:250px; width:56px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; text-align:center; color:#f6f4ef">A</p>
+  <p style="position:absolute; top:548px; left:195px; width:56px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; text-align:center; color:#f6f4ef">B</p>
+  <p style="position:absolute; top:668px; left:290px; width:56px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; text-align:center; color:#f6f4ef">C</p>
+  <p data-build-in="fade 1" style="position:absolute; top:373px; left:630px; width:56px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; text-align:center; color:#4a4f5c">D</p>
+  <p style="position:absolute; top:756px; left:193px; width:300px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-align:center; text-transform:uppercase; color:#b04a33">Established core</p>
+  <p data-build-in="fade 1" style="position:absolute; top:373px; left:698px; width:260px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#6b6f7a">not checked yet</p>
+  <p data-build-in="fade 1" style="position:absolute; top:533px; left:768px; width:200px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; color:#1b1f2a">failed the gate</p>
+  <p data-build-in="fade 1" style="position:absolute; top:683px; left:698px; width:260px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; color:#1b1f2a">failed the gate</p>
+  <p data-build-in="fade 1" style="position:absolute; top:810px; left:128px; width:820px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#6b6f7a">Inside each study: the one-question pair.</p>
+    <div data-build-in="rise 2" style="position:absolute; top:300px; left:1000px; width:792px; display:flex; flex-direction:column; gap:12px; padding:40px; background:#fdfcf9; border:1px solid #dcd6ca; border-left:8px solid #b04a33; border-radius:16px">
+      <div style="display:flex; flex-direction:row; align-items:center; gap:16px">
+        <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">Develop</p>
+        <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">organize-research-project</p>
+      </div>
+      <p style="font-family:'Source Serif 4', Georgia, serif; font-size:32px; font-weight:600; color:#1b1f2a">The promotion gate</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">1</span>  Independent audit</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">2</span>  Integration: notation, tests, interfaces</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">3</span>  Your approval</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c"><span style="color:#b04a33">Pass:</span> joins the core.  <span style="color:#1b1f2a">✕ Fail:</span> stays outside, evidence kept.</p>
+    </div>
+    <div data-build-in="rise 3" style="position:absolute; top:705px; left:1000px; width:792px; display:flex; flex-direction:column; gap:12px; padding:40px; background:#fdfcf9; border:1px solid #dcd6ca; border-left:8px solid #b04a33; border-radius:16px">
+      <div style="display:flex; flex-direction:row; align-items:center; gap:16px">
+        <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">Audit</p>
+        <p style="padding:6px 16px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">review-ai-paper</p>
+      </div>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#1b1f2a">A fresh reviewer gets the finished paper, not its history.</p>
+    </div>
+  <aside>Now back to the original goal. Most open research questions aren't a single question. You start from one big question and push in many directions. Some succeed, some don't, and from the successful ones you push further. That takes a lot of exploration, and exploration needs fresh, independent thinking: agents biased by a failed attempt keep chasing the same failed route. So organize-research-project keeps the thrusts, or studies, as independent as possible, mechanically limiting each one to its own isolated folder. But a project can't be purely independent, or you never build on what you've found. So the skill balances independent thrusts with an established core of theory or experiments. Results enter the core through a promotion gate: robustly audited, coherent notation, a good interface, and, most importantly, your approval. So the core holds results that are true and worthwhile. That's the answer to the gem in the haystack: if it's in the core, it's worth your time to read. And when you turn the work into a paper, review-ai-paper audits the whole package from every angle: the logic, but also the citations, the literature and the novelty. It's what a researcher with real integrity would do to their own paper.</aside>
+</section>
+<section id="humans" data-transition="fade" style="background:#f6f4ef">
+  <div id="pce5c6c643719r0-16dc9774" style="position:absolute; top:128px; left:128px; width:1664px; height:129px; display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">07 · Your own head</p>
+    <h2 style="font-family:'Source Serif 4', Georgia, serif; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">Make them explain it to you.</h2>
+  </div>
+    <div id="pce5c6c643719r1-16dc9774" data-build-in="rise 1" style="position:absolute; top:305px; left:128px; width:816px; height:383px; display:flex; flex-direction:column; gap:20px; padding:48px 48px 48px 0">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#6b6f7a">The problem</p>
+      <p style="font-family:'Source Serif 4', Georgia, serif; font-size:26px; line-height:1.35; color:#1b1f2a">Let Ψᵢⱼ⁽ᵏ⁾ := Σₗ κₗ·Λₗⱼ(Ωᵢ ⊗ ξ⁽ᵏ⁻¹⁾) − θᵢ, where κ, Λ, Ω, ξ are as in (3.7′), θ is the A.4(ii)-regularized residual, and ∂ₜΨ = Γ(Ψ, Ψ′) whenever ‖Λ‖ &lt; ε₀.</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; line-height:1.4; color:#4a4f5c">Dozens of new symbols, packed into a line that takes pages to unpack.</p>
+    </div>
+    <div data-build-in="rise 2" style="position:absolute; top:305px; left:976px; width:816px; height:383px; display:flex; flex-direction:column; gap:20px; padding:48px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
+      <p style="padding:6px 20px; font-family:'IBM Plex Mono', 'Courier New', monospace; font-size:28px; color:#b04a33; background:#f3e3dc; border-radius:8px">teach-technical-math</p>
+      <h3 style="font-family:'Source Serif 4', Georgia, serif; font-size:44px; font-weight:600; color:#1b1f2a">A patient teacher</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Teaches a paper, or the agents' own report, one block at a time.</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Every symbol defined before it's used.</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; line-height:1.4; color:#4a4f5c">Confused? It rebuilds the whole explanation, not a one-line patch.</p>
+    </div>
+  <p id="pce5c6c643719r2-16dc9774" data-build-in="rise 3" style="position:absolute; top:736px; left:128px; width:1664px; font-family:'Source Serif 4', Georgia, serif; font-size:44px; font-style:italic; line-height:1.3; color:#1b1f2a">Write skills that teach the model how to talk to you.</p>
+  <aside>One last thought. Even after all these steps, the output can still be very hard to read: dozens of symbols encoding something very simple, in weird, non-canonical notation. So one of the most important skills for me is simply being able to read it, having the AI teach me, or explain its own output. I packed everything about how to explain theoretical content to me into skills, just for my own sake, to digest a theorem or a proof.</aside>
+</section>
+<section id="close" data-transition="fade" style="background:#1B1F2A;color:#F6F4EF;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:24px">
+<p style="font-size:24px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#E9A27F">08 · Conclusion</p>
+<h2 style="font-family:'Source Serif 4', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#F6F4EF">Simple ideas, a big difference, and just the beginning.</h2>
+<p style="font-size:32px;line-height:1.4;color:#C9CCD3">There's much more to exploit. Take what helps, add your own, and tell me your tricks.</p>
+</div>
+<div data-build-in="rise 1" style="position:absolute;top:452.8px;left:128px;width:1664px;display:flex;flex-direction:column">
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:10px 0;border-bottom:1px solid #3A4152">
+<p style="width:480px;font-size:24px;color:#C9CCD3">Get the basics right</p>
+<p style="flex:1;font-size:24px;color:#8A90A0">coding agent · one machine · skills · subagents</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:10px 0;border-bottom:1px solid #3A4152">
+<p style="width:480px;font-size:24px;color:#C9CCD3">Many agents, not one thread</p>
+<p style="flex:1;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E9A27F">investigate-conjectures · organize-research-project</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:10px 0;border-bottom:1px solid #3A4152">
+<p style="width:480px;font-size:24px;color:#C9CCD3">One question: formulate, then solve</p>
+<p style="flex:1;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E9A27F">investigate-conjectures → solve-math-rigorously</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:10px 0;border-bottom:1px solid #3A4152">
+<p style="width:480px;font-size:24px;color:#C9CCD3">A whole project: develop, then audit</p>
+<p style="flex:1;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E9A27F">organize-research-project → review-ai-paper</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:32px;padding:10px 0">
+<p style="width:480px;font-size:24px;color:#C9CCD3">Make it readable</p>
+<p style="flex:1;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:24px;color:#E9A27F">teach-technical-math</p>
+</div>
+</div>
+<p data-build-in="rise 2" style="position:absolute;top:764.8px;left:128px;width:1664px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:32px;color:#E9A27F"><a href="https://github.com/ajoudaki/personal-skills">github.com/ajoudaki/personal-skills</a></p>
+<aside>So to wrap up. All the ideas I've shared are very simple, but for me they made an enormous difference. And this is clearly just the beginning: there's so much room to improve and to fully leverage the models we already have. The table shows all the skills I mentioned, and they're in the repo. Feel free to use them, improve them, and add your own tricks for your domain. Thanks.</aside>
+</section>
+</div>
+<div id="notes"></div>
+<div id="counter"></div>
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...stage.querySelectorAll(':scope > section')];
+  const notes = document.getElementById('notes');
+  const counter = document.getElementById('counter');
+
+  // Each slide's steps are the distinct build orders on it, ascending.
+  const builds = slides.map(s => [...s.querySelectorAll('[data-build-in]')].map(el => {
+    const [effect, order] = el.dataset.buildIn.trim().split(/\s+/);
+    return { el, effect, order: Number(order) || 1 };
+  }));
+  const steps = builds.map(bs => [...new Set(bs.map(b => b.order))].sort((a, b) => a - b));
+
+  let slide = 0, step = 0;
+
+  function fit() {
+    const k = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `scale(${k}) translate(-50%, -50%)`;
+  }
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('current', i === slide));
+    const shown = steps[slide].slice(0, step);
+    builds[slide].forEach(b => b.el.classList.toggle('pending', !shown.includes(b.order)));
+    const aside = slides[slide].querySelector('aside');
+    notes.textContent = aside ? aside.textContent : '';
+    counter.textContent = `${slide + 1}/${slides.length} · step ${step}/${steps[slide].length}`;
+    history.replaceState(null, '', `#${slide + 1}.${step}`);
+  }
+
+  function go(i, k) {
+    slide = Math.max(0, Math.min(slides.length - 1, i));
+    step = Math.max(0, Math.min(steps[slide].length, k));
+    // Hide later slides' builds so they replay when reached.
+    builds.forEach((bs, j) => { if (j !== slide) bs.forEach(b => b.el.classList.add('pending')); });
+    render();
+  }
+
+  function next() {
+    if (step < steps[slide].length) go(slide, step + 1);
+    else if (slide < slides.length - 1) go(slide + 1, 0);
+  }
+
+  function prev() {
+    if (step > 0) go(slide, step - 1);
+    else if (slide > 0) go(slide - 1, steps[slide - 1].length);
+  }
+
+  addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') go(0, 0);
+    else if (e.key === 'End') go(slides.length - 1, steps[slides.length - 1].length);
+    else if (e.key === 'n' || e.key === 'N') document.body.classList.toggle('show-notes');
+    else if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+  });
+  addEventListener('click', e => { if (!e.target.closest('a')) next(); });
+  addEventListener('resize', fit);
+
+  // For rendering: deck.html?static#<slide>.<step> shows that state with no animation.
+  if (new URLSearchParams(location.search).has('static')) document.body.classList.add('static');
+  window.deck = { go, steps, count: slides.length };
+
+  const m = location.hash.match(/^#(\d+)(?:\.(\d+))?$/);
+  fit();
+  go(m ? Number(m[1]) - 1 : 0, m && m[2] ? Number(m[2]) : 0);
+})();
+</script>
+</body>
+</html>
