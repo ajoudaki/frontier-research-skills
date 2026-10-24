@@ -494,7 +494,7 @@ def render(nodes, edge_px, variant):
                  "That's the map, the global strategy. "
                  "But look at one thrust at the edge, pushing out into uncharted waters.")
         return section("strategy", head + "\n" + "\n".join(layers), notes)
-    notes = ("Let's put it all together, now that we've seen every piece. We start from one open-ended question. "
+    notes = ("Now that we've seen every piece: we start from one open-ended question. "
              "organize-research-project turns it into research thrusts, and inside each one, formulate, solve and learn. "
              "The explored region grows fast, and its shore is where the uncharted waters begin. "
              "Behind it, with some lag, the core grows through the promotion gate, always in one piece. "

@@ -126,7 +126,7 @@ def text(n, color, build):
 
 
 DEVELOP_NOTES = (
-    "Let's start with the main one, the architecture: organize-research-project. A project is one big open question, "
+    "The main one is the architecture: organize-research-project. A project is one big open question, "
     "and the skill rests on three ideas. "
     "From the research question, studies branch out, and the first idea is isolation: each study has its own question, "
     "inputs and folder, and by default it doesn't see the others' work. With your approval, one study can build on another. "
