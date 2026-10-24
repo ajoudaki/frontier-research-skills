@@ -409,10 +409,10 @@ def render(nodes, edge_px, variant):
                         "A leader to the uncharted waters.")]
         else:
             zl.append(p(bx - BR, by + BR - 70, 2 * BR, "uncharted waters", 34, INK, 600, "center", family=SERIF, extra="; font-style:italic"))
-        zl.append(p(128, 870, 1664, "The frontier is hard, even for a very capable model.<br>How do we make each push succeed, and correctly?",
-                    44, INK, 600, "center", family=SERIF, extra="; line-height:1.3").replace("<p", "<h2", 1).replace("</p>", "</h2>"))
-        EXTRA["q-frontier"] = section("q-frontier", "\n".join(zl), "Let's zoom in. This is the frontier of research, and it's hard, even for a very "
-                                      "capable model. How do we maximize the chance that it gets through, and that what it finds is correct?")
+        zl.append(p(128, 870, 1664, "How do we make each push succeed?",
+                    52, INK, 600, "center", family=SERIF, extra="; line-height:1.3").replace("<p", "<h2", 1).replace("</p>", "</h2>"))
+        EXTRA["q-frontier"] = section("q-frontier", "\n".join(zl), "Let's zoom in. This is the frontier, and it's hard, even for a very capable model. "
+                                      "How do we make each push succeed?")
     if variant == "gem":
         SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot, "push": push_art,
                                         "circle": [mx, my, ring_r], "push_line": [px, py, nx, ny]}))

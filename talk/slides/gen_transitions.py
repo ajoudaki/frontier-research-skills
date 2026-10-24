@@ -16,25 +16,20 @@ SLIDES = HERE / "slides"
 
 # (id, comes after, question, notes)
 INTERLUDES = [
-    ("q-problem", "bottleneck",
-     f'How do we raise the <span style="color:{RED}">signal-to-noise</span> ratio?<br>And how do we stay in control?',
-     "So we have two questions. How do we raise the signal-to-noise ratio? And how do we stay in control?"),
-    ("q-practice", "agents", "How do we implement all this in practice?",
-     "So how do we implement all this in practice?"),
-    ("q-skills", "foundations", "In fact, everything we'll talk about from here is a skill.<br>Here are the five.",
-     "In fact, everything we'll talk about from here is a skill. Here are the five."),
-    ("q-thrust", "develop", "But each thrust is still open:<br>what exactly is its question, and how do we solve it?",
-     "What exactly is its question? And how do we solve it? Let's take one thrust."),
-    ("q-solve", "formulate", "The target is sharp now.<br>But the arrow is still dashed: how do we solve it?",
-     "But the arrow is still dashed: nothing is proved yet. How do we solve it?"),
-    ("q-understand", "solve", "Solved, most likely.<br>But to judge it, we still have to understand it.",
-     "We've delegated as much as we could, but we still have to stay in charge: someone has to judge whether it's relevant, "
-     "whether it's the right direction, and whether an assumption or technique was quietly tweaked along the way. That means "
-     "reading it, and agent output can be very hard to read. That's the third stage."),
-    ("q-paper", "teach", "Now we can judge what joins the core.<br>But a paper needs more: novelty, significance, the literature.",
-     "Now we can judge what joins the core. But is that a paper? A paper needs more: novelty, significance, the literature."),
-    ("q-together", "review", "Now let's put it all together.",
-     "Now let's put it all together."),
+    ("q-problem", "bottleneck", "How do we find the gem,<br>and stay in control?",
+     "So how do we find the gem, and stay in control?"),
+    ("q-practice", "agents", "How do we do this in practice?",
+     "So how do we do this in practice?"),
+    ("q-skills", "foundations", "Everything from here is a skill.",
+     "Everything from here is a skill. Here are the five."),
+    ("q-solve", "formulate", "Now, how do we solve it?",
+     "Now, how do we solve it?"),
+    ("q-understand", "solve", "Solved. Do we understand it?",
+     "Solved, most likely. But we still have to judge it, and to judge it, we have to understand it."),
+    ("q-paper", "teach", "Is it a paper?",
+     "We can judge what joins the core now. But is it a paper?"),
+    ("q-together", "review", "Putting it all together.",
+     "Let's put it all together."),
 ]
 
 
@@ -52,8 +47,8 @@ def interlude(sid, question, notes):
             "style=\"position:absolute; top:250px; left:780px; width:360px; height:467px\"")
         body = [hay, heading(p(128, 770, 1664, question, 56, INK, 600, "center", family=SERIF, extra="; line-height:1.3"))]
     else:
-        body = [f'  <div style="position:absolute; top:420px; left:920px; width:80px; height:4px; background:{RED}"></div>',
-                heading(p(128, 460, 1664, question, 60, INK, 600, "center", family=SERIF, extra="; line-height:1.3"))]
+        body = [f'  <div style="position:absolute; top:440px; left:920px; width:80px; height:4px; background:{RED}"></div>',
+                heading(p(128, 480, 1664, question, 72, INK, 600, "center", family=SERIF, extra="; line-height:1.3"))]
     return section(sid, "\n".join(body), notes)
 
 
