@@ -6,6 +6,7 @@ order lives in talk/slides/deck.json.
 Usage: python talk/slides/gen_skill_slides.py
 """
 
+import json
 import math
 import re
 from pathlib import Path
@@ -179,23 +180,32 @@ def formulate():
         r = 1 + 0.08 * math.sin(5 * a) + 0.05 * math.sin(9 * a + 1)
         pts.append((cx + rx * r * math.cos(a), cy + ry * r * math.sin(a)))
     cloud = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
-    # step 0: the thrust as we've drawn it: an established node, a dashed arrow, the next node
+    # step 0: the push into uncharted waters, magnified exactly as on the strategy slide, turned to run left to right
     ox_, tx_ = 150, 520
-    L.append(svg(OX, OY, W, H, f'<line x1="{ox_ + 20}" y1="{cy}" x2="{tx_ - 34}" y2="{cy}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
-                 f'<polygon points="{tx_ - 20},{cy} {tx_ - 36},{cy - 9} {tx_ - 36},{cy + 9}" fill="{INK}"/>'
-                 f'<circle cx="{ox_}" cy="{cy}" r="18" fill="{RED}"/>'
-                 f'<circle cx="{tx_}" cy="{cy}" r="18" fill="{PAPER}" stroke="{INK}" stroke-width="3"/>',
-                 "A thrust as drawn so far: an established node, a dashed arrow, the next node."))
-    L.append(p(OX + ox_ - 90, OY + cy + 30, 180, "established", 20, RED, 600, "center"))
-    L.append(p(OX + tx_ - 110, OY + cy + 30, 220, "the next question", 20, MUTED, 600, "center"))
-    L.append(p(OX + ox_ - 20, OY + cy - 60, tx_ - ox_ + 40, "a thrust, as we've drawn it", 22, MUTED, 400, "center",
+    snap = json.loads((HERE / "gem_snapshot.json").read_text())
+    gx1, gy1, gx2, gy2 = snap["push_line"]
+    gmx, gmy, gring = snap["circle"]
+    turn = math.degrees(math.atan2(gy2 - gy1, gx2 - gx1))
+    lr = 260                                              # the same size as the lens on the strategy slide
+    sc = lr / (1.25 * gring)
+    lx = 300
+    L.append(svg(OX, OY, W, H, f'<defs><clipPath id="lens7"><circle cx="{lx:.1f}" cy="{cy}" r="{lr:.1f}"/></clipPath></defs>'
+                 f'<circle cx="{lx:.1f}" cy="{cy}" r="{lr:.1f}" fill="{BG}"/>'
+                 f'<g clip-path="url(#lens7)"><g transform="translate({lx:.1f},{cy}) rotate({-turn:.2f}) scale({sc:.4f}) translate({-gmx:.1f},{-gmy:.1f})">'
+                 f'{snap["svg"]}{snap["push"]}</g></g>'
+                 f'<circle cx="{lx:.1f}" cy="{cy}" r="{lr - 1.5:.1f}" fill="none" stroke="{INK}" stroke-width="3"/>',
+                 "The push into uncharted waters from the strategy slide, magnified and turned to run left to right."))
+    L.append(p(OX + lx + lr + 50, OY + cy - 40, 620, "Remember this push into uncharted waters?", 32, INK, 600, family=SERIF,
                extra="; font-style:italic"))
     # step 1: in reality, the next node is a vague question
-    L.append(f'  <div data-build-in="fade 1" style="position:absolute; top:{OY + cy - 64}px; left:{OX + ox_ - 30}px; '
-             f'width:{tx_ - ox_ + 150}px; height:40px; background:{BG}"></div>')
-    L.append(f'  <div data-build-in="fade 1" style="position:absolute; top:{OY + cy + 26}px; left:{OX + tx_ - 120}px; width:240px; '
-             f'height:34px; background:{BG}"></div>')
-    L.append(svg(OX, OY, W, H, f'<circle cx="{tx_}" cy="{cy}" r="22" fill="{BG}"/>', "The sharp next node gives way.", "fade 1"))
+    L.append(svg(OX, OY, W, H, f'<circle cx="{lx:.1f}" cy="{cy}" r="{lr + 4:.1f}" fill="{BG}"/>', "The magnified view gives way.", "fade 1"))
+    L.append(f'  <div data-build-in="fade 1" style="position:absolute; top:{OY + cy - 48}px; left:{OX + lx + lr + 40:.0f}px; width:650px; '
+             f'height:60px; background:{BG}"></div>')
+    L.append(svg(OX, OY, W, H, f'<line x1="{ox_ + 20}" y1="{cy}" x2="{tx_ - 34}" y2="{cy}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
+                 f'<polygon points="{tx_ - 20},{cy} {tx_ - 36},{cy - 9} {tx_ - 36},{cy + 9}" fill="{INK}"/>'
+                 f'<circle cx="{ox_}" cy="{cy}" r="18" fill="{RED}"/>',
+                 "The same push: an established node and a dashed arrow.", "fade 1"))
+    L.append(p(OX + ox_ - 90, OY + cy + 30, 180, "established", 20, RED, 600, "center", build="fade 1"))
     L.append(svg(OX, OY, W, H, f'<polygon points="{cloud}" fill="#EFEBE2" stroke="{GRAY}" stroke-width="3" stroke-dasharray="10 8"/>',
                  "In reality, the next question is vague: a soft dashed cloud.", "fade 1"))
     L.append(p(OX + cx - 200, OY + cy - 20, 400, "A vague question", 30, MUTED, 400, "center", family=SERIF,
@@ -240,8 +250,8 @@ def formulate():
     L.append(p(OX + cx + 96, OY + cy + 128, 200, "Frozen", 30, RED, 600, "center", build="pop 8",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
     L.append(transition("The target is sharp now. But the arrow is still dashed: how do we solve it?", 9))
-    notes = ("So far, we've drawn a thrust as a node, a dashed arrow, and the next node. "
-             "In reality, the next node isn't sharp at all. It's a vague question, and a lot of time goes into pinning down what we "
+    notes = ("Remember this push into uncharted waters? We said the thrusts are hard. It's even harder than that. "
+             "In reality, the target isn't a sharp node at all. It's a vague question, and a lot of time goes into pinning down what we "
              "even want. The danger is that a vague question leaves room for answers to an easier question, and an agent will happily "
              "take them. The goal is the steelman, not the straw man: the strongest version that stays faithful to what you meant. "
              "So formulate-problem writes a research contract, and each field rules something out. "
