@@ -38,6 +38,11 @@ INTERLUDES = [
 ]
 
 
+def heading(element):
+    """The question is the interlude's title, so mark it up as one."""
+    return element.replace("<p", "<h2", 1).replace("</p>", "</h2>")
+
+
 def interlude(sid, question, notes):
     if sid == "q-problem":
         # keep the gem in the haystack above the two questions
@@ -45,10 +50,10 @@ def interlude(sid, question, notes):
         hay = hay.replace(' data-build-in="fade 4"', "").replace(
             "style=\"position:absolute; top:0; right:24.55px; width:816.38px; height:880.16px\"",
             "style=\"position:absolute; top:250px; left:780px; width:360px; height:467px\"")
-        body = [hay, p(128, 770, 1664, question, 56, INK, 600, "center", family=SERIF, extra="; line-height:1.3")]
+        body = [hay, heading(p(128, 770, 1664, question, 56, INK, 600, "center", family=SERIF, extra="; line-height:1.3"))]
     else:
         body = [f'  <div style="position:absolute; top:420px; left:920px; width:80px; height:4px; background:{RED}"></div>',
-                p(128, 460, 1664, question, 60, INK, 600, "center", family=SERIF, extra="; line-height:1.3")]
+                heading(p(128, 460, 1664, question, 60, INK, 600, "center", family=SERIF, extra="; line-height:1.3"))]
     return section(sid, "\n".join(body), notes)
 
 

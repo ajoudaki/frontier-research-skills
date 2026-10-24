@@ -6,8 +6,7 @@ Hi everyone, I'm Amir. Today's models are smart enough to do real research, but 
 ## 2. Smart models fail beautifully.
 Let's start with where we are today. We're in the middle of a fundamental transition: from writing every line of code, paper and theory ourselves, to delegating much more research to very capable models. The transition is hard, because in research, agents fail silently, and the smarter they get, the harder those failures are to catch. The text looks flawless, the figures look great, even the math looks great at a glance. But the real failure is hidden on page 12, in some assumption that quietly absorbs all the complexity. On top of that, they produce code, theory and papers far faster than we can read. So we end up with a pile of results that may contain some gems, but finding them takes an enormous amount of time: a gem in a haystack. And noise isn't only mistakes: a result can be correct but irrelevant. You lose so much control that it can defeat the purpose of using them at all.
 
-## 3. → 
-  How do we raise the signal-to-noise ratio? And how do we stay in control?
+## 3. → How do we raise the signal-to-noise ratio? And how do we stay in control?
 So we have two questions. How do we raise the signal-to-noise ratio? And how do we stay in control?
 
 ## 4. The strategy at a glance.
