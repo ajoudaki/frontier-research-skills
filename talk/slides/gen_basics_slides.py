@@ -290,8 +290,16 @@ def engine():
         y += h + gap
     L.append(svg(PX + 40, PY + 80, PWid, 380, art, "A cost pyramid: you at the top, the most capable models just below for what is mission-critical, "
                  "capable models below them, and cheaper models at the base.", "fade 12"))
-    up = arrow(20, 340, 20, 30, RED, 3) + text(40, 190, "failures below", 22, RED, 600, "start") + text(40, 218, "are caught above", 22, RED, 600, "start")
-    L.append(svg(PX + 40 + PWid + 20, PY + 80, 300, 380, up, "Failures at a lower level are caught by the audits above it.", "fade 13"))
+    # two parallel arrows: reliability and cost rise together up the pyramid; the main point sits beside them
+    def side_arrow(x, label, color):
+        return (arrow(x, 336, x, 28, color, 3)
+                + f'<text transform="translate({x - 10},182) rotate(-90)" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" '
+                  f'font-size="19" font-weight="600" fill="{color}">{label}</text>')
+    up = (side_arrow(26, "more reliable", INK) + side_arrow(76, "more expensive", MUTED)
+          + text(51, 362, "cheaper", 19, MUTED, 600, "middle")
+          + text(104, 168, "failures below", 23, RED, 600, "start") + text(104, 198, "are caught above", 23, RED, 600, "start"))
+    L.append(svg(PX + 40 + PWid + 6, PY + 80, 318, 380, up, "Two parallel arrows: going up the pyramid, models are more reliable and more "
+                 "expensive; failures at a lower level are caught by the audits above it.", "fade 13"))
     L.append(f'  <div data-build-in="fade 14" style="position:absolute; top:{PY + 480}px; left:{PX + 40}px; width:{W}px; display:flex; flex-direction:column; '
              f'gap:6px; padding:18px 22px; background:#FBF3EF; border:2px solid {RED}; border-radius:14px">\n'
              f'    <p style="{SANS}; font-size:22px; font-weight:600; color:{RED}">And when a claim can be tested, test it</p>\n'
