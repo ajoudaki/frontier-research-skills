@@ -167,58 +167,83 @@ def overview():
 # ---------- 06 · formulate-problem: rule out the easier questions, then freeze ----------
 
 def formulate():
+    """The thrust as drawn so far (a node, a dashed arrow, the next node); in reality the next node is a vague
+    question; the contract rules out the easier questions one by one; a sharp circle emerges and is frozen,
+    while the arrow stays dashed: nothing is proved yet."""
     L = [header(tracker("Formulate"), "Formulate the steelman, then freeze it.", "formulate-problem")]
     OX, OY, W, H = 128, 270, 1664, 660
-    cx, cy, rx, ry = 832, 310, 380, 218
+    cx, cy, rx, ry = 900, 310, 360, 215
     pts = []
     for k in range(120):
         a = 2 * math.pi * k / 120
         r = 1 + 0.08 * math.sin(5 * a) + 0.05 * math.sin(9 * a + 1)
         pts.append((cx + rx * r * math.cos(a), cy + ry * r * math.sin(a)))
     cloud = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
-    # the vague question (static)
+    # step 0: the thrust as we've drawn it: an established node, a dashed arrow, the next node
+    ox_, tx_ = 150, 520
+    L.append(svg(OX, OY, W, H, f'<line x1="{ox_ + 20}" y1="{cy}" x2="{tx_ - 34}" y2="{cy}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
+                 f'<polygon points="{tx_ - 20},{cy} {tx_ - 36},{cy - 9} {tx_ - 36},{cy + 9}" fill="{INK}"/>'
+                 f'<circle cx="{ox_}" cy="{cy}" r="18" fill="{RED}"/>'
+                 f'<circle cx="{tx_}" cy="{cy}" r="18" fill="{PAPER}" stroke="{INK}" stroke-width="3"/>',
+                 "A thrust as drawn so far: an established node, a dashed arrow, the next node."))
+    L.append(p(OX + ox_ - 90, OY + cy + 30, 180, "established", 20, RED, 600, "center"))
+    L.append(p(OX + tx_ - 110, OY + cy + 30, 220, "the next question", 20, MUTED, 600, "center"))
+    L.append(p(OX + ox_ - 20, OY + cy - 60, tx_ - ox_ + 40, "a thrust, as we've drawn it", 22, MUTED, 400, "center",
+               extra="; font-style:italic"))
+    # step 1: in reality, the next node is a vague question
+    L.append(f'  <div data-build-in="fade 1" style="position:absolute; top:{OY + cy - 64}px; left:{OX + ox_ - 30}px; '
+             f'width:{tx_ - ox_ + 150}px; height:40px; background:{BG}"></div>')
+    L.append(f'  <div data-build-in="fade 1" style="position:absolute; top:{OY + cy + 26}px; left:{OX + tx_ - 120}px; width:240px; '
+             f'height:34px; background:{BG}"></div>')
+    L.append(svg(OX, OY, W, H, f'<circle cx="{tx_}" cy="{cy}" r="22" fill="{BG}"/>', "The sharp next node gives way.", "fade 1"))
     L.append(svg(OX, OY, W, H, f'<polygon points="{cloud}" fill="#EFEBE2" stroke="{GRAY}" stroke-width="3" stroke-dasharray="10 8"/>',
-                 "A vague research question, drawn as a soft dashed cloud."))
-    L.append(p(OX + cx - 200, OY + cy - 20, 400, "A vague question", 30, MUTED, 400, "center", family=SERIF, extra="; font-style:italic"))
-    # step 6: the vague boundary fades into the background, still visible
-    L.append(svg(OX, OY, W, H, f'<polygon points="{cloud}" fill="{BG}" opacity="0.7"/>', "The vague boundary fades into the background.", "fade 6"))
-    # each contract field rules out one easier question: a point on the vague edge, labelled where it sits
-    rows = [("Question", "rules out an easier target", 195, "left"),
+                 "In reality, the next question is vague: a soft dashed cloud.", "fade 1"))
+    L.append(p(OX + cx - 200, OY + cy - 20, 400, "A vague question", 30, MUTED, 400, "center", family=SERIF,
+               build="fade 1", extra="; font-style:italic"))
+    # step 7: the vague boundary fades into the background, still visible
+    L.append(svg(OX, OY, W, H, f'<polygon points="{cloud}" fill="{BG}" opacity="0.7"/>', "The vague boundary fades into the background.", "fade 7"))
+    # steps 2-6: each contract field rules out one easier question, a point on the vague edge, labelled where it sits
+    rows = [("Question", "rules out an easier target", 210, "left"),
             ("Definitions", "rules out a drifting definition", 245, "left"),
             ("Quantifiers", "rules out ‘for all’ weakened to ‘there exists’", 300, "right"),
             ("Evidence standard", "rules out a proxy metric", 10, "right"),
             ("Scope", "rules out one example for a whole class", 125, "below")]
     dots = []
     for i, (field, rule, deg, side) in enumerate(rows):
-        k = i + 1
+        k = i + 2
         a = math.radians(deg)
         dx, dy = cx + 0.98 * rx * math.cos(a), cy + 0.98 * ry * math.sin(a)
         dots.append((dx, dy))
         L.append(svg(OX, OY, W, H, f'<circle cx="{dx:.1f}" cy="{dy:.1f}" r="14" fill="{DARK}"/>',
                      f"{field}: an answer to an easier question sits on the vague edge.", f"pop {k}"))
-        lw = 480
+        lw = {"Quantifiers": 470, "Evidence standard": 380}.get(field, 480)
         left, top, align = {"right": (OX + dx + 34, OY + dy - 34, "left"),
                             "left": (OX + dx - 34 - lw, OY + dy - 34, "right"),
-                            "above": (OX + dx - lw / 2, OY + dy - 100, "center"),
                             "below": (OX + dx - lw / 2, OY + dy + 26, "center")}[side]
         L.append(p(left, top, lw, field, 28, INK, 600, align, build=f"fade {k}"))
         L.append(p(left, top + 38, lw, rule, 22, MUTED, 400, align, build=f"fade {k}"))
-    # step 6: the sharp boundary emerges; every point lies outside it
-    sx0, sy0, sx1, sy1 = cx - 240, cy - 118, cx + 240, cy + 118
+    # step 7: the true boundary emerges, a sharp circle with a thick edge; every point lies outside it
+    R = 196
     crosses = "".join(cross_badge(dx, dy, RED, 16) for dx, dy in dots)
-    L.append(svg(OX, OY, W, H, f'<rect x="{sx0}" y="{sy0}" width="{sx1 - sx0}" height="{sy1 - sy0}" rx="8" fill="{PAPER}" stroke="{INK}" stroke-width="4"/>' + crosses,
-                 "The sharp conjecture: a crisp boundary, with every point outside it.", "fade 6"))
-    L.append(p(OX + sx0 + 20, OY + sy0 + 44, sx1 - sx0 - 40, "For every <i>x</i> in <i>D</i><br>with <i>H</i>(<i>x</i>), <i>C</i>(<i>x</i>) holds.",
-               32, INK, 400, "center", build="fade 6", family=SERIF))
-    L.append(p(OX + sx0 + 20, OY + sy0 + 170, sx1 - sx0 - 40, "the sharp conjecture", 20, MUTED, 600, "center", build="fade 6",
+    L.append(svg(OX, OY, W, H, f'<circle cx="{cx}" cy="{cy}" r="{R}" fill="{PAPER}" stroke="{INK}" stroke-width="6"/>' + crosses,
+                 "The sharp conjecture: a crisp circle, with every point outside it.", "fade 7"))
+    # the arrow now reaches the sharp circle, still dashed: decided, not proved
+    L.append(svg(OX, OY, W, H, f'<rect x="{tx_ - 40}" y="{cy - 14}" width="26" height="28" fill="{BG}"/>'
+                 f'<line x1="{tx_ - 46}" y1="{cy}" x2="{cx - R - 24}" y2="{cy}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
+                 f'<polygon points="{cx - R - 8},{cy} {cx - R - 26},{cy - 10} {cx - R - 26},{cy + 10}" fill="{INK}"/>',
+                 "The dashed arrow now reaches the sharp question.", "fade 7"))
+    L.append(p(OX + cx - 170, OY + cy - 52, 340, "For every <i>x</i> in <i>D</i><br>with <i>H</i>(<i>x</i>), <i>C</i>(<i>x</i>) holds.",
+               30, INK, 400, "center", build="fade 7", family=SERIF))
+    L.append(p(OX + cx - 170, OY + cy + 52, 340, "the sharp conjecture", 18, MUTED, 600, "center", build="fade 7",
                extra="; letter-spacing:3px; text-transform:uppercase"))
-    # step 7: frozen
-    L.append(p(OX + sx1 - 140, OY + sy0 - 30, 200, "Frozen", 30, RED, 600, "center", build="pop 7",
+    # step 8: frozen
+    L.append(p(OX + cx + 96, OY + cy + 128, 200, "Frozen", 30, RED, 600, "center", build="pop 8",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
-    L.append(transition("The question is pinned down. But how do we solve it?", 8))
-    notes = ("Take one thrust. Even a narrowed question is still open, and usually vague, like this cloud. "
-             "The danger is that a vague question leaves room for answers to an easier question, and an agent will happily take them. "
-             "The goal is the steelman, not the straw man: the strongest version that stays faithful to what you meant. "
+    L.append(transition("The target is sharp now. But the arrow is still dashed: how do we solve it?", 9))
+    notes = ("So far, we've drawn a thrust as a node, a dashed arrow, and the next node. "
+             "In reality, the next node isn't sharp at all. It's a vague question, and a lot of time goes into pinning down what we "
+             "even want. The danger is that a vague question leaves room for answers to an easier question, and an agent will happily "
+             "take them. The goal is the steelman, not the straw man: the strongest version that stays faithful to what you meant. "
              "So formulate-problem writes a research contract, and each field rules something out. "
              "The question itself is pinned down, so an easier target doesn't count. "
              "The definitions are fixed, so they can't drift halfway through. "
@@ -226,9 +251,9 @@ def formulate():
              "The evidence standard says what counts, so a proxy metric doesn't. "
              "And the scope is explicit, so one example can't stand in for a whole class. "
              "Notice that the vague boundary couldn't tell us whether any of these were in or out. "
-             "Once they're ruled out, the sharp boundary emerges: one precise conjecture. "
+             "Once they're ruled out, the true boundary emerges: one precise conjecture, with a sharp edge. "
              "Then it's frozen. A material change needs your say, and results for a changed question never count as answers to the original. "
-             "Now the question is pinned down, with no wiggle room. But we still have to solve it, and that's the next hard push.")
+             "Now we know exactly where the arrow points. But it's still dashed: nothing is proved yet. How do we solve it?")
     return section("formulate", "\n".join(L), notes)
 
 
@@ -236,18 +261,28 @@ def formulate():
 
 def solve():
     L = [header(tracker("Solve"), "Solve by many routes, then audit the proof.", "solve-problem")]
-    lanes = [400, 510, 620, 730]
+    lanes = [470, 575, 680, 785]
     mid = sum(lanes) / 4
+    # the thrust across the top: from what we know to the frozen question; the arrow between them is the proof we need
+    TY, TX0, TX1 = 336, 150, 1010
+    L.append(svg(0, 0, 1920, 1080, f'<line x1="{TX0 + 18}" y1="{TY}" x2="{TX1 - 42}" y2="{TY}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
+                 f'<polygon points="{TX1 - 28},{TY} {TX1 - 44},{TY - 9} {TX1 - 44},{TY + 9}" fill="{INK}"/>'
+                 f'<circle cx="{TX0}" cy="{TY}" r="16" fill="{RED}"/>'
+                 f'<circle cx="{TX1}" cy="{TY}" r="24" fill="{PAPER}" stroke="{INK}" stroke-width="6"/>',
+                 "The thrust: from an established node to the frozen question, with a dashed arrow still to prove."))
+    L.append(p(TX0 + 40, TY - 44, TX1 - TX0 - 120, "the arrow: the proof we still need", 21, MUTED, 400, "center", extra="; font-style:italic"))
+    L.append(p(TX1 - 150, TY + 30, 220, "the frozen question", 18, MUTED, 600, "center"))
     # the frozen contract (static)
     L.append(box(128, int(mid - 58), 220, line("∀ <i>x</i> ∈ <i>D</i>:  <i>C</i>(<i>x</i>)", 28, INK, family=SERIF) + "\n" +
                  line("frozen contract", 18, RED, 600, extra="; letter-spacing:2px; text-transform:uppercase"), border=INK, pad=18))
     # step 1: parallel routes, one agent each, different mechanisms
     names = ["Route 1 · duality", "Route 2 · induction", "Route 3 · induction, renamed", "Route 4 · extremal"]
-    fan = "".join(arrow(4, mid - 340, 70, y - 340, GRAY, 2) for y in lanes)
-    L.append(svg(348, 340, 80, 460, fan, "The same contract goes to every route.", "fade 1"))
+    top0 = lanes[0] - 60
+    fan = "".join(arrow(4, mid - top0, 70, y - top0, GRAY, 2) for y in lanes)
+    L.append(svg(348, top0, 80, 460, fan, "The same contract goes to every route.", "fade 1"))
     for y, n in zip(lanes, names):
         L.append(box(420, y - 32, 340, line(n, 22, INK, 600), build="fade 1", pad=16, height=64))
-    L.append(p(420, 320, 640, "parallel agents, one route each, same contract", 22, MUTED, 400, build="fade 1"))
+    L.append(p(420, lanes[0] - 70, 640, "parallel agents, one route each, same contract", 22, MUTED, 400, build="fade 1"))
     # step 2: the registry after a round: a duplicate is merged, a stalled route is blocked
     L.append(svg(420, lanes[1] + 32, 340, 120, f'<rect x="0" y="46" width="340" height="64" rx="14" fill="{BG}" opacity="0.7"/>'
                  + arrow(170, 44, 170, 2, DARK, 3), "Route 3 is merged into route 2: same mechanism.", "fade 2"))
@@ -282,10 +317,18 @@ def solve():
                  build="rise 5", border=RED, height=236))
     for i, c in enumerate(props):
         L.append(p(AX + 34, 680 + i * 50, AW - 60, "· " + c, 24, INK, 400, build="rise 5"))
-    L.append(p(128, 830, 920, f'The search and its audit: <span style="{MONO}; color:{RED}">formulate-problem</span>. '
+    L.append(p(128, 880, 920, f'The search and its audit: <span style="{MONO}; color:{RED}">formulate-problem</span>. '
                f'The written proof: <span style="{MONO}; color:{RED}">solve-problem</span>.', 22, MUTED, 400, build="fade 5"))
-    L.append(transition("Solved, most likely. But to judge it, we still have to understand it.", 6))
-    notes = ("Solving is the second hard push, and it starts from the frozen contract. "
+    # step 6: the proof is written, so the arrow turns solid: this thrust is done
+    L.append(f'  <div data-build-in="fade 6" style="position:absolute; top:{TY - 48}px; left:{TX0 + 40}px; width:{TX1 - TX0 - 120}px; '
+             f'height:36px; background:{BG}"></div>')
+    L.append(svg(0, 0, 1920, 1080, f'<line x1="{TX0 + 18}" y1="{TY}" x2="{TX1 - 42}" y2="{TY}" stroke="{RED}" stroke-width="5"/>'
+                 f'<polygon points="{TX1 - 28},{TY} {TX1 - 46},{TY - 11} {TX1 - 46},{TY + 11}" fill="{RED}"/>'
+                 + tick_badge((TX0 + TX1) / 2, TY, RED, 17), "The arrow turns solid: the thrust is proved.", "fade 6"))
+    L.append(p(TX0 + 40, TY - 44, TX1 - TX0 - 120, "proved: this thrust is done", 21, RED, 600, "center", build="fade 6"))
+    L.append(transition("Solved, most likely. But to judge it, we still have to understand it.", 7))
+    notes = ("Here's the thrust again: from what we know to the frozen question. The arrow between them is the proof, and it's "
+             "still dashed. Solving is the second hard push, and it starts from the frozen contract. "
              "With your go-ahead, the proof search runs as parallel agents, one per route, and each route uses a genuinely different mechanism: "
              "duality, induction, an extremal argument. They all get the same contract, and none is told which strategy to favor, so they stay independent. "
              "After every round, a registry keeps score. Two routes that turn out to use the same idea are merged. "
@@ -295,7 +338,8 @@ def solve():
              "and hunt for counterexamples at the boundary and in degenerate cases. "
              "Only what survives gets written up by solve-problem: the plan first, every nontrivial step derived, no 'clearly' in place of a reason, "
              "and an answer to exactly the question in the contract. "
-             "So now the thrust has a written proof that's most likely correct. We've delegated as much as we could, "
+             "And now the arrow is solid: the thrust is done, most likely correctly. "
+             "We've delegated as much as we could, "
              "but we still have to stay in charge: someone has to judge whether it's relevant, whether it's the right direction, "
              "and whether an assumption or technique was quietly tweaked along the way. That means reading it, and agent output "
              "can be very hard to read. That's the third stage.")
