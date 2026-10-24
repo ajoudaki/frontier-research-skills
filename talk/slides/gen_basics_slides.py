@@ -384,7 +384,7 @@ def close():
     L.append(p(R0, 642, RW, "Agents now do most of the mechanical work. What's missing is research taste: where to explore, when to stop. "
                "Could they one day run a whole project from a single open question? Not today.", 26, DARK, build="fade 4", extra="; line-height:1.4"))
     L.append(f'  <p data-build-in="fade 5" style="position:absolute; top:846px; left:{R0}px; width:{RW}px; {MONO}; font-size:28px; color:{RED}">'
-             f'<a href="https://github.com/ajoudaki/personal-skills">github.com/ajoudaki/personal-skills</a></p>')
+             f'<a href="https://github.com/ajoudaki/frontier-research-skills">github.com/ajoudaki/frontier-research-skills</a></p>')
     L.append(p(R0, 896, RW, "Thank you.", 36, INK, 600, family=SERIF, build="fade 5"))
     notes = ("So to wrap up. We started from one open-ended question, explored it in thrusts, built a core, and carved out a gem. "
              "Everything we discussed has one goal: raise the signal-to-noise ratio, and save your time in every possible way, so you "

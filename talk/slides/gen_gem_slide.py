@@ -463,16 +463,16 @@ def render(nodes, edge_px, variant):
         # how to use it today, kept short: the README has the rest
         code = f"{MONO}; font-size:17px; line-height:1.45; color:{INK}; background:#EFEBE2; border-radius:8px; padding:10px 14px; white-space:pre"
         U = GEM_STEP + 1
-        col += [f'  <div data-build-in="rise {U}" style="position:absolute; top:440px; left:1220px; width:572px; height:470px; '
+        col += [f'  <div data-build-in="rise {U}" style="position:absolute; top:440px; left:1220px; width:572px; height:494px; '
                 f'background:{PAPER}; border:1px solid #DCD6CA; border-radius:16px"></div>',
                 p(1248, 466, 500, "How to use it", 30, INK, 600, family=SERIF, build=f"rise {U}"),
                 p(1248, 520, 500, "Get the skills", 20, RED, 600, build=f"rise {U}"),
-                f'  <p data-build-in="rise {U}" style="position:absolute; top:550px; left:1248px; width:516px; {code}">git clone github.com/ajoudaki/personal-skills</p>',
-                p(1248, 616, 500, "Install one for every project", 20, RED, 600, build=f"rise {U}"),
-                f'  <p data-build-in="rise {U}" style="position:absolute; top:646px; left:1248px; width:516px; {code}">ln -s $PWD/&lt;skill&gt; ~/.claude/skills/\n# or ~/.codex/skills/ for Codex</p>',
-                p(1248, 738, 500, "Or make it a project's default", 20, RED, 600, build=f"rise {U}"),
-                f'  <p data-build-in="rise {U}" style="position:absolute; top:768px; left:1248px; width:516px; {code}">name it in the project&#39;s AGENTS.md\nor CLAUDE.md</p>',
-                p(1248, 860, 500, "The README has the details.", 20, MUTED, build=f"rise {U}")]
+                f'  <p data-build-in="rise {U}" style="position:absolute; top:550px; left:1248px; width:516px; {code}">git clone \\\n  github.com/ajoudaki/frontier-research-skills</p>',
+                p(1248, 642, 500, "Install one for every project", 20, RED, 600, build=f"rise {U}"),
+                f'  <p data-build-in="rise {U}" style="position:absolute; top:672px; left:1248px; width:516px; {code}">ln -s $PWD/&lt;skill&gt; ~/.claude/skills/\n# or ~/.codex/skills/ for Codex</p>',
+                p(1248, 764, 500, "Or make it a project's default", 20, RED, 600, build=f"rise {U}"),
+                f'  <p data-build-in="rise {U}" style="position:absolute; top:794px; left:1248px; width:516px; {code}">name it in the project&#39;s AGENTS.md\nor CLAUDE.md</p>',
+                p(1248, 886, 500, "The README has the details.", 20, MUTED, build=f"rise {U}")]
 
     eyebrow, title = (("02 · The strategy", "The strategy at a glance.") if variant == "strategy"
                       else ("11 · Putting it all together", "From the haystack to the core to the gem."))
