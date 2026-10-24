@@ -128,7 +128,7 @@ def text(n, color, build):
 DEVELOP_NOTES = (
     "Here's the architecture. A project is one big open question, and develop-project rests on three ideas. "
     "From the research question, studies branch out, and the first idea is isolation: each study has its own question, "
-    "inputs and folder, and never sees the others' work. "
+    "inputs and folder, and by default it doesn't see the others' work. With your approval, one study can build on another. "
     "That way, an agent stuck on one failed idea can't drag the others into it, and you get the widest exploration. "
     "Inside each study, the agents formulate, solve and learn. "
     "The second idea is the promotion gate. A result enters the project's core only if it's correct, by an independent review; "
@@ -238,7 +238,7 @@ def three_ideas():
     rows = [
         f'  <div data-build-in="fade 1" style="position:absolute; top:300px; left:{PX}px; width:{PW}px; height:600px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px"></div>',
         head(330, 1, 1, "Isolated studies"),
-        ln(380, 1, "Each thrust has its own question, inputs and folder, and never sees the others\u2019 work."),
+        ln(380, 1, "Each thrust has its own question, inputs and folder; by default it doesn\u2019t see the others\u2019 work."),
         ln(448, 6, "→ the widest exploration", color="#b04a33", weight=600),
         head(518, 7, 2, "A promotion gate"),
         ln(568, 7, "<b>Correct:</b> an independent review"),

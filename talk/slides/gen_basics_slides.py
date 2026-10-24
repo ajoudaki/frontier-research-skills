@@ -96,18 +96,18 @@ def agents():
     L.append(f'  <div data-build-in="rise 4" style="position:absolute; top:{PT}px; left:{RX}px; width:{PW}px; height:{PH}px; '
              f'background:{PAPER}; border:2px solid {RED}; border-radius:16px"></div>')
     L.append(p(RX + 40, PT + 40, 600, "Many fresh agents", 24, RED, 600, build="rise 4", extra="; letter-spacing:3px; text-transform:uppercase"))
-    TX, TY, TW, TH = RX + 40, PT + 80, 736, 290
-    root, R = (368, 20), 13
+    TX, TY, TW, TH = RX + 40, PT + 80, 736, 270
+    root, R = (368, 20), 15
     cols = [92, 276, 460, 644]
-    lv = [70, 112, 154, 196, 238]
+    lv = [80, 140, 200]
     # per branch: (level, x offset, parent's x offset); branches explore and split on their own
     tree = [
-        [(0, 0, 0), (1, 0, 0), (2, 0, 0), (3, 0, 0), (4, 0, 0)],
-        [(0, 0, 0), (1, 0, 0), (2, 0, 0), (3, -34, 0), (3, 34, 0), (4, -34, -34), (4, 34, 34)],
-        [(0, 0, 0), (1, 0, 0), (2, -30, 0), (2, 30, 0), (3, 30, 30), (4, 30, 30)],
-        [(0, 0, 0), (1, 0, 0), (2, 0, 0), (3, 0, 0)],
+        [(0, 0, 0), (1, 0, 0), (2, 0, 0)],
+        [(0, 0, 0), (1, 0, 0), (2, -34, 0), (2, 34, 0)],
+        [(0, 0, 0), (1, -30, 0), (1, 30, 0), (2, 30, 30)],
+        [(0, 0, 0), (1, 0, 0)],
     ]
-    CAUGHT = (2, 4, 30)
+    CAUGHT = (2, 2, 30)
     L.append(svg(TX, TY, TW, TH, f'<circle cx="{root[0]}" cy="{root[1]}" r="20" fill="{INK}"/>', "The main agent.", "rise 4"))
     labels = ["missed", "missed", "caught it", "missed"]
     for b, nodes in enumerate(tree):
@@ -116,7 +116,7 @@ def agents():
             x, y = cols[b] + dx, lv[level]
             px, py = (cols[b] + pdx, lv[level - 1] + R) if level else (root[0], root[1] + 20)
             caught = (b, level, dx) == CAUGHT
-            on_path = b == CAUGHT[0] and dx == CAUGHT[2] or (b == CAUGHT[0] and level < 2)
+            on_path = b == CAUGHT[0] and (dx == CAUGHT[2] or level == 0)
             art += f'<line x1="{px}" y1="{py}" x2="{x}" y2="{y - R}" stroke="{RED if on_path else SOFT}" stroke-width="3"/>'
             if caught:
                 art += dot(x, y, RED, r=R + 3) + (f'<polyline points="{x - 8},{y} {x - 2},{y + 6} {x + 9},{y - 7}" fill="none" '
