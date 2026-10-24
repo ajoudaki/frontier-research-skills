@@ -199,42 +199,18 @@ ENGINE_CARDS = [("One thread", "Why one long thread fails"),
 
 
 def engine():
-    """Four stacked cards on the left, one highlighted at a time; the big panel on the right opens on the
-    magnified push into uncharted waters, then shows each card's details in turn."""
+    """Four stacked cards on the left, one highlighted at a time; the big panel on the right opens on what the
+    engine is for, then shows each card's details in turn."""
     L = [heading("03 · Inside one thrust", "The multi-agent engine behind every thrust.")]
     for i in range(4):
         L.append(card(i, False, None, ENGINE_CARDS))
 
-    # step 0: the panel opens on the push into uncharted waters, magnified
-    snap = json.loads((Path(__file__).resolve().parent / "gem_snapshot.json").read_text())
-    vx, vy, vw, vh = snap["viewBox"]
-    mx, my, cr = snap["circle"]
+    # step 0: the panel states what the engine is for; each card then opens its details
     L.append(f'  <div style="position:absolute; top:{PY}px; left:{PX}px; width:{PW}px; height:{PH}px; background:{PAPER}; '
              f'border:1px solid {BORDER}; border-radius:16px"></div>')
-    L.append(p(PX + 40, PY + 32, PW - 80, "The frontier, magnified", 22, RED, 600, extra="; letter-spacing:3px; text-transform:uppercase"))
-    IW, IX, IY = 420, PX + 40, PY + 110
-    s = IW / vw
-    IH = round(vh * s)
-    L.append(f'  <svg aria-label="The map from the strategy slide, with the push into uncharted waters circled." '
-             f'style="position:absolute; top:{IY}px; left:{IX}px; width:{IW}px; height:{IH}px" width="{IW}" height="{IH}" '
-             f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snap["svg"]}{snap["push"]}'
-             f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{cr:.1f}" fill="none" stroke="{INK}" stroke-width="{3 / s:.1f}"/></svg>')
-    sx, sy, sr = IX + (mx - vx) * s, IY + (my - vy) * s, cr * s
-    BR = 200
-    bx, by = PX + PW - 60 - BR, PY + 70 + BR
-    zoom = 1.25 * cr
-    L.append(svg(0, 0, 1920, 1080, f'<line x1="{sx:.1f}" y1="{sy - sr:.1f}" x2="{bx:.1f}" y2="{by - BR:.1f}" stroke="{INK}" stroke-width="1.5"/>'
-                 f'<line x1="{sx:.1f}" y1="{sy + sr:.1f}" x2="{bx:.1f}" y2="{by + BR:.1f}" stroke="{INK}" stroke-width="1.5"/>',
-                 "Lines joining the small circle to its magnified view."))
-    L.append(f'  <svg aria-label="The circled push, magnified: a study at the edge of the core reaching into uncharted waters." '
-             f'style="position:absolute; top:{by - BR:.0f}px; left:{bx - BR:.0f}px; width:{2 * BR}px; height:{2 * BR}px" '
-             f'width="{2 * BR}" height="{2 * BR}" viewBox="{mx - zoom:.1f} {my - zoom:.1f} {2 * zoom:.1f} {2 * zoom:.1f}">'
-             f'<defs><clipPath id="lens"><circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}"/></clipPath></defs>'
-             f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}" fill="{BG}"/>'
-             f'<g clip-path="url(#lens)">{snap["svg"]}{snap["push"]}</g>'
-             f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom - 1.5 * zoom / BR:.1f}" fill="none" stroke="{INK}" stroke-width="{3 * zoom / BR:.2f}"/></svg>')
-    L.append(p(PX + 40, PY + PH - 92, PW - 80, "One push into uncharted waters. The frontier is hard, even for a very capable model: "
-               "how do we make it succeed, and correctly?", 24, DARK, extra="; line-height:1.4"))
+    L.append(p(PX + 60, PY + 170, PW - 120, "Many agents, organized well, are what make a push into the research frontier feasible.",
+               44, INK, 600, family=SERIF, extra="; line-height:1.25"))
+    L.append(p(PX + 60, PY + 400, PW - 120, "Four parts: why one thread fails, independence, opposition, and cost.", 26, MUTED))
 
     W = PW - 80
     R = 16
@@ -341,8 +317,8 @@ def engine():
              f'    <p style="{SANS}; font-size:22px; line-height:1.4; color:{DARK}">A short script can refute a false claim in seconds; re-checking a '
              f'proof takes far longer. In the skills: sanity checks on small cases, and a counterexample search.</p>\n  </div>')
     L.append(transition("How do we implement all this in practice?", 15))
-    notes = ("Let's zoom into that one push. It's a hard research barrier, out in uncharted waters, and even a very capable model can "
-             "fail here. How do we maximize the chance it gets through, and correctly? The answer is a multi-agent engine. "
+    notes = ("The answer is a multi-agent engine: many agents, organized well, are what make a push into the research frontier "
+             "feasible. It has four parts. "
              "First, why not one long thread? It accumulates everything: every dead end, every earlier claim, every sentiment. "
              "Once it makes an early mistake, "
              "everything after it is anchored to it, and telling it to be unbiased can't undo that. "
