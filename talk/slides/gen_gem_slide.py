@@ -1,6 +1,7 @@
 """Generate talk/slides/slides/gem.html: the whole project as a haystack, a small part of it as the gem.
 
 A large, irregular tree (about 200 studies) grows from the research question, one level per step.
+Every edge has the same length; branches turn into free space as they grow.
 Some lines of work are bushy and deep, others stop early. Any study may branch, promoted or not: by default studies don't see each other, but with your approval
 one can build on another's unpromoted work. The established core is one contiguous lake with a
 single shoreline around the promoted studies (about a fifth of the graph); unpromoted studies stay
@@ -12,6 +13,7 @@ Usage: python talk/slides/gen_gem_slide.py
 
 import math
 import random
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -30,8 +32,8 @@ GEM = ('<polygon points="22,4 68,4 86,28 45,76 4,28" fill="{fill}"/>'
 
 STEPS = 6                  # build steps for the growth; deeper studies arrive with the last step
 MAX_DEPTH = 7
-CX, CY = 700, 615          # the research question, on the slide
-R_ROOT, R_NODE = 26, 7
+R_NODE = 7
+R_ROOT = R_NODE             # the research question is drawn like any other study
 # expected children per unit of vigor, by depth: any study may branch, promoted or not. Vigor is
 # inherited with noise, so some lines of work become bushy and deep while others stop early.
 BASE = {1: 1.6, 2: 1.35, 3: 1.15, 4: 0.95, 5: 0.85, 6: 0.7, 7: 0.5}
@@ -51,8 +53,7 @@ def build_tree(seed):
     nodes = [{"level": 0, "parent": None, "kids": [], "vigor": 1.0}]
 
     def add(parent, vigor):
-        nd = {"level": nodes[parent]["level"] + 1, "parent": parent, "kids": [], "vigor": vigor,
-              "jr": rng.uniform(-1, 1), "ja": rng.uniform(-1, 1), "bend": rng.uniform(-0.14, 0.14)}
+        nd = {"level": nodes[parent]["level"] + 1, "parent": parent, "kids": [], "vigor": vigor}
         nodes.append(nd)
         nodes[parent]["kids"].append(len(nodes) - 1)
         return len(nodes) - 1
@@ -69,61 +70,49 @@ def build_tree(seed):
     return nodes
 
 
-def position(rho, angle):
-    a = math.radians(angle)
-    return CX + (50 + 70 * rho) * math.cos(a), CY + (30 + 41 * rho) * math.sin(a)
+AREA = (150, 300, 1280, 945)   # x0, y0, x1, y1: where the graph may sit on the slide
 
 
-def layout(nodes, start):
-    """Radial layout: every leaf gets an angular slot, wider the closer it is to the centre; a parent
-    sits near its children's mean angle. Each study is nudged in angle and depth, so the graph reads as
-    grown rather than drawn on rings."""
-    for nd in nodes:
-        nd.pop("angle", None)
-    leaves = []
-
-    def walk(i):
-        if not nodes[i]["kids"]:
-            leaves.append(i)
-        for k in nodes[i]["kids"]:
-            walk(k)
-
-    walk(0)
-    weight = [3 / nodes[i]["level"] for i in leaves]
-    unit, at = 360 / sum(weight), start
-    for i, w in zip(leaves, weight):
-        nodes[i]["angle"] = at + unit * w / 2 + nodes[i]["ja"] * unit * w * 0.22
-        at += unit * w
-
-    def angle(i):
-        if "angle" not in nodes[i]:
-            kids = nodes[i]["kids"]
-            nodes[i]["angle"] = sum(angle(k) for k in kids) / len(kids) + nodes[i]["ja"] * 2.5
-        return nodes[i]["angle"]
-
-    for i in range(1, len(nodes)):
-        angle(i)
-    nodes[0]["rho"], nodes[0]["xy"] = 0.0, (CX, CY)
-    for nd in nodes[1:]:
-        nd["rho"] = nd["level"] + 0.28 * nd["jr"]
-        nd["xy"] = position(nd["rho"], nd["angle"])
-    relax(nodes)
+def place(nodes, seed):
+    """Lay the tree out with Graphviz neato (stress majorization) asking for the same length on every
+    edge, turn it so its long axis runs across the slide, and scale it uniformly into AREA, which keeps
+    the edges equal."""
+    lines = [f"graph G {{ graph [start={seed}, maxiter=3000, epsilon=0.00001]; node [shape=point, width=0.05]; edge [len=1];"]
+    lines += [f"  {i} -- {k};" for i, nd in enumerate(nodes) for k in nd["kids"]]
+    lines.append("}")
+    out = subprocess.run(["neato", "-Tplain"], input="\n".join(lines), capture_output=True, text=True, check=True).stdout
+    pos = {}
+    for row in out.splitlines():
+        f = row.split()
+        if f and f[0] == "node":
+            pos[int(f[1])] = (float(f[2]), float(f[3]))
+    pts = np.array([pos[i] for i in range(len(nodes))])
+    pts -= pts.mean(0)
+    _, _, vt = np.linalg.svd(pts, full_matrices=False)
+    pts = pts @ vt.T                                          # long axis along x
+    aspect = np.ptp(pts[:, 0]) / np.ptp(pts[:, 1])
+    x0, y0, x1, y1 = AREA
+    scale = min((x1 - x0) / np.ptp(pts[:, 0]), (y1 - y0) / np.ptp(pts[:, 1]))
+    pts = (pts - pts.min(0)) * scale
+    pts += ((x0 + x1 - pts[:, 0].max()) / 2, (y0 + y1 - pts[:, 1].max()) / 2)
+    pts = relax(pts, gap=22)
+    for nd, (x, y) in zip(nodes, pts):
+        nd["xy"] = (float(x), float(y))
+    lengths = [math.dist(nd["xy"], nodes[nd["parent"]]["xy"]) for nd in nodes[1:]]
+    return float(np.std(lengths) / np.mean(lengths)), float(aspect)
 
 
-def relax(nodes, gap=24, rounds=60):
-    """Nudge apart any two studies closer than `gap`, keeping the research question fixed."""
-    pts = np.array([nd["xy"] for nd in nodes], dtype=float)
+def relax(pts, gap, rounds=80):
+    """Nudge apart any two studies closer than `gap` pixels, so no two discs crowd each other."""
+    pts = pts.copy()
     for _ in range(rounds):
         diff = pts[:, None] - pts[None]
         dist = np.sqrt((diff ** 2).sum(-1)) + np.eye(len(pts)) * 1e9
         push = np.clip(gap - dist, 0, None) / 2
         if not push.any():
             break
-        move = (diff / dist[..., None] * push[..., None]).sum(1)
-        move[0] = 0
-        pts += move
-    for nd, (x, y) in zip(nodes, pts):
-        nd["xy"] = (float(x), float(y))
+        pts += (diff / dist[..., None] * push[..., None]).sum(1)
+    return pts
 
 
 def min_gap(nodes):
@@ -133,20 +122,33 @@ def min_gap(nodes):
     return d.min()
 
 
-def promote(nodes):
-    """The core: studies inside a smooth, star-shaped region around the question whose parent is in the core."""
-    nodes[0]["core"] = True
-    for nd in nodes[1:]:
-        a = math.radians(nd["angle"])
-        reach = 3.4 + 1.0 * math.sin(2 * a + 1.0) + 0.7 * math.sin(3 * a + 2.4) + 0.45 * math.sin(5 * a + 0.7)
-        nd["core"] = nd["rho"] <= reach and nodes[nd["parent"]]["core"]
-        nd["step"] = min(nd["level"], STEPS)
+def promote(nodes, share=0.2):
+    """The core: studies inside a smooth, organic region around the question, whose parent is in the
+    core. The region's size is tuned so the core holds about `share` of all studies."""
+    cx, cy = nodes[0]["xy"]
+
+    def mark(size):
+        nodes[0]["core"] = True
+        for i in sorted(range(1, len(nodes)), key=lambda i: nodes[i]["level"]):
+            nd = nodes[i]
+            dx, dy = nd["xy"][0] - cx, nd["xy"][1] - cy
+            a = math.atan2(dy, dx)
+            reach = size * (1 + 0.35 * math.sin(2 * a + 1.0) + 0.25 * math.sin(3 * a + 2.4) + 0.15 * math.sin(5 * a + 0.7))
+            nd["core"] = math.hypot(dx, dy) <= reach and nodes[nd["parent"]]["core"]
+            nd["step"] = min(nd["level"], STEPS)
+        return sum(nd["core"] for nd in nodes[1:]) / (len(nodes) - 1)
+
+    lo, hi = 20.0, 900.0
+    for _ in range(30):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if mark(mid) < share else (lo, mid)
+    mark(hi)
 
 
 GRID = (260, 1000, 300, 1320, 3)   # y0, y1, x0, x1, step: the slide area the field is evaluated on
 
 
-def shore(inside, outside, sigma, root=True):
+def shore(inside, outside, sigma, center=None):
     """One closed shoreline around the studies in `inside`, with every study in `outside` left out.
 
     The shore is a level set of a smooth field: a soft bump on each inside study, a sharp dip on each
@@ -158,13 +160,13 @@ def shore(inside, outside, sigma, root=True):
     def bump(c, sig):
         return np.exp(-((xs - c[0]) ** 2 + (ys - c[1]) ** 2) / (2 * sig ** 2))
 
-    field = 1.6 * bump((CX, CY), sigma * 1.3) if root else 0 * xs
+    field = 1.6 * bump(center, sigma * 1.3) if center else 0 * xs
     for nd in inside:
         field = field + bump(nd["xy"], sigma)
     for nd in outside:
         field = field - 2.6 * bump(nd["xy"], 13)
     field = field + 0.06 * np.sin(xs / 37 + 0.3) * np.sin(ys / 29 + 1.1)
-    target = (CX, CY) if root else inside[0]["xy"]
+    target = center or inside[0]["xy"]
     best = None
     for c in measure.find_contours(field, 0.5):
         poly = np.c_[x0 + s * c[:, 1], y0 + s * c[:, 0]]
@@ -189,11 +191,10 @@ def main():
         nodes = build_tree(seed)
         if not 190 <= len(nodes) - 1 <= 220:
             continue
-        start = max(range(0, 360, 12), key=lambda s: (layout(nodes, s), min_gap(nodes))[1])
-        layout(nodes, start)
+        spread, aspect = place(nodes, seed)
         promote(nodes)
         share = sum(nd["core"] for nd in nodes[1:]) / (len(nodes) - 1)
-        if min_gap(nodes) < 18 or not 0.17 <= share <= 0.24:
+        if spread > 0.25 or aspect < 1.35 or min_gap(nodes) < 18 or not 0.17 <= share <= 0.24:
             continue
         try:
             html = render(nodes, seed)
@@ -206,23 +207,26 @@ def main():
 
 
 def render(nodes, seed):
+    CX, CY = nodes[0]["xy"]
     total = len(nodes) - 1
     core = [nd for nd in nodes[1:] if nd["core"]]
     rest = [nd for nd in nodes[1:] if not nd["core"]]
     xs_, ys_ = [nd["xy"][0] for nd in nodes], [nd["xy"][1] for nd in nodes]
+    lengths = [math.dist(nd["xy"], nodes[nd["parent"]]["xy"]) for nd in nodes[1:]]
+    print(f"edges {np.mean(lengths):.0f}px ± {np.std(lengths) / np.mean(lengths):.0%}")
     print(f"seed {seed}: {total} studies, {len(core)} in the core ({len(core) / total:.0%}); "
           f"x {min(xs_):.0f}-{max(xs_):.0f}, y {min(ys_):.0f}-{max(ys_):.0f}; closest pair {min_gap(nodes):.0f}px")
 
-    # the gem: the research question plus one level-1 core branch, the one closest to ten studies
-    def core_subtree(i):
-        out = [i]
-        for k in nodes[i]["kids"]:
-            if nodes[k]["core"]:
-                out += core_subtree(k)
-        return out
-
-    candidates = [i for i, nd in enumerate(nodes) if nd["level"] == 1 and nd["core"]]
-    gem = [nodes[i] for i in core_subtree(min(candidates, key=lambda i: abs(len(core_subtree(i)) - 10)))]
+    # the gem: about ten core studies grown outward from the question, always taking the core study
+    # closest to what is already in the gem, so the carved part stays compact and connected
+    gem, frontier = [], [k for k in nodes[0]["kids"] if nodes[k]["core"]]
+    while frontier and len(gem) < 10:
+        pts = [nodes[0]["xy"]] + [nd["xy"] for nd in gem]
+        cx_, cy_ = sum(x for x, _ in pts) / len(pts), sum(y for _, y in pts) / len(pts)
+        i = min(frontier, key=lambda i: math.dist(nodes[i]["xy"], (cx_, cy_)))
+        frontier.remove(i)
+        gem.append(nodes[i])
+        frontier += [k for k in nodes[i]["kids"] if nodes[k]["core"]]
     print(f"gem: {len(gem)} studies")
 
     def edge(nd, color, width=2):
@@ -231,10 +235,7 @@ def render(nodes, seed):
         d = math.dist((ax, ay), (bx, by))
         ux, uy = (bx - ax) / d, (by - ay) / d
         sx, sy, ex, ey = ax + ux * r_a, ay + uy * r_a, bx - ux * R_NODE, by - uy * R_NODE
-        bend = nd["bend"] * d
-        qx, qy = (sx + ex) / 2 - uy * bend, (sy + ey) / 2 + ux * bend
-        return (f'<path d="M{sx:.1f},{sy:.1f} Q{qx:.1f},{qy:.1f} {ex:.1f},{ey:.1f}" fill="none" '
-                f'stroke="{color}" stroke-width="{width}"/>')
+        return (f'<line x1="{sx:.1f}" y1="{sy:.1f}" x2="{ex:.1f}" y2="{ey:.1f}" stroke="{color}" stroke-width="{width}"/>')
 
     def disc(nd, fill, r=R_NODE):
         return f'<circle cx="{nd["xy"][0]:.1f}" cy="{nd["xy"][1]:.1f}" r="{r}" fill="{fill}"/>'
@@ -245,7 +246,7 @@ def render(nodes, seed):
         inside = [nd for nd in core if nd["step"] <= k]
         if len(inside) > last:
             last = len(inside)
-            lakes.append(full(f'<path d="{shore(inside, rest, 46)}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
+            lakes.append(full(f'<path d="{shore(inside, rest, 46, (CX, CY))}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
                               f"The established core grows at level {k}: one contiguous lake.", f"fade {k}"))
     levels = []
     for k in range(1, STEPS + 1):
@@ -266,11 +267,11 @@ def render(nodes, seed):
     unknown = p(x1 - 240, y1 - 34, 240, "the unknown", 30, MUTED, align="right", family=SERIF, build="fade 7", extra="; font-style:italic")
 
     # step 8: a coherent part of the core is carved out for a paper, in sapphire
-    gem_shape = shore(gem, [nd for nd in nodes[1:] if nd not in gem], 32)
+    gem_shape = shore(gem, [nd for nd in nodes[1:] if nd not in gem], 32, (CX, CY))
     gem_art = (f'<path d="{gem_shape}" fill="{SAPPHIRE_SOFT}" stroke="{SAPPHIRE}" stroke-width="3" stroke-linejoin="round"/>'
                + "".join(edge(nd, SAPPHIRE, 3) for nd in gem)
                + "".join(disc(nd, SAPPHIRE, R_NODE + 1) for nd in gem)
-               + f'<circle cx="{CX}" cy="{CY}" r="{R_ROOT}" fill="{INK}" stroke="{SAPPHIRE}" stroke-width="5"/>')
+               + f'<circle cx="{CX}" cy="{CY}" r="{R_ROOT + 1}" fill="{INK}" stroke="{SAPPHIRE}" stroke-width="3"/>')
     carve = full(gem_art, f"A coherent part of the core, {len(gem)} studies, carved out for the paper.", "fade 8")
 
     # the right-hand column
