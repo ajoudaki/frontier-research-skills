@@ -335,13 +335,14 @@ def render(nodes, edge_px, variant):
             return [svg(C, top + 4, 40, 40, swatch, title, build),
                     p(C + 56, top, 386, title, 28, INK, 600, family=SERIF, build=build),
                     p(C + 56, top + 40, 386, sub, 22, MUTED, build=build)]
-        col = (legend(330, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" stroke-dasharray="5 4"/>'
+        col = (legend(320, f'<circle cx="20" cy="20" r="13" fill="{INK}"/>', "Open-ended question", "where every research thrust starts", None)
+               + legend(430, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" stroke-dasharray="5 4"/>'
                       f'<circle cx="20" cy="20" r="6" fill="{STRAW}"/>', "Research thrusts", "fresh exploration, pushed forward", "fade 1")
-               + legend(450, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CORE}" stroke="{RED}" stroke-width="3"/>'
+               + legend(540, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CORE}" stroke="{RED}" stroke-width="3"/>'
                         f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "the fully audited and relevant parts", "fade 7")
-               + legend(570, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
+               + legend(650, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
                         "carved out, audited for novelty and significance", "fade 8")
-               + [p(C, 710, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build="fade 9"),
+               + [p(C, 780, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build="fade 9"),
                   p(128, 950, 1664, "Easier said than done. How do we actually achieve it?", 30, RED, family=SERIF, build="fade 10",
                     extra="; font-style:italic")])
     else:
@@ -358,7 +359,7 @@ def render(nodes, edge_px, variant):
                       extra=f"; {MONO}; line-height:1.43")]
 
         mono = ["organize-research-project", "formulate-problem", "solve-problem", "teach-material"]
-        col = ([block(310, "Open-ended question", "#E9E6E0", "#B9B4A8", DARK, "fade 0")]
+        col = ([block(310, "Open-ended question", INK, INK, "#F6F4EF", "fade 0")]
                + link(380, 134, DARK, mono, "fade 1")
                + [block(520, "Research thrusts", CHARTED, CHARTED_EDGE, INK, "rise 1", dashed=True)]
                + link(590, 66, RED, ["promotion gate"], "fade 7")

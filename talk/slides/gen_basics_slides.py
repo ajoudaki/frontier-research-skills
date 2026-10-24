@@ -276,7 +276,7 @@ def close():
     L.append(f'  <svg data-build-in="fade 1" aria-label="The whole project in miniature: the explored region, the established core, and the gem." '
              f'style="position:absolute; top:296px; left:128px; width:{GW}px; height:{GH}px" width="{GW}" height="{GH}" '
              f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snap["svg"]}</svg>')
-    chain = [("open question", "#E9E6E0", "#B9B4A8", DARK), ("thrusts", "#EFEADF", "#C9BFA8", INK), ("core", CORE, RED, RED), ("gem", SAPPHIRE_SOFT, SAPPHIRE, SAPPHIRE)]
+    chain = [("open question", INK, INK, "#F6F4EF"), ("thrusts", "#EFEADF", "#C9BFA8", INK), ("core", CORE, RED, RED), ("gem", SAPPHIRE_SOFT, SAPPHIRE, SAPPHIRE)]
     x, cy = 128, 296 + GH + 24
     for k, (name, bg, border, fg) in enumerate(chain):
         w = 40 + 14 * len(name)
