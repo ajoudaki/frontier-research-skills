@@ -36,7 +36,8 @@ from skimage import measure
 from gen_skill_slides import BG, CORE, DARK, INK, MONO, MUTED, PAPER, RED, SANS, SERIF, arrow, p, section, svg
 
 OUT = Path(__file__).resolve().parent / "slides" / "gem.html"
-SNAPSHOT = Path(__file__).resolve().parent / "gem_snapshot.json"   # the final picture, reused on the conclusion slide
+SNAPSHOT = Path(__file__).resolve().parent / "gem_snapshot.json"
+EXTRA = {}                       # interlude pages built alongside the two slides   # the final picture, reused on the conclusion slide
 
 SAPPHIRE, SAPPHIRE_SOFT = "#2F6FC9", "#DCE7F6"
 STRAW, STRAW_EDGE = "#CDB98C", "#D9CCAE"
@@ -232,7 +233,7 @@ def main():
         except AssertionError as err:
             print(f"seed {seed}: {err}")
             continue
-        for sid, html in pages.items():
+        for sid, html in {**pages, **EXTRA}.items():
             (OUT.parent / f"{sid}.html").write_text(html)
             print(f"wrote {sid}.html")
         print(f"seed {seed}: edges {scale:.0f}px, closest pair {gap:.2f} edges, closest node to edge {near:.2f} edges, aspect {aspect:.2f}")
@@ -376,43 +377,42 @@ def render(nodes, edge_px, variant):
                 + "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in nodes[1:])
                 + "".join(disc(nd, RED if nd["core"] else STRAW) for nd in nodes[1:]) + gem_art)
     if variant == "strategy":
-        # last step: the map shrinks to a corner and the circled push is magnified, as in a textbook figure
-        ZOOM = GEM_STEP + 3
+        # the interlude after this slide: the map in a corner, the circled push magnified, and the question
         vx, vy, vw, vh = x0, y0, x1 - x0, y1 - y0
-        IW, IX, IY = 430, 128, 360
+        IW, IX, IY = 480, 200, 310
         s = IW / vw
         IH = round(vh * s)
-        BR, bx, by = 270, 1000, 620
+        BR, bx, by = 250, 1330, 560
         zoom = 1.25 * ring_r
         sx, sy, sr = IX + (mx - vx) * s, IY + (my - vy) * s, ring_r * s
         tx, ty = bx + (nx - mx) * BR / zoom, by + (ny - my) * BR / zoom      # the arrow tip, magnified
-        layers += [
-            f'  <div data-build-in="fade {ZOOM}" style="position:absolute; top:280px; left:100px; width:1230px; height:700px; background:{BG}"></div>',
-            f'  <svg data-build-in="fade {ZOOM}" aria-label="The map, shrunk, with the push into uncharted waters circled." '
-            f'style="position:absolute; top:{IY}px; left:{IX}px; width:{IW}px; height:{IH}px" width="{IW}" height="{IH}" '
-            f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snapshot}{push_art}'
-            f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{ring_r:.1f}" fill="none" stroke="{INK}" stroke-width="{3 / s:.1f}"/></svg>',
-            full(f'<line x1="{sx:.1f}" y1="{sy - sr:.1f}" x2="{bx:.1f}" y2="{by - BR:.1f}" stroke="{INK}" stroke-width="1.5"/>'
-                 f'<line x1="{sx:.1f}" y1="{sy + sr:.1f}" x2="{bx:.1f}" y2="{by + BR:.1f}" stroke="{INK}" stroke-width="1.5"/>',
-                 "Lines joining the small circle to its magnified view.", f"fade {ZOOM}"),
-            f'  <svg data-build-in="fade {ZOOM}" aria-label="The push, magnified: from the edge of the core out into uncharted waters." '
-            f'style="position:absolute; top:{by - BR:.0f}px; left:{bx - BR:.0f}px; width:{2 * BR}px; height:{2 * BR}px" '
-            f'width="{2 * BR}" height="{2 * BR}" viewBox="{mx - zoom:.1f} {my - zoom:.1f} {2 * zoom:.1f} {2 * zoom:.1f}">'
-            f'<defs><clipPath id="lens"><circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}"/></clipPath></defs>'
-            f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}" fill="{BG}"/>'
-            f'<g clip-path="url(#lens)">{snapshot}{push_art}</g>'
-            f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom - 1.5 * zoom / BR:.1f}" fill="none" stroke="{INK}" stroke-width="{3 * zoom / BR:.2f}"/></svg>']
-        # name the water the arrow is heading into, outside the lens, with a leader to just past the tip
+        zl = [f'  <svg aria-label="The map, shrunk, with the push into uncharted waters circled." '
+              f'style="position:absolute; top:{IY}px; left:{IX}px; width:{IW}px; height:{IH}px" width="{IW}" height="{IH}" '
+              f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snapshot}{push_art}'
+              f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{ring_r:.1f}" fill="none" stroke="{INK}" stroke-width="{3 / s:.1f}"/></svg>',
+              full(f'<line x1="{sx:.1f}" y1="{sy - sr:.1f}" x2="{bx:.1f}" y2="{by - BR:.1f}" stroke="{INK}" stroke-width="1.5"/>'
+                   f'<line x1="{sx:.1f}" y1="{sy + sr:.1f}" x2="{bx:.1f}" y2="{by + BR:.1f}" stroke="{INK}" stroke-width="1.5"/>',
+                   "Lines joining the small circle to its magnified view."),
+              f'  <svg aria-label="The push, magnified: from the edge of the core out into uncharted waters." '
+              f'style="position:absolute; top:{by - BR:.0f}px; left:{bx - BR:.0f}px; width:{2 * BR}px; height:{2 * BR}px" '
+              f'width="{2 * BR}" height="{2 * BR}" viewBox="{mx - zoom:.1f} {my - zoom:.1f} {2 * zoom:.1f} {2 * zoom:.1f}">'
+              f'<defs><clipPath id="lens"><circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}"/></clipPath></defs>'
+              f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}" fill="{BG}"/>'
+              f'<g clip-path="url(#lens)">{snapshot}{push_art}</g>'
+              f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom - 1.5 * zoom / BR:.1f}" fill="none" stroke="{INK}" stroke-width="{3 * zoom / BR:.2f}"/></svg>']
         ux_, uy_ = math.cos(push_ang), math.sin(push_ang)
         px_, py_ = tx + ux_ * 26, ty + uy_ * 26
         if tx < bx:
-            layers += [p(IX + IW + 10, py_ - 40, bx - BR - IX - IW - 40, "uncharted<br>waters", 32, INK, 600, "right", family=SERIF,
-                         build=f"fade {ZOOM}", extra="; font-style:italic; line-height:1.15"),
-                       full(f'<line x1="{bx - BR - 20:.1f}" y1="{py_:.1f}" x2="{px_:.1f}" y2="{py_:.1f}" stroke="{INK}" stroke-width="1.5" stroke-dasharray="4 4"/>',
-                            "A leader to the uncharted waters.", f"fade {ZOOM}")]
+            zl += [p(IX + IW + 30, py_ - 40, bx - BR - IX - IW - 70, "uncharted<br>waters", 34, INK, 600, "right", family=SERIF,
+                     extra="; font-style:italic; line-height:1.15"),
+                   full(f'<line x1="{bx - BR - 26:.1f}" y1="{py_:.1f}" x2="{px_:.1f}" y2="{py_:.1f}" stroke="{INK}" stroke-width="1.5" stroke-dasharray="4 4"/>',
+                        "A leader to the uncharted waters.")]
         else:
-            layers.append(p(bx - BR, by + BR - 70, 2 * BR, "uncharted waters", 32, INK, 600, "center", family=SERIF,
-                            build=f"fade {ZOOM}", extra="; font-style:italic"))
+            zl.append(p(bx - BR, by + BR - 70, 2 * BR, "uncharted waters", 34, INK, 600, "center", family=SERIF, extra="; font-style:italic"))
+        zl.append(p(128, 870, 1664, "The frontier is hard, even for a very capable model.<br>How do we make each push succeed, and correctly?",
+                    44, INK, 600, "center", family=SERIF, extra="; line-height:1.3"))
+        EXTRA["q-frontier"] = section("q-frontier", "\n".join(zl), "Let's zoom in. This is the frontier of research, and it's hard, even for a very "
+                                      "capable model. How do we maximize the chance that it gets through, and that what it finds is correct?")
     if variant == "gem":
         SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot, "push": push_art,
                                         "circle": [mx, my, ring_r], "push_line": [px, py, nx, ny]}))
@@ -433,8 +433,7 @@ def render(nodes, edge_px, variant):
                + legend(650, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
                         "carved out, audited for novelty and significance", f"fade {GEM_STEP}")
                + [p(C, 780, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build=f"fade {GEM_STEP}"),
-                  p(128, 950, 1664, "The frontier is hard, even for a very capable model. How do we make each push succeed, and correctly?", 30, RED, family=SERIF, build=f"fade {GEM_STEP + 3}",
-                    extra="; font-style:italic")])
+                  ])
     else:
         # the four regions as one horizontal strip under the title, coloured like the graph, with the skills on the
         # edges between them; then, once the gem is in, how to use it all today
@@ -493,9 +492,7 @@ def render(nodes, edge_px, variant):
                  "Finally, a part of the core is carved out and audited again, for novelty and significance: is it scientifically "
                  "worthy? That's the paper, and that's the gem in the haystack. "
                  "That's the map, the global strategy. "
-                 "But look at one thrust at the edge, pushing out into uncharted waters. "
-                 "Let's zoom in. This is the frontier of research, and it's hard, even for a very capable model. How do we maximize the chance "
-                 "that it gets through, and that what it finds is correct?")
+                 "But look at one thrust at the edge, pushing out into uncharted waters.")
         return section("strategy", head + "\n" + "\n".join(layers), notes)
     notes = ("Let's put it all together, now that we've seen every piece. We start from one open-ended question. "
              "organize-research-project turns it into research thrusts, and inside each one, formulate, solve and learn. "

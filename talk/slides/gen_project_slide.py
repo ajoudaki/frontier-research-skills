@@ -139,8 +139,7 @@ DEVELOP_NOTES = (
     "that's the signal-to-noise ratio. "
     "The third idea: you build on the core. New studies can rely on promoted results, "
     "and they can be promoted in turn, so the core keeps growing. "
-    "That's the organization, and it already has a lot of value. But each thrust is itself a hard research question. "
-    "What exactly is its question? And how do we solve it? Let's take one thrust."
+    "That's the organization, and it already has a lot of value. But each thrust is itself a hard research question."
 )
 
 
@@ -249,8 +248,6 @@ def three_ideas():
         head(758, 14, 3, "Build on the core"),
         ln(808, 14, "New studies rely on promoted results,"),
         ln(842, 16, "and can be promoted in turn."),
-        f'  <p data-build-in="fade 17" style="position:absolute; top:950px; left:128px; width:1664px; {SERIF}; font-size:30px; '
-        f'font-style:italic; color:#b04a33">But each thrust is still open: what exactly is its question, and how do we solve it?</p>',
     ]
     return "\n".join(rows)
 

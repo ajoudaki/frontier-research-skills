@@ -305,7 +305,6 @@ def engine():
              f'    <p style="{SANS}; font-size:22px; font-weight:600; color:{RED}">And when a claim can be tested, test it</p>\n'
              f'    <p style="{SANS}; font-size:22px; line-height:1.4; color:{DARK}">A short script can refute a false claim in seconds; re-checking a '
              f'proof takes far longer. In the skills: sanity checks on small cases, and a counterexample search.</p>\n  </div>')
-    L.append(transition("How do we implement all this in practice?", 15))
     notes = ("The answer is a multi-agent engine: many agents, organized well, are what make a push into the research frontier "
              "feasible. It has four parts. "
              "First, why not one long thread? It accumulates everything: every dead end, every earlier claim, every sentiment. "
@@ -326,8 +325,7 @@ def engine():
              "Below them, capable models for drafting and derivations; at the base, cheaper models for code and routine runs. "
              "The pyramid is built so that a failure at a lower level gets caught by the audits above it. "
              "And when a claim can be tested, test it: a short script can refute a false claim in seconds, while re-checking a proof "
-             "takes far longer. "
-             "So how do we implement all this in practice?")
+             "takes far longer.")
     return section("agents", "\n".join(L), notes)
 
 
@@ -344,7 +342,6 @@ def foundations():
         if i:
             L.append(card(i - 1, False, f"fade {step}"))
         L += make(step)
-    L.append(transition("In fact, everything we'll talk about from here is a skill. Here are the five.", 4))
     notes = ("You can simply ask the main thread to start agents. What makes it practical are three foundations. "
              "Context: a coding agent, not a chat, on one always-on workstation. Then the theory, the LaTeX, the code, the results and "
              "the figures are all in reach. Agents work overnight, and even if you dispatch jobs elsewhere, the results come back. "
@@ -353,8 +350,7 @@ def foundations():
              "you roll all of it back. "
              "Reuse. A project is just a folder with a file every agent in it reads, so the project's rules load by default. "
              "Prompts you type again and again become skills, which load by name or when a task matches them, and they're plain "
-             "files, so they move with you to another model. "
-             "In fact, everything we'll talk about from here is a skill. Here are the five.")
+             "files, so they move with you to another model.")
     return section("foundations", "\n".join(L), notes)
 
 

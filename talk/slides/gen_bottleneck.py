@@ -82,8 +82,6 @@ def main():
         L.append(p(128, top_, 920, f'<span style="color:{RED}">{i + 1}</span>  {s}', 32, DARK, build=f"rise {i + 1}", extra="; line-height:1.4"))
     L.append(haystack())
     L.append(p(1183, 196, 600, f'A <b style="color:{SAPPHIRE}">gem</b> in the haystack.', 48, INK, 600, "center", build="fade 4", family=SERIF))
-    L.append(p(128, 732.8, 920, f'How do we raise the <span style="color:{RED}">signal-to-noise</span> ratio?<br>And how do we stay in control?',
-               44, INK, build="rise 5"))
     notes = ("Let's start with where we are today. We're in the middle of a fundamental transition: from writing every line of code, "
              "paper and theory ourselves, to delegating much more research to very capable models. "
              "The transition is hard, because in research, agents fail silently, and the smarter they get, the harder those failures "
@@ -92,8 +90,7 @@ def main():
              "On top of that, they produce code, theory and papers far faster than we can read. "
              "So we end up with a pile of results that may contain some gems, but finding them takes an enormous amount of time: "
              "a gem in a haystack. And noise isn't only mistakes: a result can be correct but irrelevant. "
-             "You lose so much control that it can defeat the purpose of using them at all. So we have two questions: how do we raise "
-             "the signal-to-noise ratio, and how do we stay in control?")
+             "You lose so much control that it can defeat the purpose of using them at all.")
     SLIDE.write_text(section("bottleneck", "\n".join(L), notes))
     print(f"wrote {SLIDE}")
 

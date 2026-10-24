@@ -249,7 +249,6 @@ def formulate():
     # step 8: frozen
     L.append(p(OX + cx + 96, OY + cy + 128, 200, "Frozen", 30, RED, 600, "center", build="pop 8",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
-    L.append(transition("The target is sharp now. But the arrow is still dashed: how do we solve it?", 9))
     notes = ("Remember this push into uncharted waters? We said the thrusts are hard. It's even harder than that. "
              "In reality, the target isn't a sharp node at all. It's a vague question, and a lot of time goes into pinning down what we "
              "even want. The danger is that a vague question leaves room for answers to an easier question, and an agent will happily "
@@ -263,7 +262,7 @@ def formulate():
              "Notice that the vague boundary couldn't tell us whether any of these were in or out. "
              "Once they're ruled out, the true boundary emerges: one precise conjecture, with a sharp edge. "
              "Then it's frozen. A material change needs your say, and results for a changed question never count as answers to the original. "
-             "Now we know exactly where the arrow points. But it's still dashed: nothing is proved yet. How do we solve it?")
+             "Now we know exactly where the arrow points.")
     return section("formulate", "\n".join(L), notes)
 
 
@@ -336,7 +335,6 @@ def solve():
                  f'<polygon points="{TX1 - 28},{TY} {TX1 - 46},{TY - 11} {TX1 - 46},{TY + 11}" fill="{RED}"/>'
                  + tick_badge((TX0 + TX1) / 2, TY, RED, 17), "The arrow turns solid: the thrust is proved.", "fade 6"))
     L.append(p(TX0 + 40, TY - 44, TX1 - TX0 - 120, "proved: this thrust is done", 21, RED, 600, "center", build="fade 6"))
-    L.append(transition("Solved, most likely. But to judge it, we still have to understand it.", 7))
     notes = ("Here's the thrust again: from what we know to the frozen question. The arrow between them is the proof, and it's "
              "still dashed. Solving is the second hard push, and it starts from the frozen contract. "
              "With your go-ahead, the proof search runs as parallel agents, one per route, and each route uses a genuinely different mechanism: "
@@ -348,11 +346,7 @@ def solve():
              "and hunt for counterexamples at the boundary and in degenerate cases. "
              "Only what survives gets written up by solve-problem: the plan first, every nontrivial step derived, no 'clearly' in place of a reason, "
              "and an answer to exactly the question in the contract. "
-             "And now the arrow is solid: the thrust is done, most likely correctly. "
-             "We've delegated as much as we could, "
-             "but we still have to stay in charge: someone has to judge whether it's relevant, whether it's the right direction, "
-             "and whether an assumption or technique was quietly tweaked along the way. That means reading it, and agent output "
-             "can be very hard to read. That's the third stage.")
+             "And now the arrow is solid: the thrust is done, most likely correctly.")
     return section("solve", "\n".join(L), notes)
 
 
@@ -387,7 +381,6 @@ def teach():
                  build="rise 4", pad=20, gap=6))
     # zoom: from the idea down to the details
     L.append(svg(BX - 40, 572, 30, 354, arrow(15, 6, 15, 348, RED, 3), "From the high-level idea down to the details.", "fade 4"))
-    L.append(transition("Now we can judge what joins the core.", 5))
     notes = ("A correct proof you don't understand isn't worth much. "
              "Here's the kind of line an agent, or a paper, might hand you: private symbols everywhere. "
              "teach-material, together with explain-canonically, teaches it in layers. "
@@ -481,7 +474,7 @@ def review():
              "Each flaw gets a severity: fatal, major or minor. "
              "And a fatal flaw cascades to every claim that depends on it: the main theorem falls with the lemma. "
              "The verdict says whether the central message stands, and the confidence reflects only what was actually checked. "
-             "And its findings can start the next round of the project. Now let's put it all together.")
+             "And its findings can start the next round of the project.")
     # step 0 is a reminder of the project's established core; the paper replaces it at step 1
     L = [re.sub(r'data-build-in="(\w+) (\d+)"', lambda m: f'data-build-in="{m[1]} {int(m[2]) + 1}"', el) for el in L]
     from gen_project_slide import core_snapshot
@@ -490,9 +483,7 @@ def review():
     L.insert(1, svg(SX, SY, 700 * s, 490 * s, f'<g transform="translate(0,{10 * s}) scale({s})">{core_snapshot()}</g>',
                     "The project's established core, as built on the organize slide."))
     L.insert(2, p(SX, SY + 490 * s + 16, 700 * s, "the established core", 28, RED, 600, "center", extra="; letter-spacing:3px; text-transform:uppercase"))
-    L.insert(3, transition("We can now build a core that's true and relevant. But a paper needs more: novelty, significance, the literature.", 0).replace(' data-build-in="fade 0"', ""))
-    L.insert(4, f'  <div data-build-in="fade 1" style="position:absolute; top:290px; left:0; width:1920px; height:790px; background:{BG}"></div>')
-    L.append(transition("Now let's put it all together.", 10))
+    L.insert(3, f'  <div data-build-in="fade 1" style="position:absolute; top:290px; left:0; width:1920px; height:790px; background:{BG}"></div>')
     i = next(k for k, el in enumerate(L) if "The submitted paper." in el)
     L[i] = L[i].replace('aria-label="The submitted paper."', 'aria-label="The submitted paper." data-build-in="fade 1"')
     i = next(k for k, el in enumerate(L) if "the paper, read in full" in el)
