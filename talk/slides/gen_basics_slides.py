@@ -313,14 +313,24 @@ def engine():
              ("most capable models", "reviews, final checks, hardest steps", RED, PAPER),
              ("capable models", "drafting, derivations", "#D98A72", INK),
              ("cheaper models", "code, routine runs", "#EBC3B5", INK)]
-    PWid, top, th = 680, 24, 86
-    art = ""
-    for k, (who, what, fill, fg) in enumerate(tiers):
-        y = top + k * (th + 6)
-        half_top, half_bot = 60 + k * (PWid / 2 - 60) / 4, 60 + (k + 1) * (PWid / 2 - 60) / 4
-        c = PWid / 2
-        art += (f'<polygon points="{c - half_top:.1f},{y} {c + half_top:.1f},{y} {c + half_bot:.1f},{y + th} {c - half_bot:.1f},{y + th}" fill="{fill}"/>')
-        art += text(c, y + 38, who, 23, fg, 600, "middle") + text(c, y + 66, what, 20, fg, 400, "middle")
+    # one true pyramid with straight sides: a pointed top tier (taller, so its label fits), the rest following the slope
+    PWid, y0, gap = 700, 6, 6
+    heights = [128, 78, 78, 78]
+    y_end = y0 + sum(heights) + gap * (len(heights) - 1)
+    c = PWid / 2
+
+    def half(y):
+        return (y - y0) / (y_end - y0) * (PWid / 2)
+
+    art, y = "", y0
+    for k, ((who, what, fill, fg), h) in enumerate(zip(tiers, heights)):
+        a_, b_ = half(y), half(y + h)
+        if k == 0:
+            art += f'<polygon points="{c:.1f},{y:.1f} {c + b_:.1f},{y + h:.1f} {c - b_:.1f},{y + h:.1f}" fill="{fill}"/>'
+        else:
+            art += f'<polygon points="{c - a_:.1f},{y:.1f} {c + a_:.1f},{y:.1f} {c + b_:.1f},{y + h:.1f} {c - b_:.1f},{y + h:.1f}" fill="{fill}"/>'
+        art += text(c, y + h - 38, who, 23, fg, 600, "middle") + text(c, y + h - 13, what, 20, fg, 400, "middle")
+        y += h + gap
     L.append(svg(PX + 40, PY + 80, PWid, 380, art, "A cost pyramid: you at the top, the most capable models just below for what is mission-critical, "
                  "capable models below them, and cheaper models at the base.", "fade 12"))
     up = arrow(20, 340, 20, 30, RED, 3) + text(40, 190, "failures below", 22, RED, 600, "start") + text(40, 218, "are caught above", 22, RED, 600, "start")
