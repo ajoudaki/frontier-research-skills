@@ -425,13 +425,13 @@ def render(nodes, edge_px, variant):
             return [svg(C, top + 4, 40, 40, swatch, title, build),
                     p(C + 56, top, 386, title, 28, INK, 600, family=SERIF, build=build),
                     p(C + 56, top + 40, 386, sub, 22, MUTED, build=build)]
-        col = (legend(320, f'<circle cx="20" cy="20" r="13" fill="{INK}"/>', "Open-ended question", "where every research thrust starts", None)
+        col = (legend(320, f'<circle cx="20" cy="20" r="13" fill="{INK}"/>', "Open-ended question", "where every thrust starts", None)
                + legend(430, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" stroke-dasharray="5 4"/>'
                       f'<circle cx="20" cy="20" r="6" fill="{STRAW}"/>', "Research thrusts", "fresh exploration, pushed forward", "fade 1")
                + legend(540, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CORE}" stroke="{RED}" stroke-width="3"/>'
-                        f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "the fully audited and relevant parts", f"fade {CORE_START}")
+                        f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "audited and relevant", f"fade {CORE_START}")
                + legend(650, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
-                        "carved out, audited for novelty and significance", f"fade {GEM_STEP}")
+                        "carved out, audited for novelty, significance", f"fade {GEM_STEP}")
                + [p(C, 780, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build=f"fade {GEM_STEP}"),
                   ])
     else:
@@ -465,12 +465,12 @@ def render(nodes, edge_px, variant):
         col += [f'  <div data-build-in="rise {U}" style="position:absolute; top:440px; left:1220px; width:572px; height:494px; '
                 f'background:{PAPER}; border:1px solid #DCD6CA; border-radius:16px"></div>',
                 p(1248, 466, 500, "How to use it", 30, INK, 600, family=SERIF, build=f"rise {U}"),
-                p(1248, 520, 500, "Get the skills", 20, RED, 600, build=f"rise {U}"),
+                p(1248, 520, 500, "Get", 20, RED, 600, build=f"rise {U}"),
                 f'  <p data-build-in="rise {U}" style="position:absolute; top:550px; left:1248px; width:516px; {code}">git clone \\\n  github.com/ajoudaki/frontier-research-skills</p>',
-                p(1248, 642, 500, "Install one for every project", 20, RED, 600, build=f"rise {U}"),
+                p(1248, 642, 500, "Install", 20, RED, 600, build=f"rise {U}"),
                 f'  <p data-build-in="rise {U}" style="position:absolute; top:672px; left:1248px; width:516px; {code}">ln -s $PWD/&lt;skill&gt; ~/.claude/skills/\n# or ~/.codex/skills/ for Codex</p>',
-                p(1248, 764, 500, "Or make it a project's default", 20, RED, 600, build=f"rise {U}"),
-                f'  <p data-build-in="rise {U}" style="position:absolute; top:794px; left:1248px; width:516px; {code}">name it in the project&#39;s AGENTS.md\nor CLAUDE.md</p>',
+                p(1248, 764, 500, "Or per project", 20, RED, 600, build=f"rise {U}"),
+                f'  <p data-build-in="rise {U}" style="position:absolute; top:794px; left:1248px; width:516px; {code}">name it in AGENTS.md or CLAUDE.md</p>',
                 p(1248, 886, 500, "The README has the details.", 20, MUTED, build=f"rise {U}")]
 
     eyebrow, title = (("02 · The strategy", "The strategy at a glance.") if variant == "strategy"

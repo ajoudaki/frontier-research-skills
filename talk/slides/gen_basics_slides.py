@@ -98,9 +98,9 @@ def panel_context(build):
     art += arrow(W - 206, 192, hub_x + hub_w + 6, 192, RED, 3) + text(mid, 222, "results come back", 20, RED, 600, "middle")
     L.append(svg(PX + 40, PY + 84, W, H, art, "Your always-on workstation holds theory, code, results and the paper, with a coding agent; "
                  "you connect from anywhere, jobs go out and results come back.", f"fade {build}"))
-    L += bullets(build, ["A coding agent, not a chat: no uploading back and forth",
-                         "Theory, LaTeX, code, results and figures, all in reach",
-                         "Agents work overnight, and wait for runs to finish"], PY + 440)
+    L += bullets(build, ["A coding agent, not a chat",
+                         "Theory, code, results, paper: all in reach",
+                         "Works overnight, waits for runs"], PY + 440)
     return L
 
 
@@ -135,9 +135,9 @@ def panel_persistence(build):
     art += text(14 + 2 * 252 + 239, 22, "roll back", 22, RED, 600, "middle")
     L.append(svg(PX + 40, PY + 74, W, H, art, "Four snapshots, each holding theory, code, audits and paper; an agent's refactor breaks the last, "
                  "and the project rolls back to the one before.", f"fade {build}"))
-    L += bullets(build, ["Not just code: the theory, the notes, the audits, the paper, all in one place",
-                         "Roll back when an agent, or a decision, goes wrong",
-                         "Big refactors become safe to try"], PY + 440)
+    L += bullets(build, ["Not just code: theory, audits, paper",
+                         "Roll back a bad agent or decision",
+                         "Big refactors become safe"], PY + 440)
     return L
 
 
@@ -154,8 +154,8 @@ def panel_reuse(build):
     fx, fy, fw, fh = 360, 20, W - 370, 296
     art += f'<path d="M {fx} {fy + 34} L {fx} {fy + 10} Q {fx} {fy} {fx + 10} {fy} L {fx + 170} {fy} L {fx + 196} {fy + 26} L {fx + fw - 10} {fy + 26} Q {fx + fw} {fy + 26} {fx + fw} {fy + 36} L {fx + fw} {fy + fh - 10} Q {fx + fw} {fy + fh} {fx + fw - 10} {fy + fh} L {fx + 10} {fy + fh} Q {fx} {fy + fh} {fx} {fy + fh - 10} Z" fill="{PAPER}" stroke="{INK}" stroke-width="2"/>'
     art += text(fx + 18, fy + 22, "my-project/", 20, INK, 600, "start", "IBM Plex Mono, monospace")
-    rows = [("AGENTS.md", "every agent in this folder reads it: the project's rules", RED, CORE),
-            ("skills/ SKILL.md", "loads by name, or when a task matches it", RED, CORE),
+    rows = [("AGENTS.md", "the project's rules, read by every agent", RED, CORE),
+            ("skills/ SKILL.md", "loads by name or by task", RED, CORE),
             ("theory/ code/ paper/", "the project itself", MUTED, "#EFEBE2")]
     for k, (chipt, desc, fg, bg) in enumerate(rows):
         ry = fy + 56 + k * 80
@@ -165,8 +165,8 @@ def panel_reuse(build):
     art += arrow(300, 140, fx + 22, fy + 56 + 80 + 20, RED, 3)
     L.append(svg(PX + 40, PY + 84, W, H, art, "A project folder: AGENTS.md, read by every agent in it; a skills folder where repeated prompts "
                  "become skills; and the project's theory, code and paper.", f"fade {build}"))
-    L += bullets(build, ["A project is a folder with a file every agent in it reads",
-                         "Skills are plain files: they move with you to another model",
+    L += bullets(build, ["A project: a folder with shared rules",
+                         "Skills are plain files: portable across models",
                          "Everything in this repo is a skill"], PY + 440)
     return L
 
@@ -189,9 +189,8 @@ def engine():
     # step 0: the panel states what the engine is for; each card then opens its details
     L.append(f'  <div style="position:absolute; top:{PY}px; left:{PX}px; width:{PW}px; height:{PH}px; background:{PAPER}; '
              f'border:1px solid {BORDER}; border-radius:16px"></div>')
-    L.append(p(PX + 60, PY + 170, PW - 120, "Many agents, organized well, are what make a push into the research frontier feasible.",
-               44, INK, 600, family=SERIF, extra="; line-height:1.25"))
-    L.append(p(PX + 60, PY + 400, PW - 120, "Four parts: why one thread fails, independence, opposition, and cost.", 26, MUTED))
+    L.append(p(PX + 60, PY + 190, PW - 120, "Many agents, well organized, make the push feasible.",
+               52, INK, 600, family=SERIF, extra="; line-height:1.25"))
 
     W = PW - 80
     R = 16
@@ -212,9 +211,9 @@ def engine():
                  "The fourth step is a mistake.", "fade 2"))
     L.append(svg(PX + 40, PY + 110, W, 140, "".join(dot(x, 60, TAINT, r=R) for x in xs[4:]) + text(xs[-1] + R, 112, "…and it never recovers", 24, MUTED, 400, "end"),
                  "Every later step inherits the mistake.", "fade 3"))
-    L += bullets(3, ["Everything piles into one context: every dead end, every claim, every sentiment",
-                     "An early mistake anchors everything after it",
-                     "Asking the thread to be unbiased can't undo that"], PY + 330)
+    L += bullets(3, ["Every dead end piles into one context",
+                     "An early mistake anchors the rest",
+                     "\u201cBe unbiased\u201d can't undo it"], PY + 330)
 
     # 2. independent agents: one branch at a time, the last one catching the flaw
     L += show(1, 4, "Independence: fresh agents, different angles")
@@ -242,9 +241,9 @@ def engine():
                 art += dot(x, y, PAPER, GRAY, R)
         art += text(cols[b], 256, labels[b], 24, RED if b == 3 else MUTED, 600 if b == 3 else 400, "middle")
         L.append(svg(PX + 40, PY + 90, W, 290, art, f"Fresh agent {b + 1} explores its own branch and {labels[b]} the flaw.", f"fade {4 + b}"))
-    L += bullets(7, ["Each starts clean, isolated, and sees only its own folder",
-                     "Several can miss; one catch is enough",
-                     "In the skills: parallel proof routes; independent reviews at the promotion gate"], PY + 420)
+    L += bullets(7, ["Each starts clean, sees only its folder",
+                     "Several miss; one catch is enough",
+                     "Skills: parallel proof routes, gate reviews"], PY + 420)
 
     # 3. agents in opposition: an author and a critic, round by round
     L += show(2, 8, "Opposition: an author and a critic")
@@ -260,9 +259,9 @@ def engine():
         L.append(svg(PX + 40, PY + 84, W, 310, art, f"The {name}.", f"fade {8 + k}"))
     L.append(svg(PX + 40, PY + 84, W, 310, tick_badge(cx, 286, RED, 17) + text(cx - 30, 294, "re-checked: resolved", 24, RED, 600, "end"),
                  "The critic re-checks: the objection is resolved.", "fade 11"))
-    L += bullets(11, ["Opposing roles, round after round; a single thread can't argue with itself",
-                      "In the skills: the hostile audit of formulate-problem",
-                      "Separate checks of a candidate proof; a fresh review after every correction"], PY + 430)
+    L += bullets(11, ["Opposing roles, round after round",
+                      "Skills: the hostile audit in formulate-problem",
+                      "A fresh review after every fix"], PY + 430)
 
     # 4. cost: the pyramid, and cheap checks
     L += show(3, 12, "Cost: a pyramid, and cheap checks")
@@ -302,9 +301,8 @@ def engine():
                  "expensive; failures at a lower level are caught by the audits above it.", "fade 13"))
     L.append(f'  <div data-build-in="fade 14" style="position:absolute; top:{PY + 480}px; left:{PX + 40}px; width:{W}px; display:flex; flex-direction:column; '
              f'gap:6px; padding:18px 22px; background:#FBF3EF; border:2px solid {RED}; border-radius:14px">\n'
-             f'    <p style="{SANS}; font-size:22px; font-weight:600; color:{RED}">And when a claim can be tested, test it</p>\n'
-             f'    <p style="{SANS}; font-size:22px; line-height:1.4; color:{DARK}">A short script can refute a false claim in seconds; re-checking a '
-             f'proof takes far longer. In the skills: sanity checks on small cases, and a counterexample search.</p>\n  </div>')
+             f'    <p style="{SANS}; font-size:22px; font-weight:600; color:{RED}">If a claim can be tested, test it</p>\n'
+             f'    <p style="{SANS}; font-size:22px; line-height:1.4; color:{DARK}">A script refutes in seconds. Skills: small-case checks, counterexample search.</p>\n  </div>')
     notes = ("The answer is a multi-agent engine: many agents, organized well, are what make a push into the research frontier "
              "feasible. It has four parts. "
              "First, why not one long thread? It accumulates everything: every dead end, every earlier claim, every sentiment. "
@@ -375,21 +373,18 @@ def close():
         if k < 3:
             L.append(p(x, cy + 6, 40, "→", 24, MUTED, 600, "center", build="fade 1"))
             x += 40
-    L.append(p(128, cy + 76, GW, "One goal throughout: raise the signal-to-noise ratio, and spend your time only on what matters.",
-               30, INK, 600, family=SERIF, build="fade 2", extra="; line-height:1.3"))
+    L.append(p(128, cy + 76, GW, "One goal: raise the signal-to-noise ratio.", 34, INK, 600, family=SERIF, build="fade 2",
+               extra="; line-height:1.3"))
     R0, RW = 940, 852
     L.append(p(R0, 300, RW, "What's next", 22, RED, 600, build="fade 3", extra="; letter-spacing:3px; text-transform:uppercase"))
-    nexts = [("Beyond theory:", "adapt these theory-first skills to other domains"),
-             ("Evaluations:", "know whether a change really improves a skill"),
-             ("Live skills:", "learn from your own chats, adapt skills and write new ones, checked by those evaluations")]
-    for k, (h, s) in enumerate(nexts):
-        L.append(p(R0, 344 + k * 76, RW, f"<b>{h}</b> {s}", 26, DARK, build="fade 3", extra="; line-height:1.35"))
-    L.append(p(R0, 600, RW, "The big question", 22, RED, 600, build="fade 4", extra="; letter-spacing:3px; text-transform:uppercase"))
-    L.append(p(R0, 642, RW, "Agents now do most of the mechanical work. What's missing is research taste: where to explore, when to stop. "
-               "Could they one day run a whole project from a single open question? Not today.", 26, DARK, build="fade 4", extra="; line-height:1.4"))
-    L.append(f'  <p data-build-in="fade 5" style="position:absolute; top:846px; left:{R0}px; width:{RW}px; {MONO}; font-size:28px; color:{RED}">'
+    nexts = [("Beyond theory", "other domains"), ("Evaluations", "does a change help a skill?"), ("Live skills", "learn from your chats")]
+    for k, (h, s_) in enumerate(nexts):
+        L.append(p(R0, 346 + k * 60, RW, f'<b style="color:{INK}">{h}</b>  <span style="color:{MUTED}">{s_}</span>', 32, DARK, build="fade 3"))
+    L.append(p(R0, 560, RW, "The big question", 22, RED, 600, build="fade 4", extra="; letter-spacing:3px; text-transform:uppercase"))
+    L.append(p(R0, 602, RW, "Can agents learn research taste?", 44, INK, 600, family=SERIF, build="fade 4"))
+    L.append(f'  <p data-build-in="fade 5" style="position:absolute; top:806px; left:{R0}px; width:{RW}px; {MONO}; font-size:28px; color:{RED}">'
              f'<a href="https://github.com/ajoudaki/frontier-research-skills">github.com/ajoudaki/frontier-research-skills</a></p>')
-    L.append(p(R0, 896, RW, "Thank you.", 36, INK, 600, family=SERIF, build="fade 5"))
+    L.append(p(R0, 860, RW, "Thank you.", 48, INK, 600, family=SERIF, build="fade 5"))
     notes = ("So to wrap up. We started from one open-ended question, explored it in thrusts, built a core, and carved out a gem. "
              "Everything we discussed has one goal: raise the signal-to-noise ratio, and save your time in every possible way, so you "
              "get what you're really after. "

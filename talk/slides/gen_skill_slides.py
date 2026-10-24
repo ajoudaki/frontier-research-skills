@@ -195,7 +195,7 @@ def formulate():
     # steps 1-5: each contract field rules out one easier question, a point on the vague edge, labelled where it sits
     rows = [("Question", "rules out an easier target", 210, "left"),
             ("Definitions", "rules out a drifting definition", 245, "left"),
-            ("Quantifiers", "rules out ‘for all’ weakened to ‘there exists’", 300, "right"),
+            ("Quantifiers", "rules out ∀ weakened to ∃", 300, "right"),
             ("Evidence standard", "rules out a proxy metric", 10, "right"),
             ("Scope", "rules out one example for a whole class", 125, "below")]
     dots = []
@@ -278,7 +278,7 @@ def solve():
     L.append(svg(420, lanes[3] - 32, 340, 64, f'<rect x="0" y="0" width="340" height="64" rx="14" fill="{BG}" opacity="0.7"/>',
                  "Route 4 fades: blocked.", "fade 2"))
     L.append(svg(770, lanes[3] - 20, 40, 40, cross_badge(20, 20, DARK, 15), "Route 4 is blocked.", "fade 2"))
-    L.append(p(820, lanes[3] - 28, 250, "blocked: its missing lemma is as hard as the theorem", 20, DARK, 600, build="fade 2"))
+    L.append(p(820, lanes[3] - 28, 250, "blocked: its lemma is as hard as the theorem", 20, DARK, 600, build="fade 2"))
     # step 3: route 1 supplies a lemma; route 2 becomes a candidate proof
     L.append(svg(570, lanes[0] + 32, 40, lanes[1] - lanes[0] - 64, arrow(20, 2, 20, lanes[1] - lanes[0] - 66, RED, 3),
                  "Route 1 supplies a missing lemma to route 2.", "fade 3"))
@@ -288,8 +288,8 @@ def solve():
                  border=RED, bg=CORE, pad=16, height=64))
     # step 4: independent audit, separate checks
     AX, AW = 1090, 702
-    checks = ["Rebuild every implication from the contract", "Check each cited theorem and its hypotheses",
-              "Hunt counterexamples: boundary, degenerate cases"]
+    checks = ["Rebuild every implication", "Check each cited theorem's hypotheses",
+              "Hunt counterexamples at the edges"]
     L.append(svg(1030, lanes[1] - 20, 62, 40, arrow(2, 20, 58, 20, RED, 3), "The candidate goes to independent audit.", "fade 4"))
     L.append(box(AX, 320, AW, label("Independent audit · separate checks", DARK), build="fade 4", height=260))
     for i, c in enumerate(checks):
@@ -297,16 +297,16 @@ def solve():
         L.append(svg(AX + 24, y, 40, 40, tick_badge(20, 20, RED, 16), f"Check passed: {c}.", "fade 4"))
         L.append(p(AX + 80, y + 4, AW - 110, c, 24, INK, 400, build="fade 4"))
     # step 5: the proof, written by solve-problem
-    props = ["The plan first, then every nontrivial step", "No “clearly” in place of a reason",
-             "Answers exactly the question in the contract"]
+    props = ["Plan first, then every step", "No “clearly” instead of a reason",
+             "Answers the contract's exact question"]
     L.append(box(AX, 610, AW, f'    <div style="display:flex; flex-direction:row; gap:16px; align-items:center">'
                  f'<p style="{SANS}; font-size:22px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:{RED}">The written proof</p>'
                  f'<p style="padding:4px 14px; {MONO}; font-size:22px; color:{RED}; background:{CORE}; border-radius:8px">solve-problem</p></div>',
                  build="rise 5", border=RED, height=236))
     for i, c in enumerate(props):
         L.append(p(AX + 34, 680 + i * 50, AW - 60, "· " + c, 24, INK, 400, build="rise 5"))
-    L.append(p(128, 880, 920, f'The search and its audit: <span style="{MONO}; color:{RED}">formulate-problem</span>. '
-               f'The written proof: <span style="{MONO}; color:{RED}">solve-problem</span>.', 22, MUTED, 400, build="fade 5"))
+    L.append(p(128, 880, 920, f'Search and audit: <span style="{MONO}; color:{RED}">formulate-problem</span>  ·  '
+               f'write-up: <span style="{MONO}; color:{RED}">solve-problem</span>', 22, MUTED, 400, build="fade 5"))
     # step 6: the proof is written, so the arrow turns solid: this thrust is done
     L.append(f'  <div data-build-in="fade 6" style="position:absolute; top:{TY - 48}px; left:{TX0 + 40}px; width:{TX1 - TX0 - 120}px; '
              f'height:36px; background:{BG}"></div>')
@@ -346,7 +346,7 @@ def teach():
                  line("𝔘 → θ ∈ ℝ<sup>d</sup>, the parameters  ·  𝔏 → L : ℝ<sup>d</sup> → ℝ, the loss  ·  𝔇 → ∇L, its gradient  ·  η > 0, the step size", 22, MUTED),
                  build="rise 1", pad=20, gap=6))
     # 2. the idea, which is also the plan of the proof
-    L.append(box(BX, 572, BW, line("Each step goes downhill; if the slope can’t change too fast, each step lowers L by a definite amount.", 26, INK, family=SERIF) + "\n" +
+    L.append(box(BX, 572, BW, line("Every step goes downhill; a smooth slope guarantees a definite drop.", 26, INK, family=SERIF) + "\n" +
                  line("plan:  a drop per step  →  add up the drops", 22, RED, 600), build="rise 2", pad=20, gap=6))
     # 3. a toy example that keeps the structure
     L.append(box(BX, 706, BW, line("L(θ) = θ²/2 in one dimension:  θ<sub>k+1</sub> = (1 − η) θ<sub>k</sub>,  so θ<sub>k</sub> → 0 exactly when 0 < η < 2.",
@@ -356,7 +356,7 @@ def teach():
                  f'<line x1="40" y1="6" x2="40" y2="34" stroke="{INK}" stroke-width="2"/>' + dots, "Iterates shrinking toward zero.", "fade 3"))
     # 4. the invoked theorem, stated and checked where it is used
     L.append(box(BX, 810, BW, line("Descent lemma: if ∇L is β-Lipschitz, then L(θ − η∇L(θ)) ≤ L(θ) − η(1 − βη/2)‖∇L(θ)‖².", 26, INK, family=SERIF) + "\n" +
-                 line("hypothesis: ∇L is β-Lipschitz, given in the paper ✓  ·  here, with η ≤ 1/β, each step lowers L by at least (η/2)‖∇L(θ<sub>k</sub>)‖²", 22, RED, 600),
+                 line("hypothesis ✓ β-Lipschitz, from the paper  ·  with η ≤ 1/β: drop ≥ (η/2)‖∇L(θ<sub>k</sub>)‖²", 22, RED, 600),
                  build="rise 4", pad=20, gap=6))
     # zoom: from the idea down to the details
     L.append(svg(BX - 40, 572, 30, 354, arrow(15, 6, 15, 348, RED, 3), "From the high-level idea down to the details.", "fade 4"))
@@ -439,7 +439,7 @@ def review():
              f'<rect x="0" y="0" width="330" height="18" rx="9" fill="{RED}"/>')
     L.append(box(128, 830, 902, line("Verdict: central message <b>unsupported</b> until C1 is repaired", 28, INK, 400, family=SERIF), build="rise 8", border=INK, pad=20))
     L.append(svg(EX, 860, 502, 18, meter, "Confidence meter, lowered by one unverifiable source.", "fade 8"))
-    L.append(p(EX, 886, 502, "confidence: lowered for what couldn't be checked", 22, MUTED, 400, build="fade 8"))
+    L.append(p(EX, 886, 502, "confidence: lowered for the unchecked", 22, MUTED, 400, build="fade 8"))
     notes = ("So now we know how to run organize-research-project: we make the thrusts, formulate them, solve them, understand "
              "them, and promote what's true and relevant into the established core. But is that a scientific result? Not yet. "
              "Some results matter more than others, and a paper is judged on more than truth: novelty, significance, the literature. "

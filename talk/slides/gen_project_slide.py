@@ -285,16 +285,16 @@ def three_ideas():
     rows = [
         f'  <div data-build-in="fade 1" style="position:absolute; top:300px; left:{PX}px; width:{PW}px; height:600px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px"></div>',
         head(330, 1, 1, "Isolated studies"),
-        ln(380, 1, "Each thrust has its own question, inputs and folder; by default it doesn\u2019t see the others\u2019 work."),
+        ln(380, 1, "Own question, inputs and folder; blind to the others by default."),
         ln(448, 6, "→ the widest exploration", color="#b04a33", weight=600),
         head(518, 7, 2, "A promotion gate"),
         ln(568, 7, "<b>Correct:</b> an independent review"),
         ln(604, 7, "<b>Coherent:</b> notation, interfaces, tests"),
         ln(640, 7, "<b>Relevant:</b> your approval"),
-        ln(688, 13, "→ only what passes enters: high signal-to-noise", color="#b04a33", weight=600),
+        ln(688, 13, "→ high signal-to-noise", color="#b04a33", weight=600),
         head(758, 14, 3, "Build on the core"),
-        ln(808, 14, "New studies rely on promoted results,"),
-        ln(842, 16, "and can be promoted in turn."),
+        ln(808, 14, "New studies build on promoted results,"),
+        ln(842, 16, "and get promoted in turn."),
     ]
     return "\n".join(rows)
 

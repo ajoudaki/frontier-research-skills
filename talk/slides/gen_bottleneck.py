@@ -72,13 +72,13 @@ def haystack():
 
 
 def main():
-    points = ["We're handing more and more research to very capable models.",
-              "Research fails silently: the prose, the figures, even the math look great, while one hidden assumption sinks it.",
-              "And there's far more output than we can check. The bottleneck becomes you."]
+    points = ["More and more research goes to capable models.",
+              "It fails silently: one hidden assumption sinks it.",
+              "More output than we can check: you're the bottleneck."]
     L = [f'  <div style="width:920px; display:flex; flex-direction:column; gap:16px">\n'
          f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">01 · The problem</p>\n'
          f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">Smart models fail beautifully.</h2>\n  </div>']
-    for i, (s, top_) in enumerate(zip(points, (384, 489.6, 595.2))):
+    for i, (s, top_) in enumerate(zip(points, (400, 480, 560))):
         L.append(p(128, top_, 920, f'<span style="color:{RED}">{i + 1}</span>  {s}', 32, DARK, build=f"rise {i + 1}", extra="; line-height:1.4"))
     L.append(haystack())
     L.append(p(1183, 196, 600, f'A <b style="color:{SAPPHIRE}">gem</b> in the haystack.', 48, INK, 600, "center", build="fade 4", family=SERIF))
