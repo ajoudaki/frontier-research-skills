@@ -380,7 +380,7 @@ def render(nodes, edge_px, variant):
         sx, sy, sr = IX + (mx - vx) * s, IY + (my - vy) * s, ring_r * s
         tx, ty = bx + (nx - mx) * BR / zoom, by + (ny - my) * BR / zoom      # the arrow tip, magnified
         layers += [
-            f'  <div data-build-in="fade {ZOOM}" style="position:absolute; top:280px; left:100px; width:1230px; height:668px; background:{BG}"></div>',
+            f'  <div data-build-in="fade {ZOOM}" style="position:absolute; top:280px; left:100px; width:1230px; height:700px; background:{BG}"></div>',
             f'  <svg data-build-in="fade {ZOOM}" aria-label="The map, shrunk, with the push into uncharted waters circled." '
             f'style="position:absolute; top:{IY}px; left:{IX}px; width:{IW}px; height:{IH}px" width="{IW}" height="{IH}" '
             f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snapshot}{push_art}'
