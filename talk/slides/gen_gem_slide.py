@@ -44,7 +44,8 @@ GEM = ('<polygon points="22,4 68,4 86,28 45,76 4,28" fill="{fill}"/>'
 
 STUDIES = 150
 STEPS = 6                       # build steps for the growth
-R_NODE = 5                      # every study, the research question included, is drawn at this size
+R_NODE = 5                      # every study is drawn at this size
+R_ROOT = 13                     # the research question, drawn larger
 AREA = (200, 350, 1250, 905)    # x0, y0, x1, y1: where the graph may sit on the slide
 
 
@@ -258,13 +259,16 @@ def render(nodes, edge_px, variant):
         (ax, ay), (bx, by) = nodes[nd["parent"]]["xy"], nd["xy"]
         d = math.dist((ax, ay), (bx, by))
         ux, uy = (bx - ax) / d, (by - ay) / d
-        return (f'<line x1="{ax + ux * R_NODE:.1f}" y1="{ay + uy * R_NODE:.1f}" x2="{bx - ux * R_NODE:.1f}" y2="{by - uy * R_NODE:.1f}" '
+        r_a = R_ROOT if nd["parent"] == 0 else R_NODE
+        return (f'<line x1="{ax + ux * r_a:.1f}" y1="{ay + uy * r_a:.1f}" x2="{bx - ux * R_NODE:.1f}" y2="{by - uy * R_NODE:.1f}" '
                 f'stroke="{color}" stroke-width="{width}" stroke-linecap="round"/>')
 
     def disc(nd, fill, r=R_NODE):
         return f'<circle cx="{nd["xy"][0]:.1f}" cy="{nd["xy"][1]:.1f}" r="{r}" fill="{fill}"/>'
 
-    question = f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="{R_NODE}" fill="{INK}"/>'
+    question = f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="{R_ROOT}" fill="{INK}"/>'
+    for nd in nodes[1:]:
+        assert math.dist(nd["xy"], (CX, CY)) >= R_ROOT + R_NODE + 4, "a study crowds the research question"
     sea, lake = 1.15 * edge_px, 0.95 * edge_px
 
     # the explored region's shore grows step by step on both slides
@@ -282,7 +286,7 @@ def render(nodes, edge_px, variant):
     gem_art = (f'<path d="{gem_shape}" fill="{SAPPHIRE_SOFT}" stroke="{SAPPHIRE}" stroke-width="3" stroke-linejoin="round"/>'
                + "".join(edge(nd, SAPPHIRE, 3) for nd in gem)
                + "".join(disc(nd, SAPPHIRE, R_NODE + 1) for nd in gem)
-               + f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="{R_NODE + 1}" fill="{INK}" stroke="{SAPPHIRE}" stroke-width="3"/>')
+               + f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="{R_ROOT + 1}" fill="{INK}" stroke="{SAPPHIRE}" stroke-width="3"/>')
     carve = full(gem_art, "A compact part of the core, grown from the question, carved out for the paper.", "fade 8")
     root = full(question, "The research question.")
 
