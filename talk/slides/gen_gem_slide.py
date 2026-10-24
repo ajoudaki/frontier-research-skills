@@ -20,6 +20,7 @@ the gem, in the same sapphire as the gem on the opening slide.
 Usage: python talk/slides/gen_gem_slide.py
 """
 
+import json
 import math
 import random
 import subprocess
@@ -29,9 +30,10 @@ import numpy as np
 from matplotlib.path import Path as Polygon
 from skimage import measure
 
-from gen_skill_slides import BG, CORE, INK, MONO, MUTED, PAPER, RED, SANS, SERIF, arrow, p, section, svg
+from gen_skill_slides import BG, CORE, DARK, INK, MONO, MUTED, PAPER, RED, SANS, SERIF, arrow, p, section, svg
 
 OUT = Path(__file__).resolve().parent / "slides" / "gem.html"
+SNAPSHOT = Path(__file__).resolve().parent / "gem_snapshot.json"   # the final picture, reused on the conclusion slide
 
 SAPPHIRE, SAPPHIRE_SOFT = "#2F6FC9", "#DCE7F6"
 STRAW, STRAW_EDGE = "#CDB98C", "#D9CCAE"
@@ -265,40 +267,61 @@ def render(nodes, edge_px, variant):
     question = f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="{R_NODE}" fill="{INK}"/>'
     sea, lake = 1.15 * edge_px, 0.95 * edge_px
 
-    # per step: the explored region's shore, then the core's lake, then the new studies
-    charted, lakes, levels, last = [], [], [], 0
+    # the explored region's shore grows step by step on both slides
+    charted = []
     for k in range(1, STEPS + 1):
         known = [nd for nd in nodes[1:] if nd["step"] <= k]
         charted.append(full(f'<path d="{shore(known, [], sea, (CX, CY))}" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" '
                             f'stroke-dasharray="7 6" stroke-linejoin="round"/>', f"Step {k}: the explored region grows.", f"fade {k}"))
-        inside = [nd for nd in core if nd["step"] <= k]
-        if len(inside) > last:
-            last = len(inside)
-            lakes.append(full(f'<path d="{shore(inside, rest, lake, (CX, CY), 0.3 * edge_px)}" fill="{CORE}" stroke="{RED}" '
-                              f'stroke-width="3" stroke-linejoin="round"/>', f"Step {k}: the established core grows, one contiguous lake.", f"fade {k}"))
-        here = [nd for nd in nodes[1:] if nd["step"] == k]
-        art = "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in here)
-        art += "".join(disc(nd, RED if nd["core"] else STRAW) for nd in here)
-        levels.append(full(art, f"Step {k}: {len(here)} new studies, {sum(nd['core'] for nd in here)} of them promoted.", f"fade {k}"))
-    root = full(question, "The research question.")
-
-    # step 7: the haystack dims and the core stands out
+    core_shape = shore(core, rest, lake, (CX, CY), 0.3 * edge_px)
+    core_art = "".join(edge(nd, RED) for nd in core) + "".join(disc(nd, RED) for nd in core) + question
     xs, ys = [nd["xy"][0] for nd in nodes], [nd["xy"][1] for nd in nodes]
     x0, y0, x1, y1 = min(xs) - 60, min(ys) - 60, max(xs) + 60, max(ys) + 60
-    dim = full(f'<rect x="{x0:.0f}" y="{y0:.0f}" width="{x1 - x0:.0f}" height="{y1 - y0:.0f}" fill="{BG}" opacity="0.55"/>',
-               "The haystack fades.", "fade 7")
-    final_lake = lakes[-1][:lakes[-1].rindex('data-build-in=')] + 'data-build-in="fade 7"' + lakes[-1][lakes[-1].index(' style=', lakes[-1].rindex('data-build-in=')):]
-    core_art = "".join(edge(nd, RED) for nd in core) + "".join(disc(nd, RED) for nd in core) + question
-    again = [final_lake, full(core_art, "The established core, highlighted.", "fade 7")]
-    uncharted = p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build="fade 7", extra="; font-style:italic")
 
-    # step 8: a compact part of the core, grown from the question, is carved out for a paper
     gem_shape = shore(gem, [nd for nd in nodes[1:] if nd not in gem], 0.8 * edge_px, (CX, CY), 0.3 * edge_px)
     gem_art = (f'<path d="{gem_shape}" fill="{SAPPHIRE_SOFT}" stroke="{SAPPHIRE}" stroke-width="3" stroke-linejoin="round"/>'
                + "".join(edge(nd, SAPPHIRE, 3) for nd in gem)
                + "".join(disc(nd, SAPPHIRE, R_NODE + 1) for nd in gem)
                + f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="{R_NODE + 1}" fill="{INK}" stroke="{SAPPHIRE}" stroke-width="3"/>')
-    carve = full(gem_art, f"A compact part of the core, {len(gem)} studies grown from the question, carved out for the paper.", "fade 8")
+    carve = full(gem_art, "A compact part of the core, grown from the question, carved out for the paper.", "fade 8")
+    root = full(question, "The research question.")
+
+    if variant == "strategy":
+        # the research thrusts grow first, all alike; then the established core is revealed inside them
+        levels = []
+        for k in range(1, STEPS + 1):
+            here = [nd for nd in nodes[1:] if nd["step"] == k]
+            art = "".join(edge(nd, STRAW_EDGE) for nd in here) + "".join(disc(nd, STRAW) for nd in here)
+            levels.append(full(art, f"Step {k}: {len(here)} new studies in the research thrusts.", f"fade {k}"))
+        reveal = [full(f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
+                       "The established core: the fully audited and relevant parts, one contiguous lake.", "fade 7")]
+        layers = charted + reveal + levels + [root, full(core_art, "The established core.", "fade 7"), carve,
+                                              p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build="fade 6", extra="; font-style:italic")]
+    else:
+        # the core grows with the thrusts; then the haystack dims and the core stands out
+        lakes, levels, last = [], [], 0
+        for k in range(1, STEPS + 1):
+            inside = [nd for nd in core if nd["step"] <= k]
+            if len(inside) > last:
+                last = len(inside)
+                lakes.append(full(f'<path d="{shore(inside, rest, lake, (CX, CY), 0.3 * edge_px)}" fill="{CORE}" stroke="{RED}" '
+                                  f'stroke-width="3" stroke-linejoin="round"/>', f"Step {k}: the established core grows, one contiguous lake.", f"fade {k}"))
+            here = [nd for nd in nodes[1:] if nd["step"] == k]
+            art = "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in here)
+            art += "".join(disc(nd, RED if nd["core"] else STRAW) for nd in here)
+            levels.append(full(art, f"Step {k}: {len(here)} new studies, {sum(nd['core'] for nd in here)} of them promoted.", f"fade {k}"))
+        dim = full(f'<rect x="{x0:.0f}" y="{y0:.0f}" width="{x1 - x0:.0f}" height="{y1 - y0:.0f}" fill="{BG}" opacity="0.55"/>',
+                   "The haystack fades.", "fade 7")
+        again = [full(f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
+                      "The established core.", "fade 7"), full(core_art, "The established core, highlighted.", "fade 7")]
+        layers = charted + lakes + levels + [root, dim] + again + [carve,
+                 p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build="fade 7", extra="; font-style:italic")]
+        # the final picture, for the conclusion slide
+        snapshot = (charted[-1].split(">", 1)[1].rsplit("</svg>", 1)[0]
+                    + f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>'
+                    + "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in nodes[1:])
+                    + "".join(disc(nd, RED if nd["core"] else STRAW) for nd in nodes[1:]) + gem_art)
+        SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot}))
 
     # the right-hand column
     C = 1350
@@ -309,73 +332,71 @@ def render(nodes, edge_px, variant):
                     p(C + 56, top, 386, title, 28, INK, 600, family=SERIF, build=build),
                     p(C + 56, top + 40, 386, sub, 22, MUTED, build=build)]
         col = (legend(330, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" stroke-dasharray="5 4"/>'
-                      f'<circle cx="20" cy="20" r="6" fill="{STRAW}"/>', "Explored thrusts", "fresh exploration, pushed forward", "fade 1")
+                      f'<circle cx="20" cy="20" r="6" fill="{STRAW}"/>', "Research thrusts", "fresh exploration, pushed forward", "fade 1")
                + legend(450, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CORE}" stroke="{RED}" stroke-width="3"/>'
-                        f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "audited and on-question: likely true, likely relevant", "fade 2")
-               + legend(590, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
+                        f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "the fully audited and relevant parts", "fade 7")
+               + legend(570, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
                         "carved out, audited for novelty and significance", "fade 8")
-               + [p(C, 730, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build="fade 9"),
+               + [p(C, 710, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build="fade 9"),
                   p(128, 950, 1664, "Easier said than done. How do we actually achieve it?", 30, RED, family=SERIF, build="fade 10",
                     extra="; font-style:italic")])
     else:
-        # the skills as a pipeline, coloured like the regions they produce
-        chip = f"padding:4px 12px; {MONO}; font-size:20px; color:{RED}; background:{CORE}; border-radius:8px"
-        col = [f'  <div data-build-in="rise 1" style="position:absolute; top:300px; left:{C}px; width:442px; height:296px; display:flex; '
-               f'flex-direction:column; gap:10px; padding:20px 24px; background:{CHARTED}; border:2px dashed {CHARTED_EDGE}; border-radius:16px">\n'
-               f'    <p style="{SERIF}; font-size:28px; font-weight:600; color:{INK}">Explored thrusts</p>\n'
-               f'    <p style="align-self:flex-start; {chip}">organize-research-project</p>\n'
-               f'    <p style="{SANS}; font-size:20px; color:{MUTED}">inside each thrust:</p>\n'
-               f'    <p style="align-self:flex-start; {chip}">formulate-problem</p>\n'
-               f'    <p style="align-self:flex-start; {chip}">solve-problem</p>\n'
-               f'    <p style="align-self:flex-start; {chip}">teach-material</p>\n  </div>',
-               svg(C + 30, 604, 40, 56, arrow(20, 2, 20, 52, RED, 3), "Through the promotion gate.", "fade 7"),
-               p(C + 84, 614, 358, "promotion gate", 24, RED, 600, build="fade 7"),
-               f'  <div data-build-in="rise 7" style="position:absolute; top:666px; left:{C}px; width:442px; padding:16px 24px; '
-               f'background:{CORE}; border:2px solid {RED}; border-radius:16px">\n'
-               f'    <p style="{SERIF}; font-size:28px; font-weight:600; color:{RED}">Established core: {len(core)} studies</p>\n  </div>',
-               svg(C + 30, 744, 40, 72, arrow(20, 2, 20, 68, SAPPHIRE, 3), "Through the paper audit.", "fade 8"),
-               p(C + 84, 744, 358, f'<span style="{MONO}">review-paper</span><br>novelty, significance', 22, SAPPHIRE, build="fade 8"),
-               f'  <div data-build-in="rise 8" style="position:absolute; top:822px; left:{C}px; width:442px; height:108px; padding:16px 24px 16px 120px; '
-               f'background:{SAPPHIRE_SOFT}; border:2px solid {SAPPHIRE}; border-radius:16px">\n'
-               f'    <p style="{SERIF}; font-size:28px; font-weight:600; color:{INK}">Carved-out paper</p>\n'
-               f'    <p style="{SANS}; font-size:22px; color:{SAPPHIRE}">the gem: {len(gem)} of {total} studies</p>\n  </div>',
-               svg(C + 20, 836, 90, 80, GEM.format(fill=SAPPHIRE, line=PAPER), "The gem.", "pop 9")]
+        # four regions as a pipeline, coloured like the graph; the skills annotate the edges between them
+        def block(top, label, fill, border, color, build, dashed=False, height=64, pad_left=24):
+            style = "dashed" if dashed else "solid"
+            return (f'  <div data-build-in="{build}" style="position:absolute; top:{top}px; left:{C}px; width:442px; height:{height}px; '
+                    f'padding:{(height - 34) / 2 - 2:.0f}px 24px 0 {pad_left}px; background:{fill}; border:2px {style} {border}; border-radius:14px">\n'
+                    f'    <p style="{SERIF}; font-size:28px; line-height:34px; font-weight:600; color:{color}">{label}</p>\n  </div>')
+
+        def link(top, height, color, lines, build):
+            return [svg(C + 30, top, 40, height, arrow(20, 4, 20, height - 4, color, 3), lines[0], build),
+                    p(C + 84, top + (height - 30 * len(lines)) / 2, 358, "<br>".join(lines), 21, color, build=build,
+                      extra=f"; {MONO}; line-height:1.43")]
+
+        mono = ["organize-research-project", "formulate-problem", "solve-problem", "teach-material"]
+        col = ([block(310, "Open-ended question", "#E9E6E0", "#B9B4A8", DARK, "fade 0")]
+               + link(380, 134, DARK, mono, "fade 1")
+               + [block(520, "Research thrusts", CHARTED, CHARTED_EDGE, INK, "rise 1", dashed=True)]
+               + link(590, 66, RED, ["promotion gate"], "fade 7")
+               + [block(662, "Established core", CORE, RED, RED, "rise 7")]
+               + link(732, 76, SAPPHIRE, ["review-paper:", "novelty, significance"], "fade 8")
+               + [block(814, "Carved-out paper", SAPPHIRE_SOFT, SAPPHIRE, INK, "rise 8", height=80, pad_left=110),
+                  svg(C + 18, 820, 76, 68, f'<g transform="scale(0.84)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem.", "pop 9")])
+        col[0] = col[0].replace(' data-build-in="fade 0"', "")
 
     eyebrow, title = (("02 · The strategy", "The strategy at a glance.") if variant == "strategy"
                       else ("10 · Putting it all together", "From the haystack to the core to the gem."))
     head = (f'  <div style="display:flex; flex-direction:column; gap:12px">\n'
             f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">{eyebrow}</p>\n'
             f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">{title}</h2>\n  </div>')
-    layers = charted + lakes + levels + [root, dim] + again + [carve, uncharted] + col
+    layers = layers + col
     if variant == "strategy":
         notes = ("Here's the strategy at a glance, and it answers both questions. Start from one open-ended research question. "
-                 "We organize it into thrusts, separate lines of exploration, and push each one forward. "
-                 "What holds up becomes the established core. It goes through much more auditing, and it's tied to the question, "
-                 "so it's likely to be true and likely to be relevant. "
-                 "The thrusts keep going, "
-                 "and the explored region grows fast, "
-                 "while the core grows slowly, "
-                 "always in one piece. "
+                 "We organize it into research thrusts: separate lines of exploration, each pushed forward. "
+                 "Most go step by step; "
+                 "now and then one splits; "
+                 "some stop. "
+                 "And the explored region keeps growing. "
+                 "Its shore is where the uncharted waters begin. "
+                 "Inside it, the parts that are fully audited and relevant form the established core, always in one piece. "
                  "So instead of reading everything, you read the core: that's the signal-to-noise ratio, and that's how you stay in control. "
-                 "Finally, a part of the core is carved out and audited once more, for novelty and significance: is it scientifically "
+                 "Finally, a part of the core is carved out and audited again, for novelty and significance: is it scientifically "
                  "worthy? That's the paper, "
-                 f"and that's the gem in the haystack: {len(gem)} out of {total} studies. "
+                 "and that's the gem in the haystack. "
                  "But this is easier said than done. How do we actually achieve it?")
         return section("strategy", head + "\n" + "\n".join(layers), notes)
-    notes = ("Let's put it all together, now that we've seen every piece. "
-             "organize-research-project runs the exploration: thrusts, and inside each one formulate, solve and learn. "
+    notes = ("Let's put it all together, now that we've seen every piece. We start from one open-ended question. "
+             "organize-research-project turns it into research thrusts, and inside each one, formulate, solve and learn. "
              "The explored region grows fast, and its shore is where the uncharted waters begin. "
              "The core grows slowly, through the promotion gate, and always in one piece. "
              "That's the balance between exploration and exploitation: fresh, independent exploration out at the edge, "
              "and a core you can build on. "
-             "And every step raises the signal-to-noise ratio: agents in adversarial positions audit each other, keep the spirit of the "
+             "And every step raised the signal-to-noise ratio: agents in adversarial positions audit each other, keep the spirit of the "
              "question, solve it without much help from us, and help us understand the result, so we can judge it quickly. "
-             "So the core is about a fifth of everything we explored. "
              "Then review-paper audits the carved-out part as a whole paper: the claims, the literature, the novelty. "
-             f"Out of {total} studies, {len(gem)} become the paper: less than a tenth. Reading all {total} would have been an enormous "
-             f"effort; reading and digesting {len(gem)} is not. That's the gem in the haystack. So let me wrap up.")
+             "Only a small part of everything we explored becomes the paper. Reading all of it would have been an enormous effort; "
+             "reading and digesting this part is not. That's the gem in the haystack. So let me wrap up.")
     return section("gem", head + "\n" + "\n".join(layers), notes)
-
 
 if __name__ == "__main__":
     main()

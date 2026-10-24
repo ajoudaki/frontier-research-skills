@@ -215,7 +215,6 @@ def formulate():
     # step 7: frozen
     L.append(p(OX + sx1 - 140, OY + sy0 - 30, 200, "Frozen", 30, RED, 600, "center", build="pop 7",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
-    L.append(p(OX + cx - 400, OY + cy + ry + 100, 800, "Frozen: a material change needs your say.", 26, RED, 600, "center", build="fade 7"))
     L.append(transition("The question is pinned down. But how do we solve it?", 8))
     notes = ("Take one thrust. Even a narrowed question is still open, and usually vague, like this cloud. "
              "The danger is that a vague question leaves room for answers to an easier question, and an agent will happily take them. "
