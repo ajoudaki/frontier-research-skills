@@ -209,9 +209,9 @@ def formulate():
     L.append(p(OX + sx1 - 140, OY + sy0 - 30, 200, "Frozen", 30, RED, 600, "center", build="pop 7",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
     L.append(p(CX, CY + 566 + 18, CW, "Frozen: a material change needs your say.", 24, RED, 600, build="fade 7"))
-    notes = ("Let's start with formulate-problem. A research question usually starts vague, like this cloud. "
+    notes = ("A research question usually starts vague, like this cloud. "
              "The danger is that a vague question leaves room for answers to an easier question, and an agent will happily take them. "
-             "The goal is the steelman, not the straw man. So the skill writes a research contract, and each field rules something out. "
+             "The goal is the steelman, not the straw man. So formulate-problem writes a research contract, and each field rules something out. "
              "The question itself is pinned down, so an easier target doesn't count. "
              "The definitions are fixed, so they can't drift halfway through. "
              "The quantifiers keep their order, so 'for all' can't quietly become 'there exists'. "
