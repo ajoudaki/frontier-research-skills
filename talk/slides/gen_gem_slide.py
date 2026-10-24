@@ -1,4 +1,7 @@
-"""Generate talk/slides/slides/gem.html: the whole project as a haystack, a small part of it as the gem.
+"""Generate talk/slides/slides/{strategy,gem}.html: the whole project as a haystack, a small part of it as the gem.
+
+The same graph serves both: the strategy at a glance (slide 02, with a light legend) and the recap
+(slide 10, with the skills drawn as a pipeline in the colours of the regions they produce).
 
 A tree of about 150 studies grows from the research question. Most studies lead to exactly one
 next study; only a few are branching points with two to four branches, inside the core and outside
@@ -216,18 +219,19 @@ def main():
         if not 0.17 <= share <= 0.24:
             continue
         try:
-            html = render(nodes, scale)
+            pages = {sid: render(nodes, scale, sid) for sid in ("strategy", "gem")}
         except AssertionError as err:
             print(f"seed {seed}: {err}")
             continue
-        OUT.write_text(html)
+        for sid, html in pages.items():
+            (OUT.parent / f"{sid}.html").write_text(html)
+            print(f"wrote {sid}.html")
         print(f"seed {seed}: edges {scale:.0f}px, closest pair {gap:.2f} edges, closest node to edge {near:.2f} edges, aspect {aspect:.2f}")
-        print(f"wrote {OUT}")
         return
     raise SystemExit("no layout passed the checks")
 
 
-def render(nodes, edge_px):
+def render(nodes, edge_px, variant):
     CX, CY = nodes[0]["xy"]
     total = len(nodes) - 1
     core = [nd for nd in nodes[1:] if nd["core"]]
@@ -286,7 +290,7 @@ def render(nodes, edge_px):
     final_lake = lakes[-1][:lakes[-1].rindex('data-build-in=')] + 'data-build-in="fade 7"' + lakes[-1][lakes[-1].index(' style=', lakes[-1].rindex('data-build-in=')):]
     core_art = "".join(edge(nd, RED) for nd in core) + "".join(disc(nd, RED) for nd in core) + question
     again = [final_lake, full(core_art, "The established core, highlighted.", "fade 7")]
-    uncharted = p(min(xs) - 40, max(ys) + 10, 320, "uncharted waters", 28, MUTED, family=SERIF, build="fade 7", extra="; font-style:italic")
+    uncharted = p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build="fade 7", extra="; font-style:italic")
 
     # step 8: a compact part of the core, grown from the question, is carved out for a paper
     gem_shape = shore(gem, [nd for nd in nodes[1:] if nd not in gem], 0.8 * edge_px, (CX, CY), 0.3 * edge_px)
@@ -298,37 +302,78 @@ def render(nodes, edge_px):
 
     # the right-hand column
     C = 1350
-    col = [p(C, 320, 442, "The established core", 32, RED, 600, family=SERIF, build="fade 7"),
-           p(C, 364, 442, f"true and relevant: {len(core)} of {total} studies", 24, INK, build="fade 7"),
-           p(C, 420, 442, "The explored region", 32, MUTED, 600, family=SERIF, build="fade 7"),
-           p(C, 464, 442, "its shore: where uncharted waters begin", 24, MUTED, build="fade 7"),
-           svg(C + 30, 508, 40, 52, arrow(20, 2, 20, 48, SAPPHIRE, 3), "Carve a part of the core for a paper.", "fade 8"),
-           f'  <div data-build-in="rise 8" style="position:absolute; top:566px; left:{C}px; width:442px; display:flex; flex-direction:column; '
-           f'gap:8px; padding:20px 24px; background:{PAPER}; border:2px solid {SAPPHIRE}; border-radius:16px">\n'
-           f'    <p style="{SERIF}; font-size:28px; font-weight:600; color:{INK}">A coherent part, for a paper</p>\n'
-           f'    <p style="{SANS}; font-size:22px; color:{MUTED}">new gates: novelty, significance</p>\n'
-           f'    <p style="align-self:flex-start; padding:4px 14px; {MONO}; font-size:22px; color:{RED}; background:{CORE}; border-radius:8px">review-paper</p>\n  </div>',
-           svg(C + 30, 756, 40, 52, arrow(20, 2, 20, 48, SAPPHIRE, 3), "The audited part becomes the paper.", "fade 9"),
-           svg(C, 820, 90, 80, GEM.format(fill=SAPPHIRE, line=PAPER), "The gem.", "pop 9"),
-           p(C + 110, 818, 332, f"The gem:<br>{len(gem)} of {total} studies", 32, INK, 600, family=SERIF, build="fade 9")]
+    if variant == "strategy":
+        # a light legend, introduced as the narration reaches each part, and the question for the next slide
+        def legend(top, swatch, title, sub, build):
+            return [svg(C, top + 4, 40, 40, swatch, title, build),
+                    p(C + 56, top, 386, title, 28, INK, 600, family=SERIF, build=build),
+                    p(C + 56, top + 40, 386, sub, 22, MUTED, build=build)]
+        col = (legend(330, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" stroke-dasharray="5 4"/>'
+                      f'<circle cx="20" cy="20" r="6" fill="{STRAW}"/>', "Explored thrusts", "fresh exploration, pushed forward", "fade 1")
+               + legend(450, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CORE}" stroke="{RED}" stroke-width="3"/>'
+                        f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "audited and on-question: likely true, likely relevant", "fade 2")
+               + legend(590, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
+                        "carved out, audited for novelty and significance", "fade 8")
+               + [p(C, 730, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build="fade 9"),
+                  p(128, 950, 1664, "Easier said than done. How do we actually achieve it?", 30, RED, family=SERIF, build="fade 10",
+                    extra="; font-style:italic")])
+    else:
+        # the skills as a pipeline, coloured like the regions they produce
+        chip = f"padding:4px 12px; {MONO}; font-size:20px; color:{RED}; background:{CORE}; border-radius:8px"
+        col = [f'  <div data-build-in="rise 1" style="position:absolute; top:300px; left:{C}px; width:442px; height:296px; display:flex; '
+               f'flex-direction:column; gap:10px; padding:20px 24px; background:{CHARTED}; border:2px dashed {CHARTED_EDGE}; border-radius:16px">\n'
+               f'    <p style="{SERIF}; font-size:28px; font-weight:600; color:{INK}">Explored thrusts</p>\n'
+               f'    <p style="align-self:flex-start; {chip}">organize-research-project</p>\n'
+               f'    <p style="{SANS}; font-size:20px; color:{MUTED}">inside each thrust:</p>\n'
+               f'    <p style="align-self:flex-start; {chip}">formulate-problem</p>\n'
+               f'    <p style="align-self:flex-start; {chip}">solve-problem</p>\n'
+               f'    <p style="align-self:flex-start; {chip}">teach-material</p>\n  </div>',
+               svg(C + 30, 604, 40, 56, arrow(20, 2, 20, 52, RED, 3), "Through the promotion gate.", "fade 7"),
+               p(C + 84, 614, 358, "promotion gate", 24, RED, 600, build="fade 7"),
+               f'  <div data-build-in="rise 7" style="position:absolute; top:666px; left:{C}px; width:442px; padding:16px 24px; '
+               f'background:{CORE}; border:2px solid {RED}; border-radius:16px">\n'
+               f'    <p style="{SERIF}; font-size:28px; font-weight:600; color:{RED}">Established core: {len(core)} studies</p>\n  </div>',
+               svg(C + 30, 744, 40, 72, arrow(20, 2, 20, 68, SAPPHIRE, 3), "Through the paper audit.", "fade 8"),
+               p(C + 84, 744, 358, f'<span style="{MONO}">review-paper</span><br>novelty, significance', 22, SAPPHIRE, build="fade 8"),
+               f'  <div data-build-in="rise 8" style="position:absolute; top:822px; left:{C}px; width:442px; height:108px; padding:16px 24px 16px 120px; '
+               f'background:{SAPPHIRE_SOFT}; border:2px solid {SAPPHIRE}; border-radius:16px">\n'
+               f'    <p style="{SERIF}; font-size:28px; font-weight:600; color:{INK}">Carved-out paper</p>\n'
+               f'    <p style="{SANS}; font-size:22px; color:{SAPPHIRE}">the gem: {len(gem)} of {total} studies</p>\n  </div>',
+               svg(C + 20, 836, 90, 80, GEM.format(fill=SAPPHIRE, line=PAPER), "The gem.", "pop 9")]
 
+    eyebrow, title = (("02 · The strategy", "The strategy at a glance.") if variant == "strategy"
+                      else ("10 · Putting it all together", "From the haystack to the core to the gem."))
     head = (f'  <div style="display:flex; flex-direction:column; gap:12px">\n'
-            f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">10 · The gem in the haystack</p>\n'
-            f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">From the haystack to the gem.</h2>\n  </div>')
+            f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">{eyebrow}</p>\n'
+            f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">{title}</h2>\n  </div>')
     layers = charted + lakes + levels + [root, dim] + again + [carve, uncharted] + col
-    notes = ("Remember the gem in the haystack? Here's what a real project looks like over time. "
-             "From the research question, studies branch out. Most lines of work go one step at a time; only now and then does one split. "
-             "Some pass the gate, and the core forms around them, like a lake. "
-             "Studies keep going. By default they don't see each other, but with your approval one can build on "
-             "another, even on work that hasn't been promoted yet. "
-             "So the explored region keeps growing, "
-             "while the core grows slowly, "
-             "and always in one piece. "
-             "In the end, the core is about a fifth of everything: an ocean of knowledge that's true and relevant. "
-             "And around everything we explored there's another shore, where the uncharted waters begin. "
-             "But a paper isn't the whole core. You carve out a coherent part, grown from the original question, and it has to pass "
-             "new gates: novelty and significance. That's the audit. "
-             f"So out of {total} studies, {len(gem)} become the paper. That's the gem in the haystack. So let me wrap up.")
+    if variant == "strategy":
+        notes = ("Here's the strategy at a glance, and it answers both questions. Start from one open-ended research question. "
+                 "We organize it into thrusts, separate lines of exploration, and push each one forward. "
+                 "What holds up becomes the established core. It goes through much more auditing, and it's tied to the question, "
+                 "so it's likely to be true and likely to be relevant. "
+                 "The thrusts keep going, "
+                 "and the explored region grows fast, "
+                 "while the core grows slowly, "
+                 "always in one piece. "
+                 "So instead of reading everything, you read the core: that's the signal-to-noise ratio, and that's how you stay in control. "
+                 "Finally, a part of the core is carved out and audited once more, for novelty and significance: is it scientifically "
+                 "worthy? That's the paper, "
+                 f"and that's the gem in the haystack: {len(gem)} out of {total} studies. "
+                 "But this is easier said than done. How do we actually achieve it?")
+        return section("strategy", head + "\n" + "\n".join(layers), notes)
+    notes = ("Let's put it all together, now that we've seen every piece. "
+             "organize-research-project runs the exploration: thrusts, and inside each one formulate, solve and learn. "
+             "The explored region grows fast, and its shore is where the uncharted waters begin. "
+             "The core grows slowly, through the promotion gate, and always in one piece. "
+             "That's the balance between exploration and exploitation: fresh, independent exploration out at the edge, "
+             "and a core you can build on. "
+             "And every step raises the signal-to-noise ratio: agents in adversarial positions audit each other, keep the spirit of the "
+             "question, solve it without much help from us, and help us understand the result, so we can judge it quickly. "
+             "So the core is about a fifth of everything we explored. "
+             "Then review-paper audits the carved-out part as a whole paper: the claims, the literature, the novelty. "
+             f"Out of {total} studies, {len(gem)} become the paper: less than a tenth. Reading all {total} would have been an enormous "
+             f"effort; reading and digesting {len(gem)} is not. That's the gem in the haystack. So let me wrap up.")
     return section("gem", head + "\n" + "\n".join(layers), notes)
 
 

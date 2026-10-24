@@ -93,8 +93,8 @@ def label(text, color=RED):
     return line(text, 22, color, 600, extra="; letter-spacing:3px; text-transform:uppercase")
 
 
-STAGES = ("Develop", "Formulate", "Solve", "Learn", "Audit")
-NUMBER = {"Develop": "05", "Formulate": "06", "Solve": "07", "Learn": "08", "Audit": "09"}
+STAGES = ("Organize", "Formulate", "Solve", "Learn", "Audit")
+NUMBER = {"Organize": "05", "Formulate": "06", "Solve": "07", "Learn": "08", "Audit": "09"}
 FAINT = "#B9B4A8"
 
 
@@ -109,6 +109,11 @@ def chips(*names):
                      f'color:{RED}; background:{CORE}; border-radius:8px">{n}</p>' for i, n in enumerate(names))
 
 
+def transition(text, build, top=950):
+    """The closing question at the bottom of a slide, which the next slide answers."""
+    return p(128, top, 1664, text, 30, RED, 400, family=SERIF, build=f"fade {build}", extra="; font-style:italic")
+
+
 def title_block(eyebrow, title):
     return (f'  <div style="display:flex; flex-direction:column; gap:12px">\n'
             f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">{eyebrow}</p>\n'
@@ -118,13 +123,13 @@ def title_block(eyebrow, title):
 # ---------- 04 · overview: the five skills, one block at a time ----------
 
 def overview():
-    L = [title_block("04 · Five skills", "Five skills, from a vague question to a paper.")]
+    L = [title_block("04 · Five skills", "Five skills: from open-ended question to paper.")]
 
     def card(left, top, stage, chip, desc, build):
         return (f'  <div data-build-in="rise {build}" style="position:absolute; top:{top}px; left:{left}px; width:406px; display:flex; '
                 f'flex-direction:column; gap:10px; padding:24px; background:{PAPER}; border:1px solid {BORDER}; border-radius:16px">\n'
                 f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:{RED}">{stage}</p>\n'
-                f'    <p style="padding:6px 16px; {MONO}; font-size:24px; color:{RED}; background:{CORE}; border-radius:8px">{chip}</p>\n'
+                f'    <p style="padding:6px 16px; {MONO}; font-size:20px; white-space:nowrap; color:{RED}; background:{CORE}; border-radius:8px">{chip}</p>\n'
                 f'    <p style="{SANS}; font-size:24px; line-height:1.4; color:{DARK}">{desc}</p>\n  </div>')
 
     def row_label(top, title, sub, build):
@@ -138,22 +143,24 @@ def overview():
 
     R1, R2 = 297, 561
     L += [row_label(R1 + 52, "A whole project", "one big, open question", 1),
-          card(398, R1, "Develop", "develop-project", "Many thrusts → one core", 1),
+          card(398, R1, "Organize", "organize-research-project", "Many thrusts → one core", 1),
           p(398, 504, 900, "↓ every thrust runs these three", 24, MUTED, build="fade 2"),
           row_label(R2 + 52, "Each thrust", "one targeted question", 2),
-          card(398, R2, "Formulate", "formulate-problem", "Vague → precise question", 2),
+          card(398, R2, "Formulate", "formulate-problem", "Open → precise question", 2),
           right_arrow(824, R2 + 91, 3), card(892, R2, "Solve", "solve-problem", "Question → checked proof", 3),
           right_arrow(1318, R2 + 91, 4), card(1386, R2, "Learn", "teach-material", "Result → understood", 4),
           right_arrow(824, R1 + 91, 5, 542), p(892, R1 + 40, 470, "the core becomes a paper", 24, MUTED, align="center", build="fade 5"),
           card(1386, R1, "Audit", "review-paper", "Paper → rigorous audit", 5),
           p(1386, 504, 406, "↺ findings start the next round", 24, MUTED, build="fade 5")]
-    notes = ("There are five skills, and I'll go through them in the order of a project. "
-             "develop-project is the architecture: it runs a whole project, one big open question, as many separate thrusts. "
-             "Every thrust then goes through three stages. formulate-problem turns its vague question into a precise one, "
-             "then solve-problem solves it, with every step checked, "
-             "and teach-material makes sure you actually understand the result. "
-             "Finally, when the project's core becomes a paper, review-paper audits it, and its findings can start the next round. "
-             "Let's start with the architecture.")
+    notes = ("So the strategy rests on those foundations, and it's implemented as five skills. Here they are at a glance, "
+             "from an open-ended research question to a paper. "
+             "organize-research-project is the main one: it organizes a whole project, one big open question, into many separate "
+             "thrusts, and builds the established core. "
+             "Inside each thrust, formulate-problem pins down its question, "
+             "solve-problem solves it, with every step checked, "
+             "and teach-material makes sure you understand the result. "
+             "Finally, review-paper audits the part of the core that becomes a paper, and its findings can start the next round. "
+             "Let's start with the main one.")
     return section("overview", "\n".join(L), notes)
 
 
@@ -161,7 +168,7 @@ def overview():
 
 def formulate():
     L = [header(tracker("Formulate"), "Formulate the steelman, then freeze it.", "formulate-problem")]
-    OX, OY, W, H = 128, 290, 1664, 660
+    OX, OY, W, H = 128, 270, 1664, 660
     cx, cy, rx, ry = 832, 310, 380, 218
     pts = []
     for k in range(120):
@@ -208,8 +215,9 @@ def formulate():
     # step 7: frozen
     L.append(p(OX + sx1 - 140, OY + sy0 - 30, 200, "Frozen", 30, RED, 600, "center", build="pop 7",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
-    L.append(p(OX + cx - 400, OY + cy + ry + 112, 800, "Frozen: a material change needs your say.", 26, RED, 600, "center", build="fade 7"))
-    notes = ("Take one thrust. Its question usually starts vague, like this cloud. "
+    L.append(p(OX + cx - 400, OY + cy + ry + 100, 800, "Frozen: a material change needs your say.", 26, RED, 600, "center", build="fade 7"))
+    L.append(transition("The question is pinned down. But how do we solve it?", 8))
+    notes = ("Take one thrust. Even a narrowed question is still open, and usually vague, like this cloud. "
              "The danger is that a vague question leaves room for answers to an easier question, and an agent will happily take them. "
              "The goal is the steelman, not the straw man: the strongest version that stays faithful to what you meant. "
              "So formulate-problem writes a research contract, and each field rules something out. "
@@ -221,7 +229,7 @@ def formulate():
              "Notice that the vague boundary couldn't tell us whether any of these were in or out. "
              "Once they're ruled out, the sharp boundary emerges: one precise conjecture. "
              "Then it's frozen. A material change needs your say, and results for a changed question never count as answers to the original. "
-             "Now we know exactly what to solve. But solving it is still very hard, and that needs a second, strong push.")
+             "Now the question is pinned down, with no wiggle room. But we still have to solve it, and that's the next hard push.")
     return section("formulate", "\n".join(L), notes)
 
 
@@ -277,7 +285,8 @@ def solve():
         L.append(p(AX + 34, 680 + i * 50, AW - 60, "· " + c, 24, INK, 400, build="rise 5"))
     L.append(p(128, 830, 920, f'The search and its audit: <span style="{MONO}; color:{RED}">formulate-problem</span>. '
                f'The written proof: <span style="{MONO}; color:{RED}">solve-problem</span>.', 22, MUTED, 400, build="fade 5"))
-    notes = ("Solving starts from the frozen contract. "
+    L.append(transition("Solved, most likely. But to judge it, we still have to understand it.", 6))
+    notes = ("Solving is the second hard push, and it starts from the frozen contract. "
              "With your go-ahead, the proof search runs as parallel agents, one per route, and each route uses a genuinely different mechanism: "
              "duality, induction, an extremal argument. They all get the same contract, and none is told which strategy to favor, so they stay independent. "
              "After every round, a registry keeps score. Two routes that turn out to use the same idea are merged. "
@@ -287,10 +296,10 @@ def solve():
              "and hunt for counterexamples at the boundary and in degenerate cases. "
              "Only what survives gets written up by solve-problem: the plan first, every nontrivial step derived, no 'clearly' in place of a reason, "
              "and an answer to exactly the question in the contract. "
-             "Now we have a written proof that's most likely correct. But you're still the judge of whether it belongs in the core: "
-             "whether it's relevant, and whether some assumption or technique was quietly tweaked along the way. "
-             "And with a large budget, there can be many candidate results. So you have to understand them, "
-             "and even correct results can be very hard to understand. That's the third stage.")
+             "So now the thrust has a written proof that's most likely correct. We've delegated as much as we could, "
+             "but we still have to stay in charge: someone has to judge whether it's relevant, whether it's the right direction, "
+             "and whether an assumption or technique was quietly tweaked along the way. That means reading it, and agent output "
+             "can be very hard to read. That's the third stage.")
     return section("solve", "\n".join(L), notes)
 
 
@@ -325,6 +334,7 @@ def teach():
                  build="rise 4", pad=20, gap=6))
     # zoom: from the idea down to the details
     L.append(svg(BX - 40, 572, 30, 354, arrow(15, 6, 15, 348, RED, 3), "From the high-level idea down to the details.", "fade 4"))
+    L.append(transition("Now we can judge what joins the core.", 5))
     notes = ("A correct proof you don't understand isn't worth much. "
              "Here's the kind of line an agent, or a paper, might hand you: private symbols everywhere. "
              "teach-material, together with explain-canonically, teaches it in layers. "
@@ -336,7 +346,7 @@ def teach():
              "And only then the details. When the argument invokes a theorem, it's stated right there, in the exact form needed, "
              "with its hypothesis checked and its conclusion spelled out for our objects. "
              "And if you're confused at any point, it rewrites the whole block rather than patching a sentence. "
-             "Once you understand it, you can decide whether it belongs in the core. Now let's zoom back out to the whole project.")
+             "Once you understand it, you can judge whether it joins the core. And that completes the loop for one thrust.")
     return section("teach", "\n".join(L), notes)
 
 
@@ -405,9 +415,10 @@ def review():
     L.append(box(128, 830, 902, line("Verdict: central message <b>unsupported</b> until C1 is repaired", 28, INK, 400, family=SERIF), build="rise 8", border=INK, pad=20))
     L.append(svg(EX, 860, 502, 18, meter, "Confidence meter, lowered by one unverifiable source.", "fade 8"))
     L.append(p(EX, 886, 502, "confidence: lowered for what couldn't be checked", 22, MUTED, 400, build="fade 8"))
-    notes = ("Back to the big picture. Once the core is understood, all of it, or part of it, becomes a coherent result, "
-             "and that result has to be written as a paper. A paper is more than its proofs: it has a literature, a background, "
-             "a claim of novelty and of significance. That needs a different kind of audit. "
+    notes = ("So now we know how to run organize-research-project: we make the thrusts, formulate them, solve them, understand "
+             "them, and promote what's true and relevant into the established core. But is that a scientific result? Not yet. "
+             "Some results matter more than others, and a paper is judged on more than truth: novelty, significance, the literature. "
+             "So we carve out the high-value part, and that needs a different kind of audit. "
              "review-paper reads the full submission, code included. "
              "It lifts out the three to five claims that matter most, into a ledger. "
              "Then it checks each one against its evidence. It re-derives the key proofs: here, the key lemma's proof fails. "
@@ -417,16 +428,18 @@ def review():
              "Each flaw gets a severity: fatal, major or minor. "
              "And a fatal flaw cascades to every claim that depends on it: the main theorem falls with the lemma. "
              "The verdict says whether the central message stands, and the confidence reflects only what was actually checked. "
-             "And its findings can start the next round of the project. So let's go back to where we started.")
+             "And its findings can start the next round of the project. Now let's put it all together.")
     # step 0 is a reminder of the project's established core; the paper replaces it at step 1
     L = [re.sub(r'data-build-in="(\w+) (\d+)"', lambda m: f'data-build-in="{m[1]} {int(m[2]) + 1}"', el) for el in L]
     from gen_project_slide import core_snapshot
     s = 1.1
     SX, SY = 960 - 350 * s, 330
     L.insert(1, svg(SX, SY, 700 * s, 490 * s, f'<g transform="translate(0,{10 * s}) scale({s})">{core_snapshot()}</g>',
-                    "The project's established core, as built on the develop slide."))
+                    "The project's established core, as built on the organize slide."))
     L.insert(2, p(SX, SY + 490 * s + 16, 700 * s, "the established core", 28, RED, 600, "center", extra="; letter-spacing:3px; text-transform:uppercase"))
-    L.insert(3, f'  <div data-build-in="fade 1" style="position:absolute; top:290px; left:0; width:1920px; height:790px; background:{BG}"></div>')
+    L.insert(3, transition("We can now build a core that's true and relevant. But a paper needs more: novelty, significance, the literature.", 0).replace(' data-build-in="fade 0"', ""))
+    L.insert(4, f'  <div data-build-in="fade 1" style="position:absolute; top:290px; left:0; width:1920px; height:790px; background:{BG}"></div>')
+    L.append(transition("Now let's put it all together.", 10))
     i = next(k for k, el in enumerate(L) if "The submitted paper." in el)
     L[i] = L[i].replace('aria-label="The submitted paper."', 'aria-label="The submitted paper." data-build-in="fade 1"')
     i = next(k for k, el in enumerate(L) if "the paper, read in full" in el)

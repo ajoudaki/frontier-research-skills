@@ -9,8 +9,8 @@
   "order": [
     "cover",
     "bottleneck",
-    "setup",
-    "agents",
+    "strategy",
+    "foundations",
     "overview",
     "develop",
     "formulate",
@@ -22,19 +22,19 @@
   ],
   "sections": {
     "s1": {
-      "description": "The problem: smart models fail beautifully, and the bottleneck becomes you.",
+      "description": "The problem, and the strategy at a glance.",
       "start": "cover"
     },
     "s2": {
-      "description": "The basics and many agents.",
-      "start": "setup"
+      "description": "The foundations under the strategy.",
+      "start": "foundations"
     },
     "s3": {
-      "description": "Five skills: the architecture, then each thrust, then the audit.",
+      "description": "Five skills: organize, then each thrust, then the audit.",
       "start": "overview"
     },
     "s4": {
-      "description": "The gem in the haystack, and the conclusion.",
+      "description": "Putting it all together, and what's next.",
       "start": "gem"
     }
   },

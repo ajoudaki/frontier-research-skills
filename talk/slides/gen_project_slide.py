@@ -126,7 +126,8 @@ def text(n, color, build):
 
 
 DEVELOP_NOTES = (
-    "Here's the architecture. A project is one big open question, and develop-project rests on three ideas. "
+    "Let's start with the main one, the architecture: organize-research-project. A project is one big open question, "
+    "and the skill rests on three ideas. "
     "From the research question, studies branch out, and the first idea is isolation: each study has its own question, "
     "inputs and folder, and by default it doesn't see the others' work. With your approval, one study can build on another. "
     "That way, an agent stuck on one failed idea can't drag the others into it, and you get the widest exploration. "
@@ -138,8 +139,8 @@ DEVELOP_NOTES = (
     "that's the signal-to-noise ratio. "
     "The third idea: you build on the core. New studies can rely on promoted results, "
     "and they can be promoted in turn, so the core keeps growing. "
-    "But each thrust is itself a research problem. Even a narrowed question is still open, and it leaves a lot of wiggle room. "
-    "So inside a thrust, the first challenge is to formulate it."
+    "That's the organization, and it already has a lot of value. But each thrust is itself a hard research question. "
+    "What exactly is its question? And how do we solve it? Let's take one thrust."
 )
 
 
@@ -248,12 +249,14 @@ def three_ideas():
         head(758, 14, 3, "Build on the core"),
         ln(808, 14, "New studies rely on promoted results,"),
         ln(842, 16, "and can be promoted in turn."),
+        f'  <p data-build-in="fade 17" style="position:absolute; top:950px; left:128px; width:1664px; {SERIF}; font-size:30px; '
+        f'font-style:italic; color:#b04a33">But each thrust is still open: what exactly is its question, and how do we solve it?</p>',
     ]
     return "\n".join(rows)
 
 
 def main():
-    render("develop", tracker("Develop"), "Develop in isolation, build on what passes.", "develop-project", DEVELOP_NOTES,
+    render("develop", tracker("Organize"), "Organize: isolated thrusts, a gated core.", "organize-research-project", DEVELOP_NOTES,
            {**PROMOTE, "G": 16}, three_ideas())
 
 
