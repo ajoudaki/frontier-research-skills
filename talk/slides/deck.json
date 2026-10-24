@@ -12,11 +12,12 @@
     "setup",
     "agents",
     "overview",
+    "develop",
     "formulate",
     "solve",
     "teach",
-    "develop",
     "review",
+    "gem",
     "close"
   ],
   "sections": {
@@ -29,12 +30,12 @@
       "start": "setup"
     },
     "s3": {
-      "description": "Five skills, one stage at a time.",
+      "description": "Five skills: the architecture, then each thrust, then the audit.",
       "start": "overview"
     },
     "s4": {
-      "description": "The conclusion.",
-      "start": "close"
+      "description": "The gem in the haystack, and the conclusion.",
+      "start": "gem"
     }
   },
   "faces": {

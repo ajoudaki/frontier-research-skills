@@ -13,6 +13,8 @@ Usage: python talk/slides/gen_project_slide.py
 import math
 from pathlib import Path
 
+from gen_skill_slides import tracker
+
 OUT = Path(__file__).resolve().parent / "slides" / "develop.html"
 
 SANS = "font-family:'IBM Plex Sans', Arial, sans-serif"
@@ -123,11 +125,8 @@ def text(n, color, build):
             f'{SANS}; font-size:24px; font-weight:600; text-align:center; color:{color}">{n}</p>')
 
 
-STAGES = ("Formulate", "Solve", "Learn", "Develop", "Audit")
-TRACKER = " · ".join(f'<span style="color:{RED if s == "Develop" else "#B9B4A8"}">{s}</span>' for s in STAGES)
-
 DEVELOP_NOTES = (
-    "So far, that's one question. A real project is many of them, and that's develop-project. It rests on three ideas. "
+    "Here's the architecture. A project is one big open question, and develop-project rests on three ideas. "
     "From the research question, studies branch out, and the first idea is isolation: each study has its own question, "
     "inputs and folder, and never sees the others' work. "
     "That way, an agent stuck on one failed idea can't drag the others into it, and you get the widest exploration. "
@@ -139,8 +138,23 @@ DEVELOP_NOTES = (
     "that's the signal-to-noise ratio. "
     "The third idea: you build on the core. New studies can rely on promoted results, "
     "and they can be promoted in turn, so the core keeps growing. "
-    "And when the core is ready to become a paper, it goes to the last skill."
+    "But each thrust is itself a research problem. Even a narrowed question is still open, and it leaves a lot of wiggle room. "
+    "So inside a thrust, the first challenge is to formulate it."
 )
+
+
+def core_snapshot():
+    """The diagram's final state, without letters or labels, in its own coordinates (for the audit slide)."""
+    promote = {**PROMOTE, "G": 16}
+    ring = hull([(CENTER, R_CENTER)] + [(NODES[m], R_NODE) for m in promote])
+    out = [f'<polygon points="{" ".join(f"{x:.1f},{y:.1f}" for x, y in ring)}" fill="{CORE}" stroke="{RED}" stroke-width="5" stroke-linejoin="round"/>']
+    for n in list(APPEAR) + list(BRANCH):
+        x, y = NODES[n]
+        color = RED if n in promote else DARK if n in FAIL else GRAY
+        fill = PAPER if color == GRAY else color
+        out.append(study_edge(n, RED if n in promote else GRAY) + f'<circle cx="{x}" cy="{y}" r="{R_NODE}" fill="{fill}" stroke="{color}" stroke-width="4"/>')
+    out.append(f'<circle cx="{CENTER[0]}" cy="{CENTER[1]}" r="{R_CENTER}" fill="#1B1F2A"/>')
+    return "".join(out)
 
 
 def render(sid, eyebrow, title, chip, notes, promote, panel):
@@ -239,7 +253,7 @@ def three_ideas():
 
 
 def main():
-    render("develop", TRACKER, "Develop in isolation, build on what passes.", "develop-project", DEVELOP_NOTES,
+    render("develop", tracker("Develop"), "Develop in isolation, build on what passes.", "develop-project", DEVELOP_NOTES,
            {**PROMOTE, "G": 16}, three_ideas())
 
 
