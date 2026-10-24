@@ -1,7 +1,7 @@
 """Generate talk/slides/slides/gem.html: the whole project as a haystack, a small part of it as the gem.
 
-A large radial tree (about 200 studies) grows from the research question, one level per step. Any
-study may branch, promoted or not: by default studies don't see each other, but with your approval
+A large, irregular tree (about 200 studies) grows from the research question, one level per step.
+Some lines of work are bushy and deep, others stop early. Any study may branch, promoted or not: by default studies don't see each other, but with your approval
 one can build on another's unpromoted work. The established core is one contiguous lake with a
 single shoreline around the promoted studies (about a fifth of the graph); unpromoted studies stay
 outside it. Then the haystack dims, and a coherent part of the core, always including the research
@@ -28,32 +28,56 @@ GEM = ('<polygon points="22,4 68,4 86,28 45,76 4,28" fill="{fill}"/>'
        '<polyline points="4,28 86,28" fill="none" stroke="{line}" stroke-width="3"/>'
        '<polyline points="22,4 34,28 45,76 56,28 68,4" fill="none" stroke="{line}" stroke-width="3" stroke-linejoin="round"/>')
 
-LEVELS = 6
+STEPS = 6                  # build steps for the growth; deeper studies arrive with the last step
+MAX_DEPTH = 7
 CX, CY = 700, 615          # the research question, on the slide
-RX, RY = 95, 53            # level k sits at k times these radii
 R_ROOT, R_NODE = 26, 7
-# how many children a study at each level may get (any study may branch, promoted or not)
-KIDS = {0: [6], 1: [2, 2, 3], 2: [1, 2, 2, 3], 3: [1, 1, 2, 2, 2], 4: [0, 1, 1, 2, 2], 5: [0, 1, 1, 1, 2]}
+# expected children per unit of vigor, by depth: any study may branch, promoted or not. Vigor is
+# inherited with noise, so some lines of work become bushy and deep while others stop early.
+BASE = {1: 1.6, 2: 1.35, 3: 1.15, 4: 0.95, 5: 0.85, 6: 0.7, 7: 0.5}
+
+
+def poisson(rng, lam):
+    k, p, limit = 0, 1.0, math.exp(-lam)
+    while True:
+        p *= rng.random()
+        if p <= limit:
+            return k
+        k += 1
 
 
 def build_tree(seed):
     rng = random.Random(seed)
-    nodes = [{"level": 0, "parent": None, "kids": []}]
-    frontier = [0]
-    for level in range(LEVELS):
+    nodes = [{"level": 0, "parent": None, "kids": [], "vigor": 1.0}]
+
+    def add(parent, vigor):
+        nd = {"level": nodes[parent]["level"] + 1, "parent": parent, "kids": [], "vigor": vigor,
+              "jr": rng.uniform(-1, 1), "ja": rng.uniform(-1, 1), "bend": rng.uniform(-0.14, 0.14)}
+        nodes.append(nd)
+        nodes[parent]["kids"].append(len(nodes) - 1)
+        return len(nodes) - 1
+
+    frontier = [add(0, rng.lognormvariate(0, 0.6)) for _ in range(6)]
+    while frontier and len(nodes) <= 400:   # oversized trees are rejected by the caller anyway
         new = []
         for i in frontier:
-            for _ in range(rng.choice(KIDS[level])):
-                nodes.append({"level": level + 1, "parent": i, "kids": []})
-                nodes[i]["kids"].append(len(nodes) - 1)
-                new.append(len(nodes) - 1)
+            nd = nodes[i]
+            if nd["level"] < MAX_DEPTH:
+                for _ in range(poisson(rng, nd["vigor"] * BASE[nd["level"]])):
+                    new.append(add(i, nd["vigor"] ** 0.75 * rng.lognormvariate(0, 0.45)))
         frontier = new
     return nodes
 
 
+def position(rho, angle):
+    a = math.radians(angle)
+    return CX + (50 + 70 * rho) * math.cos(a), CY + (30 + 41 * rho) * math.sin(a)
+
+
 def layout(nodes, start):
     """Radial layout: every leaf gets an angular slot, wider the closer it is to the centre; a parent
-    sits at its children's mean angle."""
+    sits near its children's mean angle. Each study is nudged in angle and depth, so the graph reads as
+    grown rather than drawn on rings."""
     for nd in nodes:
         nd.pop("angle", None)
     leaves = []
@@ -68,19 +92,38 @@ def layout(nodes, start):
     weight = [3 / nodes[i]["level"] for i in leaves]
     unit, at = 360 / sum(weight), start
     for i, w in zip(leaves, weight):
-        nodes[i]["angle"] = at + unit * w / 2
+        nodes[i]["angle"] = at + unit * w / 2 + nodes[i]["ja"] * unit * w * 0.22
         at += unit * w
 
     def angle(i):
         if "angle" not in nodes[i]:
-            nodes[i]["angle"] = sum(angle(k) for k in nodes[i]["kids"]) / len(nodes[i]["kids"])
+            kids = nodes[i]["kids"]
+            nodes[i]["angle"] = sum(angle(k) for k in kids) / len(kids) + nodes[i]["ja"] * 2.5
         return nodes[i]["angle"]
 
     for i in range(1, len(nodes)):
         angle(i)
-    for nd in nodes:
-        a, k = math.radians(nd.get("angle", 0)), nd["level"]
-        nd["xy"] = (CX + k * RX * math.cos(a), CY + k * RY * math.sin(a))
+    nodes[0]["rho"], nodes[0]["xy"] = 0.0, (CX, CY)
+    for nd in nodes[1:]:
+        nd["rho"] = nd["level"] + 0.28 * nd["jr"]
+        nd["xy"] = position(nd["rho"], nd["angle"])
+    relax(nodes)
+
+
+def relax(nodes, gap=24, rounds=60):
+    """Nudge apart any two studies closer than `gap`, keeping the research question fixed."""
+    pts = np.array([nd["xy"] for nd in nodes], dtype=float)
+    for _ in range(rounds):
+        diff = pts[:, None] - pts[None]
+        dist = np.sqrt((diff ** 2).sum(-1)) + np.eye(len(pts)) * 1e9
+        push = np.clip(gap - dist, 0, None) / 2
+        if not push.any():
+            break
+        move = (diff / dist[..., None] * push[..., None]).sum(1)
+        move[0] = 0
+        pts += move
+    for nd, (x, y) in zip(nodes, pts):
+        nd["xy"] = (float(x), float(y))
 
 
 def min_gap(nodes):
@@ -95,8 +138,9 @@ def promote(nodes):
     nodes[0]["core"] = True
     for nd in nodes[1:]:
         a = math.radians(nd["angle"])
-        reach = 2.9 + 1.0 * math.sin(2 * a + 1.0) + 0.7 * math.sin(3 * a + 2.4) + 0.45 * math.sin(5 * a + 0.7)
-        nd["core"] = nd["level"] <= reach and nodes[nd["parent"]]["core"]
+        reach = 3.4 + 1.0 * math.sin(2 * a + 1.0) + 0.7 * math.sin(3 * a + 2.4) + 0.45 * math.sin(5 * a + 0.7)
+        nd["core"] = nd["rho"] <= reach and nodes[nd["parent"]]["core"]
+        nd["step"] = min(nd["level"], STEPS)
 
 
 GRID = (260, 1000, 300, 1320, 3)   # y0, y1, x0, x1, step: the slide area the field is evaluated on
@@ -139,17 +183,29 @@ def full(content, label, build=None):
 
 
 def main():
-    # pick a tree of about 200 studies whose layout keeps every study clear of the others
-    for seed in range(400):
+    # pick a tree of about 200 studies whose layout keeps every study clear of the others, and whose
+    # core can be drawn as one lake that leaves every other study outside
+    for seed in range(2000):
         nodes = build_tree(seed)
-        if not 190 <= len(nodes) - 1 <= 215:
+        if not 190 <= len(nodes) - 1 <= 220:
             continue
-        start = max(range(0, 360, 6), key=lambda s: (layout(nodes, s), min_gap(nodes))[1])
+        start = max(range(0, 360, 12), key=lambda s: (layout(nodes, s), min_gap(nodes))[1])
         layout(nodes, start)
         promote(nodes)
         share = sum(nd["core"] for nd in nodes[1:]) / (len(nodes) - 1)
-        if min_gap(nodes) >= 20 and 0.17 <= share <= 0.24:
-            break
+        if min_gap(nodes) < 18 or not 0.17 <= share <= 0.24:
+            continue
+        try:
+            html = render(nodes, seed)
+        except AssertionError as err:
+            print(f"seed {seed}: {err}")
+            continue
+        OUT.write_text(html)
+        print(f"wrote {OUT}")
+        return
+
+
+def render(nodes, seed):
     total = len(nodes) - 1
     core = [nd for nd in nodes[1:] if nd["core"]]
     rest = [nd for nd in nodes[1:] if not nd["core"]]
@@ -174,7 +230,10 @@ def main():
         r_a = R_ROOT if nd["parent"] == 0 else R_NODE
         d = math.dist((ax, ay), (bx, by))
         ux, uy = (bx - ax) / d, (by - ay) / d
-        return (f'<line x1="{ax + ux * r_a:.1f}" y1="{ay + uy * r_a:.1f}" x2="{bx - ux * R_NODE:.1f}" y2="{by - uy * R_NODE:.1f}" '
+        sx, sy, ex, ey = ax + ux * r_a, ay + uy * r_a, bx - ux * R_NODE, by - uy * R_NODE
+        bend = nd["bend"] * d
+        qx, qy = (sx + ex) / 2 - uy * bend, (sy + ey) / 2 + ux * bend
+        return (f'<path d="M{sx:.1f},{sy:.1f} Q{qx:.1f},{qy:.1f} {ex:.1f},{ey:.1f}" fill="none" '
                 f'stroke="{color}" stroke-width="{width}"/>')
 
     def disc(nd, fill, r=R_NODE):
@@ -182,18 +241,18 @@ def main():
 
     # one lake per level that adds core studies, each containing the last
     lakes, last = [], 0
-    for k in range(1, LEVELS + 1):
-        inside = [nd for nd in core if nd["level"] <= k]
+    for k in range(1, STEPS + 1):
+        inside = [nd for nd in core if nd["step"] <= k]
         if len(inside) > last:
             last = len(inside)
             lakes.append(full(f'<path d="{shore(inside, rest, 46)}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
                               f"The established core grows at level {k}: one contiguous lake.", f"fade {k}"))
     levels = []
-    for k in range(1, LEVELS + 1):
-        here = [nd for nd in nodes[1:] if nd["level"] == k]
+    for k in range(1, STEPS + 1):
+        here = [nd for nd in nodes[1:] if nd["step"] == k]
         art = "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in here)
         art += "".join(disc(nd, RED if nd["core"] else STRAW) for nd in here)
-        levels.append(full(art, f"Level {k}: {len(here)} new studies, {sum(nd['core'] for nd in here)} of them promoted.", f"fade {k}"))
+        levels.append(full(art, f"Step {k}: {len(here)} new studies, {sum(nd['core'] for nd in here)} of them promoted.", f"fade {k}"))
     root = full(f'<circle cx="{CX}" cy="{CY}" r="{R_ROOT}" fill="{INK}"/>', "The research question.")
 
     # step 7: the haystack dims and the core stands out
@@ -247,8 +306,7 @@ def main():
              "But a paper isn't the whole core. You carve out a coherent part, grown from the original question, and it has to pass new gates: novelty and significance. "
              "That's the audit. "
              f"So out of {total} studies, {len(gem)} become the paper. That's the gem in the haystack. So let me wrap up.")
-    OUT.write_text(section("gem", head + "\n" + "\n".join(layers), notes))
-    print(f"wrote {OUT}")
+    return section("gem", head + "\n" + "\n".join(layers), notes)
 
 
 if __name__ == "__main__":
