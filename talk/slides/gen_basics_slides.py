@@ -51,8 +51,7 @@ def text(x, y, s, size=22, color=INK, weight=400, anchor="start", family="IBM Pl
 PX, PY, PW, PH = 688, 300, 1104, 620      # the detail panel
 CARDS = [("Context", "A coding agent on one workstation"),
          ("Persistence", "Everything under version control"),
-         ("Reuse", "Projects and skills"),
-         ("Use them", "Install the skills today")]
+         ("Reuse", "Projects and skills")]
 
 
 def card(i, highlight, build, cards=None):
@@ -169,24 +168,6 @@ def panel_reuse(build):
     L += bullets(build, ["A project is a folder with a file every agent in it reads",
                          "Skills are plain files: they move with you to another model",
                          "Everything in this repo is a skill"], PY + 440)
-    return L
-
-
-def panel_install(build):
-    """How to use the skills today: clone, install everywhere or per project, make one the project default."""
-    L = [panel(build, "Use them today: one repo of skills")]
-    code = f"{MONO}; font-size:20px; line-height:1.4; color:{INK}; background:#EFEBE2; border-radius:10px; padding:12px 18px; white-space:pre"
-    rows = [("Get them", "git clone https://github.com/ajoudaki/personal-skills"),
-            ("Everywhere on your machine", "ln -s $PWD/personal-skills/organize-research-project ~/.claude/skills/\n# or ~/.codex/skills/, for Codex"),
-            ("In one project only", "cp -r personal-skills/organize-research-project my-project/.claude/skills/"),
-            ("On by default for a project", "# my-project/AGENTS.md  (or CLAUDE.md), read by every agent there\nUse organize-research-project for every study.")]
-    top = PY + 80
-    for k, (label_, snippet) in enumerate(rows):
-        L.append(p(PX + 40, top, PW - 80, label_, 22, RED, 600, build=f"fade {build}"))
-        L.append(f'  <p data-build-in="fade {build}" style="position:absolute; top:{top + 34}px; left:{PX + 40}px; width:{PW - 80}px; {code}">{snippet}</p>')
-        top += 104 + 28 * snippet.count("\n")
-    L.append(p(PX + 40, PY + PH - 60, PW - 80, "After that, a skill loads when you name it, or when a task matches its description.", 22, DARK,
-               build=f"fade {build}"))
     return L
 
 
@@ -345,18 +326,18 @@ def engine():
 # ---------- 04 · the foundations ----------
 
 def foundations():
-    L = [heading("04 · The foundations", "Four foundations that make it practical.")]
-    for i in range(4):
+    L = [heading("04 · The foundations", "Three foundations that make it practical.")]
+    for i in range(3):
         L.append(card(i, False, None))
     # each foundation in turn: its card lights up (a plain copy covers the previous one) and its panel opens
-    for i, make in enumerate([panel_context, panel_persistence, panel_reuse, panel_install]):
+    for i, make in enumerate([panel_context, panel_persistence, panel_reuse]):
         step = i + 1
         L.append(card(i, True, f"fade {step}"))
         if i:
             L.append(card(i - 1, False, f"fade {step}"))
         L += make(step)
-    L.append(transition("In fact, everything we'll talk about from here is a skill. Here are the five.", 5))
-    notes = ("You can simply ask the main thread to start agents. What makes it practical are a few foundations. "
+    L.append(transition("In fact, everything we'll talk about from here is a skill. Here are the five.", 4))
+    notes = ("You can simply ask the main thread to start agents. What makes it practical are three foundations. "
              "Context: a coding agent, not a chat, on one always-on workstation. Then the theory, the LaTeX, the code, the results and "
              "the figures are all in reach. Agents work overnight, and even if you dispatch jobs elsewhere, the results come back. "
              "Persistence: everything under version control, and everything in the same place, theory included. Every snapshot holds "
@@ -365,9 +346,6 @@ def foundations():
              "Reuse. A project is just a folder with a file every agent in it reads, so the project's rules load by default. "
              "Prompts you type again and again become skills, which load by name or when a task matches them, and they're plain "
              "files, so they move with you to another model. "
-             "And this is practical today. Clone the repo. Link a skill into your agent's skills folder to have it everywhere, or copy "
-             "it into one project's skills folder. To make it the default for a project, point to it from that project's AGENTS.md "
-             "or CLAUDE.md, which every agent there reads. "
              "In fact, everything we'll talk about from here is a skill. Here are the five.")
     return section("foundations", "\n".join(L), notes)
 

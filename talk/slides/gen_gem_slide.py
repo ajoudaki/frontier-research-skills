@@ -362,7 +362,14 @@ def render(nodes, edge_px, variant):
                    full(f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{ring_r:.1f}" fill="none" stroke="{INK}" stroke-width="3"/>',
                         "A circle around the push, to zoom into.", f"fade {GEM_STEP + 2}")]
     else:
-        layers.append(p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build=f"fade {STEPS}", extra="; font-style:italic"))
+        layers.append(p(x0 + 20, y0, 320, "uncharted waters", 28, MUTED, family=SERIF, build=f"fade {STEPS}", extra="; font-style:italic"))
+        # the same picture, scaled into the space left by the strip above and the install box on the right
+        bx0, by0, bx1, by1 = 128, 420, 1200, 955
+        sc = min((bx1 - bx0) / (x1 - x0), (by1 - by0) / (y1 - y0))
+        dx = bx0 - x0 * sc + ((bx1 - bx0) - (x1 - x0) * sc) / 2
+        dy = by0 - y0 * sc + ((by1 - by0) - (y1 - y0) * sc) / 2
+        layers = ([f'  <div style="position:absolute; top:0; left:0; width:1920px; height:1080px; transform:translate({dx:.1f}px, {dy:.1f}px) '
+                   f'scale({sc:.4f}); transform-origin:0 0">'] + layers + ["  </div>"])
     # the final picture: the strategy slide zooms into it, and the conclusion slide shows it in miniature
     snapshot = (charted[-1].split(">", 1)[1].rsplit("</svg>", 1)[0]
                 + f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>'
@@ -429,28 +436,43 @@ def render(nodes, edge_px, variant):
                   p(128, 950, 1664, "The frontier is hard, even for a very capable model. How do we make each push succeed, and correctly?", 30, RED, family=SERIF, build=f"fade {GEM_STEP + 3}",
                     extra="; font-style:italic")])
     else:
-        # four regions as a pipeline, coloured like the graph; the skills annotate the edges between them
-        def block(top, label, fill, border, color, build, dashed=False, height=64, pad_left=24):
+        # the four regions as one horizontal strip under the title, coloured like the graph, with the skills on the
+        # edges between them; then, once the gem is in, how to use it all today
+        def block(left, width, label, fill, border, color, build, dashed=False, icon=False):
             style = "dashed" if dashed else "solid"
-            return (f'  <div data-build-in="{build}" style="position:absolute; top:{top}px; left:{C}px; width:442px; height:{height}px; '
-                    f'padding:{(height - 34) / 2 - 2:.0f}px 24px 0 {pad_left}px; background:{fill}; border:2px {style} {border}; border-radius:14px">\n'
-                    f'    <p style="{SERIF}; font-size:28px; line-height:34px; font-weight:600; color:{color}">{label}</p>\n  </div>')
+            b_ = f' data-build-in="{build}"' if build else ""
+            pad = 64 if icon else 18
+            return (f'  <div{b_} style="position:absolute; top:{SY}px; left:{left}px; width:{width}px; height:56px; '
+                    f'padding:10px 14px 0 {pad}px; background:{fill}; border:2px {style} {border}; border-radius:12px">\n'
+                    f'    <p style="{SERIF}; font-size:22px; line-height:32px; font-weight:600; color:{color}; white-space:nowrap">{label}</p>\n  </div>')
 
-        def link(top, height, color, lines, build):
-            return [svg(C + 30, top, 40, height, arrow(20, 4, 20, height - 4, color, 3), lines[0], build),
-                    p(C + 84, top + (height - 30 * len(lines)) / 2, 358, "<br>".join(lines), 21, color, build=build,
-                      extra=f"; {MONO}; line-height:1.43")]
+        def link(left, width, color, lines, build):
+            return [svg(left + 8, SY + 14, width - 16, 28, arrow(2, 14, width - 18, 14, color, 3), lines[0], build),
+                    p(left, SY - 18 * len(lines) - 4, width, "<br>".join(lines), 17, color, align="center", build=build,
+                      extra=f"; {MONO}; line-height:1.2")]
 
-        mono = ["organize-research-project", "formulate-problem", "solve-problem", "teach-material"]
-        col = ([block(310, "Open-ended question", INK, INK, "#F6F4EF", "fade 0")]
-               + link(380, 134, DARK, mono, "fade 1")
-               + [block(520, "Research thrusts", CHARTED, CHARTED_EDGE, INK, "rise 1", dashed=True)]
-               + link(590, 66, RED, ["promotion gate"], f"fade {CORE_START}")
-               + [block(662, "Established core", CORE, RED, RED, f"rise {CORE_START}")]
-               + link(732, 76, SAPPHIRE, ["review-paper:", "novelty, significance"], f"fade {GEM_STEP}")
-               + [block(814, "Carved-out paper", SAPPHIRE_SOFT, SAPPHIRE, INK, f"rise {GEM_STEP}", height=80, pad_left=110),
-                  svg(C + 18, 820, 76, 68, f'<g transform="scale(0.84)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem.", f"pop {GEM_STEP}")])
-        col[0] = col[0].replace(' data-build-in="fade 0"', "")
+        SY = 330
+        col = ([block(128, 270, "Open-ended question", INK, INK, "#F6F4EF", None)]
+               + link(398, 260, DARK, ["organize-research-project", "formulate · solve · learn"], "fade 1")
+               + [block(658, 230, "Research thrusts", CHARTED, CHARTED_EDGE, INK, "rise 1", dashed=True)]
+               + link(888, 200, RED, ["promotion gate"], f"fade {CORE_START}")
+               + [block(1088, 230, "Established core", CORE, RED, RED, f"rise {CORE_START}")]
+               + link(1318, 204, SAPPHIRE, ["review-paper"], f"fade {GEM_STEP}")
+               + [block(1522, 270, "Carved-out paper", SAPPHIRE_SOFT, SAPPHIRE, INK, f"rise {GEM_STEP}", icon=True),
+                  svg(1534, SY + 10, 44, 40, f'<g transform="scale(0.48)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem.", f"pop {GEM_STEP}")])
+        # how to use it today, kept short: the README has the rest
+        code = f"{MONO}; font-size:17px; line-height:1.45; color:{INK}; background:#EFEBE2; border-radius:8px; padding:10px 14px; white-space:pre"
+        U = GEM_STEP + 1
+        col += [f'  <div data-build-in="rise {U}" style="position:absolute; top:440px; left:1220px; width:572px; height:470px; '
+                f'background:{PAPER}; border:1px solid #DCD6CA; border-radius:16px"></div>',
+                p(1248, 466, 500, "Convinced? It's easy to use.", 30, INK, 600, family=SERIF, build=f"rise {U}"),
+                p(1248, 520, 500, "Get the skills", 20, RED, 600, build=f"rise {U}"),
+                f'  <p data-build-in="rise {U}" style="position:absolute; top:550px; left:1248px; width:516px; {code}">git clone github.com/ajoudaki/personal-skills</p>',
+                p(1248, 616, 500, "Install one for every project", 20, RED, 600, build=f"rise {U}"),
+                f'  <p data-build-in="rise {U}" style="position:absolute; top:646px; left:1248px; width:516px; {code}">ln -s $PWD/&lt;skill&gt; ~/.claude/skills/\n# or ~/.codex/skills/ for Codex</p>',
+                p(1248, 738, 500, "Or make it a project's default", 20, RED, 600, build=f"rise {U}"),
+                f'  <p data-build-in="rise {U}" style="position:absolute; top:768px; left:1248px; width:516px; {code}">name it in the project&#39;s AGENTS.md\nor CLAUDE.md</p>',
+                p(1248, 860, 500, "The README has the details.", 20, MUTED, build=f"rise {U}")]
 
     eyebrow, title = (("02 · The strategy", "The strategy at a glance.") if variant == "strategy"
                       else ("11 · Putting it all together", "From the haystack to the core to the gem."))
@@ -486,7 +508,9 @@ def render(nodes, edge_px, variant):
              "and help us understand the result, so we can judge it quickly. "
              "Then review-paper audits the carved-out part as a whole paper: the claims, the literature, the novelty. Only a small part "
              "of everything we explored becomes the paper. Reading all of it would have been an enormous effort; reading and digesting "
-             "this part is not. That's the gem in the haystack. So let me wrap up.")
+             "this part is not. That's the gem in the haystack. "
+             "And if you're convinced, it's easy to use. Clone the repo, link a skill into your agent's skills folder, or make it a "
+             "project's default from its AGENTS.md or CLAUDE.md. The README has the details. So let me wrap up.")
     return section("gem", head + "\n" + "\n".join(layers), notes)
 
 if __name__ == "__main__":
