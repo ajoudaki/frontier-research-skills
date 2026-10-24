@@ -1,7 +1,7 @@
-"""Generate the 'closer look' slides: the overview, then one per skill, with step-by-step builds.
+"""Generate the skill slides: the overview, then one per skill, with step-by-step builds.
 
-Writes talk/slides/slides/{overview,formulate,solve,teach,review}.html and appends
-their ids to talk/slides/deck.json if missing.
+Writes talk/slides/slides/{overview,formulate,solve,teach,review}.html and inserts
+any missing ids into talk/slides/deck.json before the conclusion.
 
 Usage: python talk/slides/gen_skill_slides.py
 """
@@ -122,7 +122,7 @@ def num_badge(x, y, n, r=20, color=DARK):
 # ---------- 0. overview: the five skills, one block at a time ----------
 
 def overview():
-    L = [title_block("A closer look · the five skills", "Five skills, from a vague question to a paper.")]
+    L = [title_block("04 · Five skills", "Five skills, from a vague question to a paper.")]
 
     def card(left, top, stage, chip, desc, build):
         return (f'  <div data-build-in="rise {build}" style="position:absolute; top:{top}px; left:{left}px; width:406px; display:flex; '
@@ -150,7 +150,7 @@ def overview():
           card(398, R2, "Develop", "develop-project", "Many thrusts → one core", 4),
           right_arrow(824, R2 + 91, 5), card(892, R2, "Audit", "review-paper", "Paper → rigorous audit", 5),
           p(398, 768, 1394, "↺ a review’s findings can start the next round", 24, MUTED, build="fade 5")]
-    notes = ("For those who want more detail, let's take a closer look at each of the five skills, in the order you'd use them. "
+    notes = ("There are five skills, and they work at two scales. Let me go through them in the order you'd use them. "
              "For a single question, it starts with formulate-problem, which turns a vague question into a precise one. "
              "Then solve-problem solves it, and every step gets checked. "
              "Then teach-material makes sure you actually understand the result. "
@@ -410,7 +410,7 @@ def review():
              "Each flaw gets a severity: fatal, major or minor. "
              "And a fatal flaw cascades to every claim that depends on it: the main theorem falls with the lemma. "
              "The verdict says whether the central message stands, and the confidence reflects only what was actually checked. "
-             "And its findings can start the next round of the project.")
+             "And its findings can start the next round of the project. That's the whole toolkit, so let me wrap up.")
     return section("review", "\n".join(L), notes)
 
 
@@ -419,9 +419,9 @@ def main():
         (SLIDES / f"{sid}.html").write_text(make())
     deck_path = HERE / "deck.json"
     deck = json.loads(deck_path.read_text())
-    for sid in ("formulate", "solve", "teach", "review"):
+    for sid in ("overview", "formulate", "solve", "teach", "review"):
         if sid not in deck["order"]:
-            deck["order"].append(sid)
+            deck["order"].insert(deck["order"].index("close"), sid)
     deck_path.write_text(json.dumps(deck, indent=2) + "\n")
     print("order:", deck["order"])
 

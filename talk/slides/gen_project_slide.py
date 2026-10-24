@@ -1,13 +1,11 @@
-"""Generate talk/slides/slides/project.html and develop.html, the animated promotion-gate slide.
+"""Generate talk/slides/slides/develop.html, the animated promotion-gate slide.
 
-develop.html is the closer-look twin: the same diagram, a panel of three ideas
-synced with it instead of the two cards, and one more step where G is promoted.
-
-Build order: studies appear one by one; the promotion-gate card comes in;
-A, B, C are promoted one by one (edge and node turn orange, a tick appears on
-the edge, and the established core grows to enclose them); D, E, F fail one
-by one (cross on the edge); then new studies branch off the established A
-and B; finally the audit card comes in.
+Build order: studies appear one by one with the first idea (isolation); the
+promotion gate comes in (7); A, B, C are promoted one by one (edge and node
+turn orange, a tick appears on the edge, and the established core grows to
+enclose them); D, E, F fail one by one (cross on the edge); new studies branch
+off the established A and B (14, 15); G is promoted and the core grows (16).
+The three-idea panel on the right builds in step with the diagram.
 
 Usage: python talk/slides/gen_project_slide.py
 """
@@ -15,7 +13,7 @@ Usage: python talk/slides/gen_project_slide.py
 import math
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parent / "slides" / "project.html"
+OUT = Path(__file__).resolve().parent / "slides" / "develop.html"
 
 SANS = "font-family:'IBM Plex Sans', Arial, sans-serif"
 MONO = "font-family:'IBM Plex Mono', 'Courier New', monospace"
@@ -32,11 +30,10 @@ NODES = {
 PARENT = {"G": "A", "H": "B"}  # branches off established studies
 
 APPEAR = {"A": 1, "D": 2, "B": 3, "E": 4, "C": 5, "F": 6}
-DEVELOP_CARD = 7
+GATE = 7  # the panel's second idea
 PROMOTE = {"A": 8, "B": 9, "C": 10}
 FAIL = {"D": 11, "E": 12, "F": 13}
 BRANCH = {"G": 14, "H": 15}
-AUDIT_CARD = 16
 
 
 def unit(a, b):
@@ -126,31 +123,6 @@ def text(n, color, build):
             f'{SANS}; font-size:24px; font-weight:600; text-align:center; color:{color}">{n}</p>')
 
 
-def card(build, top, stage, chip, body):
-    return f'''  <div data-build-in="rise {build}" style="position:absolute; top:{top}px; left:1000px; width:792px; display:flex; flex-direction:column; gap:12px; padding:40px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px">
-    <div style="display:flex; flex-direction:row; gap:16px; align-items:center">
-      <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#b04a33">{stage}</p>
-      <p style="padding:6px 16px; {MONO}; font-size:24px; color:#b04a33; background:#f3e3dc; border-radius:8px">{chip}</p>
-    </div>
-{body}
-  </div>'''
-
-
-NOTES = (
-    "Most open-ended research questions aren't a single question. You start from one big question and push in many directions. "
-    "Some succeed, some don't, and from the successful ones you push further. That takes a lot of exploration, and exploration "
-    "needs fresh, independent thinking: agents biased by a failed attempt keep chasing the same failed route. So develop-project "
-    "keeps the thrusts, or studies, as independent as possible, mechanically limiting each one to its own isolated folder. "
-    "But a project can't be purely independent, or you never build on what you've found. So the skill balances independent "
-    "thrusts with an established core of theory or experiments. Results enter the core through a promotion gate: robustly "
-    "audited, coherent notation, a good interface, and, most importantly, your approval. Results that fail the gate stay "
-    "outside, with their evidence kept. So the core holds results that are true and worthwhile, and new studies can branch "
-    "off it and build on them. That's the answer to the gem in the haystack: if it's in the core, it's worth your time to "
-    "read. And when you turn the work into a paper, review-paper audits the whole package from every angle: the logic, but "
-    "also the citations, the literature and the novelty. It's what a researcher with real integrity would do to their own "
-    "paper. That's the whole toolkit, so let me wrap up."
-)
-
 STAGES = ("Formulate", "Solve", "Learn", "Develop", "Audit")
 TRACKER = " · ".join(f'<span style="color:{RED if s == "Develop" else "#B9B4A8"}">{s}</span>' for s in STAGES)
 
@@ -237,18 +209,6 @@ def chip_tag(chip):
             f'color:#b04a33; background:{CORE}; border-radius:8px">{chip}</p>')
 
 
-def talk_cards():
-    """The talk's slide: the promotion-gate card, then the audit card."""
-    develop = card(DEVELOP_CARD, 300, "Develop", "develop-project", f'''    <p style="{SERIF}; font-size:32px; font-weight:600; color:#1b1f2a">The promotion gate</p>
-    <p style="{SANS}; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">1</span>  Independent audit</p>
-    <p style="{SANS}; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">2</span>  Integration: notation, tests, interfaces</p>
-    <p style="{SANS}; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">3</span>  Your approval</p>
-    <p style="{SANS}; font-size:24px; line-height:1.4; color:#4a4f5c"><span style="color:#b04a33">✓ Pass:</span> joins the core.  <span style="color:#1b1f2a">✕ Fail:</span> stays outside, evidence kept.</p>''')
-    audit = card(AUDIT_CARD, 705, "Audit", "review-paper",
-                 f'    <p style="{SANS}; font-size:24px; line-height:1.4; color:#1b1f2a">A fresh reviewer gets the finished paper, not its history.</p>')
-    return develop + "\n" + audit
-
-
 def three_ideas():
     """The closer look: the three ideas, each line arriving with its step of the animation."""
     PX, PW = 1040, 752
@@ -279,7 +239,6 @@ def three_ideas():
 
 
 def main():
-    render("project", "06 · A whole project", "Develop in isolation, then audit cold.", None, NOTES, PROMOTE, talk_cards())
     render("develop", TRACKER, "Develop in isolation, build on what passes.", "develop-project", DEVELOP_NOTES,
            {**PROMOTE, "G": 16}, three_ideas())
 

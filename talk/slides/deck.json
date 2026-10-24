@@ -11,16 +11,13 @@
     "bottleneck",
     "setup",
     "agents",
-    "map",
-    "point",
-    "project",
-    "close",
     "overview",
     "formulate",
     "solve",
     "teach",
     "develop",
-    "review"
+    "review",
+    "close"
   ],
   "sections": {
     "s1": {
@@ -32,16 +29,12 @@
       "start": "setup"
     },
     "s3": {
-      "description": "Two scales: one question, then a whole project.",
-      "start": "map"
+      "description": "Five skills, one stage at a time.",
+      "start": "overview"
     },
     "s4": {
       "description": "The conclusion.",
       "start": "close"
-    },
-    "s5": {
-      "description": "A closer look at each skill.",
-      "start": "overview"
     }
   },
   "faces": {
