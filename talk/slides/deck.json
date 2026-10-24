@@ -15,6 +15,7 @@
     "point",
     "project",
     "close",
+    "overview",
     "formulate",
     "solve",
     "teach",
@@ -40,7 +41,7 @@
     },
     "s5": {
       "description": "A closer look at each skill.",
-      "start": "formulate"
+      "start": "overview"
     }
   },
   "faces": {

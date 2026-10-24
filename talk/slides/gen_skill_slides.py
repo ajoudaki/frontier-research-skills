@@ -148,7 +148,7 @@ def formulate():
     L.append(p(OX + sx1 - 150, OY + sy0 - 34, 210, "Frozen", 30, RED, 600, "center", build="pop 13",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
     L.append(p(1110, 830, 682, "Every cheat it finds is closed before any attempt to solve.", 26, MUTED, 400, build="fade 13"))
-    notes = ("Let's look closer at each skill, starting with formulate-problem. A research question usually starts vague. "
+    notes = ("First, formulate-problem. A research question usually starts vague. "
              "Before anyone tries to solve it, the skill writes a research contract: the objects and definitions, the admissible domain, "
              "the order of the quantifiers, the conclusion and its scope, what counts as evidence, and which substitutions are forbidden. "
              "Only then does it state a sharp conjecture. And then it attacks its own statement, looking for the ways an agent could cheat: "
