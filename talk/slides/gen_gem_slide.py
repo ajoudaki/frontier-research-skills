@@ -13,9 +13,12 @@ direction neato chose; only layouts with no crossing edges and comfortable spaci
 
 Two shorelines: the established core is one contiguous lake with a single shore around the promoted
 studies (about a fifth of the graph), with every unpromoted study outside it; and the explored region
-around all studies has its own shore, where uncharted waters begin. Then the haystack dims, and a
-compact part of the core, grown from the research question, is carved out for a paper and shown as
-the gem, in the same sapphire as the gem on the opening slide.
+around all studies has its own shore, where uncharted waters begin.
+
+Both slides animate the same way: the research thrusts grow first; the core starts a couple of steps
+later and grows steadily until just after the thrusts are done; then a compact part of the core, grown
+from the research question, is carved out for a paper and shown as the gem, in the same sapphire as
+the gem on the opening slide.
 
 Usage: python talk/slides/gen_gem_slide.py
 """
@@ -30,7 +33,7 @@ import numpy as np
 from matplotlib.path import Path as Polygon
 from skimage import measure
 
-from gen_skill_slides import BG, CORE, DARK, INK, MONO, MUTED, PAPER, RED, SANS, SERIF, arrow, p, section, svg
+from gen_skill_slides import CORE, DARK, INK, MONO, MUTED, PAPER, RED, SANS, SERIF, arrow, p, section, svg
 
 OUT = Path(__file__).resolve().parent / "slides" / "gem.html"
 SNAPSHOT = Path(__file__).resolve().parent / "gem_snapshot.json"   # the final picture, reused on the conclusion slide
@@ -43,7 +46,9 @@ GEM = ('<polygon points="22,4 68,4 86,28 45,76 4,28" fill="{fill}"/>'
        '<polyline points="22,4 34,28 45,76 56,28 68,4" fill="none" stroke="{line}" stroke-width="3" stroke-linejoin="round"/>')
 
 STUDIES = 150
-STEPS = 6                       # build steps for the growth
+STEPS = 6                       # build steps for the research thrusts
+CORE_START, CORE_END = 3, STEPS + 1   # the established core starts later and keeps growing a step past the thrusts
+GEM_STEP = CORE_END + 1         # the carved-out paper comes last
 R_NODE = 5                      # every study is drawn at this size
 R_ROOT = 13                     # the research question, drawn larger
 AREA = (200, 350, 1250, 905)    # x0, y0, x1, y1: where the graph may sit on the slide
@@ -278,7 +283,6 @@ def render(nodes, edge_px, variant):
         charted.append(full(f'<path d="{shore(known, [], sea, (CX, CY))}" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" '
                             f'stroke-dasharray="7 6" stroke-linejoin="round"/>', f"Step {k}: the explored region grows.", f"fade {k}"))
     core_shape = shore(core, rest, lake, (CX, CY), 0.3 * edge_px)
-    core_art = "".join(edge(nd, RED) for nd in core) + "".join(disc(nd, RED) for nd in core) + question
     xs, ys = [nd["xy"][0] for nd in nodes], [nd["xy"][1] for nd in nodes]
     x0, y0, x1, y1 = min(xs) - 60, min(ys) - 60, max(xs) + 60, max(ys) + 60
 
@@ -287,39 +291,33 @@ def render(nodes, edge_px, variant):
                + "".join(edge(nd, SAPPHIRE, 3) for nd in gem)
                + "".join(disc(nd, SAPPHIRE, R_NODE + 1) for nd in gem)
                + f'<circle cx="{CX:.1f}" cy="{CY:.1f}" r="{R_ROOT + 1}" fill="{INK}" stroke="{SAPPHIRE}" stroke-width="3"/>')
-    carve = full(gem_art, "A compact part of the core, grown from the question, carved out for the paper.", "fade 8")
+    carve = full(gem_art, "A compact part of the core, grown from the question, carved out for the paper.", f"fade {GEM_STEP}")
     root = full(question, "The research question.")
 
-    if variant == "strategy":
-        # the research thrusts grow first, all alike; then the established core is revealed inside them
-        levels = []
-        for k in range(1, STEPS + 1):
-            here = [nd for nd in nodes[1:] if nd["step"] == k]
-            art = "".join(edge(nd, STRAW_EDGE) for nd in here) + "".join(disc(nd, STRAW) for nd in here)
-            levels.append(full(art, f"Step {k}: {len(here)} new studies in the research thrusts.", f"fade {k}"))
-        reveal = [full(f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
-                       "The established core: the fully audited and relevant parts, one contiguous lake.", "fade 7")]
-        layers = charted + reveal + levels + [root, full(core_art, "The established core.", "fade 7"), carve,
-                                              p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build="fade 6", extra="; font-style:italic")]
-    else:
-        # the core grows with the thrusts; then the haystack dims and the core stands out
-        lakes, levels, last = [], [], 0
-        for k in range(1, STEPS + 1):
-            inside = [nd for nd in core if nd["step"] <= k]
-            if len(inside) > last:
-                last = len(inside)
-                lakes.append(full(f'<path d="{shore(inside, rest, lake, (CX, CY), 0.3 * edge_px)}" fill="{CORE}" stroke="{RED}" '
-                                  f'stroke-width="3" stroke-linejoin="round"/>', f"Step {k}: the established core grows, one contiguous lake.", f"fade {k}"))
-            here = [nd for nd in nodes[1:] if nd["step"] == k]
-            art = "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in here)
-            art += "".join(disc(nd, RED if nd["core"] else STRAW) for nd in here)
-            levels.append(full(art, f"Step {k}: {len(here)} new studies, {sum(nd['core'] for nd in here)} of them promoted.", f"fade {k}"))
-        dim = full(f'<rect x="{x0:.0f}" y="{y0:.0f}" width="{x1 - x0:.0f}" height="{y1 - y0:.0f}" fill="{BG}" opacity="0.55"/>',
-                   "The haystack fades.", "fade 7")
-        again = [full(f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
-                      "The established core.", "fade 7"), full(core_art, "The established core, highlighted.", "fade 7")]
-        layers = charted + lakes + levels + [root, dim] + again + [carve,
-                 p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build="fade 7", extra="; font-style:italic")]
+    # the same growth on both slides: research thrusts grow for STEPS steps; the established core starts later
+    # and grows steadily, breadth first, until a step after the thrusts are done; then the gem
+    ranked = sorted(core, key=lambda nd: (nd["level"], nodes.index(nd)))
+    span = CORE_END - CORE_START + 1
+    for r, nd in enumerate(ranked):
+        nd["core_step"] = max(CORE_START + r * span // len(ranked), nd["step"] + 1)
+    levels, lakes, promoted, last = [], [], [], 0
+    for k in range(1, STEPS + 1):
+        here = [nd for nd in nodes[1:] if nd["step"] == k]
+        art = "".join(edge(nd, STRAW_EDGE) for nd in here) + "".join(disc(nd, STRAW) for nd in here)
+        levels.append(full(art, f"Step {k}: {len(here)} new studies in the research thrusts.", f"fade {k}"))
+    for k in range(CORE_START, CORE_END + 1):
+        inside = [nd for nd in core if nd["core_step"] <= k]
+        fresh = [nd for nd in core if nd["core_step"] == k]
+        if len(inside) > last:
+            last = len(inside)
+            lakes.append(full(f'<path d="{shore(inside, rest, lake, (CX, CY), 0.3 * edge_px)}" fill="{CORE}" stroke="{RED}" '
+                              f'stroke-width="3" stroke-linejoin="round"/>', f"Step {k}: the established core grows, one contiguous lake.", f"fade {k}"))
+        if fresh:
+            promoted.append(full("".join(edge(nd, RED) for nd in fresh) + "".join(disc(nd, RED) for nd in fresh),
+                                 f"Step {k}: {len(fresh)} studies pass the promotion gate.", f"fade {k}"))
+    layers = charted + lakes + levels + promoted + [root, carve,
+             p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build=f"fade {STEPS}", extra="; font-style:italic")]
+    if variant == "gem":
         # the final picture, for the conclusion slide
         snapshot = (charted[-1].split(">", 1)[1].rsplit("</svg>", 1)[0]
                     + f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>'
@@ -339,11 +337,11 @@ def render(nodes, edge_px, variant):
                + legend(430, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CHARTED}" stroke="{CHARTED_EDGE}" stroke-width="2" stroke-dasharray="5 4"/>'
                       f'<circle cx="20" cy="20" r="6" fill="{STRAW}"/>', "Research thrusts", "fresh exploration, pushed forward", "fade 1")
                + legend(540, f'<rect x="2" y="2" width="36" height="36" rx="8" fill="{CORE}" stroke="{RED}" stroke-width="3"/>'
-                        f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "the fully audited and relevant parts", "fade 7")
+                        f'<circle cx="20" cy="20" r="6" fill="{RED}"/>', "Established core", "the fully audited and relevant parts", f"fade {CORE_START}")
                + legend(650, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
-                        "carved out, audited for novelty and significance", "fade 8")
-               + [p(C, 780, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build="fade 9"),
-                  p(128, 950, 1664, "Easier said than done. How do we actually achieve it?", 30, RED, family=SERIF, build="fade 10",
+                        "carved out, audited for novelty and significance", f"fade {GEM_STEP}")
+               + [p(C, 780, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build=f"fade {GEM_STEP}"),
+                  p(128, 950, 1664, "Easier said than done. How do we actually achieve it?", 30, RED, family=SERIF, build=f"fade {GEM_STEP + 1}",
                     extra="; font-style:italic")])
     else:
         # four regions as a pipeline, coloured like the graph; the skills annotate the edges between them
@@ -362,11 +360,11 @@ def render(nodes, edge_px, variant):
         col = ([block(310, "Open-ended question", INK, INK, "#F6F4EF", "fade 0")]
                + link(380, 134, DARK, mono, "fade 1")
                + [block(520, "Research thrusts", CHARTED, CHARTED_EDGE, INK, "rise 1", dashed=True)]
-               + link(590, 66, RED, ["promotion gate"], "fade 7")
-               + [block(662, "Established core", CORE, RED, RED, "rise 7")]
-               + link(732, 76, SAPPHIRE, ["review-paper:", "novelty, significance"], "fade 8")
-               + [block(814, "Carved-out paper", SAPPHIRE_SOFT, SAPPHIRE, INK, "rise 8", height=80, pad_left=110),
-                  svg(C + 18, 820, 76, 68, f'<g transform="scale(0.84)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem.", "pop 9")])
+               + link(590, 66, RED, ["promotion gate"], f"fade {CORE_START}")
+               + [block(662, "Established core", CORE, RED, RED, f"rise {CORE_START}")]
+               + link(732, 76, SAPPHIRE, ["review-paper:", "novelty, significance"], f"fade {GEM_STEP}")
+               + [block(814, "Carved-out paper", SAPPHIRE_SOFT, SAPPHIRE, INK, f"rise {GEM_STEP}", height=80, pad_left=110),
+                  svg(C + 18, 820, 76, 68, f'<g transform="scale(0.84)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem.", f"pop {GEM_STEP}")])
         col[0] = col[0].replace(' data-build-in="fade 0"', "")
 
     eyebrow, title = (("02 · The strategy", "The strategy at a glance.") if variant == "strategy"
@@ -378,29 +376,29 @@ def render(nodes, edge_px, variant):
     if variant == "strategy":
         notes = ("Here's the strategy at a glance, and it answers both questions. Start from one open-ended research question. "
                  "We organize it into research thrusts: separate lines of exploration, each pushed forward. "
-                 "Most go step by step; "
-                 "now and then one splits; "
-                 "some stop. "
-                 "And the explored region keeps growing. "
-                 "Its shore is where the uncharted waters begin. "
-                 "Inside it, the parts that are fully audited and relevant form the established core, always in one piece. "
-                 "So instead of reading everything, you read the core: that's the signal-to-noise ratio, and that's how you stay in control. "
+                 "Most go step by step; now and then one splits, and some stop. "
+                 "And with some lag, the parts that are fully audited and relevant form the established core. "
+                 "The thrusts keep pushing out, "
+                 "and the core follows, always in one piece. "
+                 "The explored region's shore is where the uncharted waters begin. "
+                 "Instead of reading everything, you read the core: that's the signal-to-noise ratio, "
+                 "and that's how you stay in control. "
                  "Finally, a part of the core is carved out and audited again, for novelty and significance: is it scientifically "
-                 "worthy? That's the paper, "
-                 "and that's the gem in the haystack. "
+                 "worthy? That's the paper, and that's the gem in the haystack. "
                  "But this is easier said than done. How do we actually achieve it?")
         return section("strategy", head + "\n" + "\n".join(layers), notes)
     notes = ("Let's put it all together, now that we've seen every piece. We start from one open-ended question. "
              "organize-research-project turns it into research thrusts, and inside each one, formulate, solve and learn. "
              "The explored region grows fast, and its shore is where the uncharted waters begin. "
-             "The core grows slowly, through the promotion gate, and always in one piece. "
+             "Behind it, with some lag, the core grows through the promotion gate, always in one piece. "
              "That's the balance between exploration and exploitation: fresh, independent exploration out at the edge, "
              "and a core you can build on. "
-             "And every step raised the signal-to-noise ratio: agents in adversarial positions audit each other, keep the spirit of the "
-             "question, solve it without much help from us, and help us understand the result, so we can judge it quickly. "
-             "Then review-paper audits the carved-out part as a whole paper: the claims, the literature, the novelty. "
-             "Only a small part of everything we explored becomes the paper. Reading all of it would have been an enormous effort; "
-             "reading and digesting this part is not. That's the gem in the haystack. So let me wrap up.")
+             "And every step raises the signal-to-noise ratio: agents in adversarial positions audit each other, keep the spirit of the "
+             "question, solve it without much help from us, "
+             "and help us understand the result, so we can judge it quickly. "
+             "Then review-paper audits the carved-out part as a whole paper: the claims, the literature, the novelty. Only a small part "
+             "of everything we explored becomes the paper. Reading all of it would have been an enormous effort; reading and digesting "
+             "this part is not. That's the gem in the haystack. So let me wrap up.")
     return section("gem", head + "\n" + "\n".join(layers), notes)
 
 if __name__ == "__main__":
