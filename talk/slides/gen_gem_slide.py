@@ -2,7 +2,8 @@
 
 A radial tree grows from the research question, one level per step: the level's
 studies appear, then some pass the gate (red) and the rest fail (dark), and the
-established core grows as an organic outline around everything that passed.
+established core grows like a lake around everything that passed: an ocean of
+knowledge whose shoreline is the frontier with the unknown.
 New studies branch only off promoted ones. Then the haystack dims, the core
 stands out, and the core goes through the audit to become the paper.
 
@@ -12,6 +13,9 @@ Usage: python talk/slides/gen_gem_slide.py
 import math
 from pathlib import Path
 
+import numpy as np
+from skimage import measure
+
 from gen_skill_slides import BG, BORDER, CORE, DARK, GRAY, INK, MONO, MUTED, PAPER, RED, SANS, SERIF, arrow, p, section, svg
 
 OUT = Path(__file__).resolve().parent / "slides" / "gem.html"
@@ -19,14 +23,14 @@ OUT = Path(__file__).resolve().parent / "slides" / "gem.html"
 # outcome of every study, level by level: P passes the gate, F fails, O is still open.
 # Children hang off the promoted studies of the level above, in order.
 LEVELS = [
-    ["PFPFFPF"],
-    ["PFF", "FPP", "PFF"],
-    ["FPF", "PF", "FFP", "FP"],
-    ["FPF", "FF", "PFO", "FO"],
+    ["PPPFPPPP"],
+    ["PP", "PF", "PP", "FP", "PP", "PF", "PP"],
+    ["PF", "FP", "PF", "FF", "PP", "FP", "PF", "FP", "FF", "PF", "FP"],
+    ["FF", "FO", "PF", "FF", "OF", "FP", "FF", "FO", "FF", "PF"],
 ]
-CX, CY = 712, 622          # the research question, on the slide
-RX, RY = 150, 78           # radii of the first level; level k sits at k times these
-R_ROOT, R_NODE, PAD = 30, 12, 14
+CX, CY = 712, 615          # the research question, on the slide
+RX, RY = 128, 70           # radii of the first level; level k sits at k times these
+R_ROOT, R_NODE = 30, 11
 
 
 def build_tree():
@@ -85,6 +89,34 @@ def min_gap(nodes):
     return min(math.dist(a, b) for i, a in enumerate(pts) for b in pts[i + 1:])
 
 
+def lake(core, others):
+    """An organic shore around the root and every node in `core`, with bays around every node in `others`.
+
+    The shore is a level set of a smooth field: a soft bump on each core study (a heavier one on the
+    research question), minus a sharper dip on each study outside the core, plus a faint ripple so the
+    shore looks natural. A failed study at the edge carves a bay; one surrounded by the core leaves a
+    small island of the unknown. Adding core studies only raises the field, so each lake contains the last."""
+    ys, xs = np.mgrid[260:1010:3, 90:1360:3].astype(float)
+
+    def bump(cx, cy, sigma):
+        return np.exp(-((xs - cx) ** 2 + (ys - cy) ** 2) / (2 * sigma ** 2))
+
+    field = 1.6 * bump(CX, CY, 70)
+    for nd in core:
+        field += bump(*nd["xy"], 56)
+    for nd in others:
+        field -= 2.6 * bump(*nd["xy"], 18)
+    field += 0.07 * np.sin(xs / 41 + 0.3) * np.sin(ys / 33 + 1.1)
+    for nd in core:
+        x, y = nd["xy"]
+        assert field[int((y - 260) / 3), int((x - 90) / 3)] > 0.5, f"core study at {x:.0f},{y:.0f} falls outside the lake"
+    path = ""
+    for c in measure.find_contours(field, 0.5):
+        pts = [f"{90 + 3 * col:.1f},{260 + 3 * row:.1f}" for row, col in c[::2]]
+        path += "M" + " L".join(pts) + " Z "
+    return path
+
+
 def seg(a, b, r_a, r_b):
     """A line from the rim of circle a to the rim of circle b."""
     d = math.dist(a, b)
@@ -106,23 +138,13 @@ def main():
     def radius(i):
         return R_ROOT if i == 0 else R_NODE
 
-    # the core: thick strokes along promoted edges and discs on promoted nodes. Every outline layer
-    # (red, wider) sits under every fill layer, so the union shows one clean organic border.
-    outline, fill = [], []
-    W = 2 * (R_NODE + PAD)
+    # the core: one lake per level, each containing the last, drawn under everything else
+    lakes = []
     for k in range(1, len(LEVELS) + 1):
-        o = f = ""
-        if k == 1:
-            x, y = nodes[0]["xy"]
-            o += f'<circle cx="{x}" cy="{y}" r="{R_ROOT + PAD + 3}" fill="{RED}"/>'
-            f += f'<circle cx="{x}" cy="{y}" r="{R_ROOT + PAD}" fill="{CORE}"/>'
-        for i, nd in enumerate(nodes):
-            if nd["level"] == k and nd["out"] == "P":
-                (x1, y1), (x2, y2) = nodes[nd["parent"]]["xy"], nd["xy"]
-                o += (f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{RED}" stroke-width="{W + 6}" stroke-linecap="round"/>')
-                f += (f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{CORE}" stroke-width="{W}" stroke-linecap="round"/>')
-        outline.append(full(o, f"The established core grows at level {k}: outline.", f"fade {2 * k}"))
-        fill.append(full(f, f"The established core grows at level {k}.", f"fade {2 * k}"))
+        inside = [nd for nd in nodes if nd["out"] == "P" and 0 < nd["level"] <= k]
+        outside = [nd for nd in nodes if nd["out"] != "P"]
+        lakes.append(full(f'<path d="{lake(inside, outside)}" fill="{CORE}" fill-rule="evenodd" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
+                          f"The established core grows like a lake at level {k}.", f"fade {2 * k}"))
 
     def edge(i, color, width=3):
         (a, b) = seg(nodes[nodes[i]["parent"]]["xy"], nodes[i]["xy"], radius(nodes[i]["parent"]), R_NODE)
@@ -156,17 +178,16 @@ def main():
     x0, y0, x1, y1 = min(xs) - 30, min(ys) - 30, max(xs) + 30, max(ys) + 30
     dim = full(f'<rect x="{x0:.0f}" y="{y0:.0f}" width="{x1 - x0:.0f}" height="{y1 - y0:.0f}" fill="{BG}" opacity="0.72"/>',
                "The haystack fades.", "fade 9")
-    core_again = [el.replace(f'data-build-in="fade {2 * k + 2}"', 'data-build-in="fade 9"') for k, el in enumerate(outline)]
-    core_again += [el.replace(f'data-build-in="fade {2 * k + 2}"', 'data-build-in="fade 9"') for k, el in enumerate(fill)]
+    core_again = [lakes[-1].replace(f'data-build-in="fade {2 * len(LEVELS)}"', 'data-build-in="fade 9"')]
     core_nodes = "".join(edge(i, RED) + disc(i, RED) for i, nd in enumerate(nodes) if i and nd["out"] == "P")
     core_again.append(full(core_nodes + f'<circle cx="{root[0]}" cy="{root[1]}" r="{R_ROOT}" fill="{INK}"/>', "The established core, highlighted.", "fade 9"))
 
     # the right-hand column: haystack and core (9), then audit and the paper (10)
     C = 1340
-    col = [p(C, 330, 452, "The haystack", 34, MUTED, 600, family=SERIF, build="fade 9"),
-           p(C, 378, 452, "every study, explored in isolation", 24, MUTED, build="fade 9"),
-           p(C, 450, 452, "The established core", 34, RED, 600, family=SERIF, build="fade 9"),
-           p(C, 498, 452, "checked, understood, approved", 24, INK, build="fade 9"),
+    col = [p(C, 330, 452, "The established core", 34, RED, 600, family=SERIF, build="fade 9"),
+           p(C, 378, 452, "an ocean of knowledge: checked, understood, approved", 24, INK, build="fade 9"),
+           p(C, 470, 452, "Its shoreline", 34, MUTED, 600, family=SERIF, build="fade 9"),
+           p(C, 518, 452, "the frontier with the unknown", 24, MUTED, build="fade 9"),
            svg(C + 30, 548, 40, 60, arrow(20, 2, 20, 56, RED, 3), "The core goes to the audit.", "fade 10"),
            f'  <div data-build-in="rise 10" style="position:absolute; top:616px; left:{C}px; width:452px; display:flex; flex-direction:row; '
            f'align-items:center; gap:16px; padding:22px 24px; background:{PAPER}; border:1px solid {BORDER}; border-radius:16px">\n'
@@ -182,14 +203,15 @@ def main():
     head = (f'  <div style="display:flex; flex-direction:column; gap:12px">\n'
             f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">10 · The gem in the haystack</p>\n'
             f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">From the haystack to the gem.</h2>\n  </div>')
-    layers = outline + fill + grow + judge + question + [dim] + core_again + col
+    unknown = p(x0 - 10, y0 - 6, 300, "the unknown", 30, MUTED, family=SERIF, build="fade 9", extra="; font-style:italic")
+    layers = lakes + grow + judge + question + [dim] + core_again + [unknown] + col
     notes = ("Remember the gem in the haystack? Here's what a real project looks like over time. "
              "From the research question, studies branch out. "
-             "Some pass the gate and join the core; most don't. "
-             "New studies branch off what passed, level by level. "
-             "And the core grows with them, into this organic shape. "
-             "The project keeps growing, and the more it grows, the smaller the core is in comparison. "
-             "That's the point. You don't have to read the haystack. You read the core, and everything in it was formulated, solved, "
+             "Some pass the gate, and the core forms around them, like a lake. "
+             "New studies branch off what passed, level by level, "
+             "and the lake grows with them: an ocean of knowledge you can trust. "
+             "But look at its shore. The larger the lake, the longer its shoreline with the unknown, and that's where the next studies go. "
+             "And the haystack around it, you don't have to read. You read the core, and everything in it was formulated, solved, "
              "understood and approved. "
              "Then the core goes through the audit and becomes a paper. That's the gem. So let me wrap up.")
     OUT.write_text(section("gem", head + "\n" + "\n".join(layers), notes))
