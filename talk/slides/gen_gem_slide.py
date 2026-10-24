@@ -177,7 +177,7 @@ def promote(nodes, share=0.2):
 GRID = (250, 1010, 120, 1330, 3)   # y0, y1, x0, x1, step: the slide area the fields are evaluated on
 
 
-def shore(inside, outside, sigma, center=None, dip=None):
+def shore(inside, outside, sigma, center=None, dip=None, polygon=False):
     """One closed shoreline around the studies in `inside`, with every study in `outside` left out.
 
     The shore is a level set of a smooth field: a soft bump on each inside study, a sharp dip on each
@@ -206,7 +206,8 @@ def shore(inside, outside, sigma, center=None, dip=None):
         assert region.contains_point(nd["xy"]), f"study at {nd['xy']} is outside its shore"
     for nd in outside:
         assert not region.contains_point(nd["xy"]), f"study at {nd['xy']} is inside a shore it doesn't belong to"
-    return "M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in best[::2]) + " Z"
+    path = "M" + " L".join(f"{x:.1f},{y:.1f}" for x, y in best[::2]) + " Z"
+    return (path, region) if polygon else path
 
 
 def full(content, label, build=None):
@@ -286,6 +287,37 @@ def render(nodes, edge_px, variant):
     xs, ys = [nd["xy"][0] for nd in nodes], [nd["xy"][1] for nd in nodes]
     x0, y0, x1, y1 = min(xs) - 60, min(ys) - 60, max(xs) + 60, max(ys) + 60
 
+    # one push out of the explored region: from a study in the core at the edge, a dashed edge into
+    # uncharted waters, where the next thrust has to break through; circled to zoom into on the next slide
+    _, explored = shore(nodes[1:], [], sea, (CX, CY), polygon=True)
+    best = None
+    for nd, reach in ((nd, f * edge_px) for nd in core for f in (1.6, 2.0, 2.4, 2.8)):
+        out_dir = math.atan2(nd["xy"][1] - CY, nd["xy"][0] - CX)
+        for deg in range(0, 360, 5):
+            a = math.radians(deg)
+            nx, ny = nd["xy"][0] + reach * math.cos(a), nd["xy"][1] + reach * math.sin(a)
+            if not (200 <= nx <= 1250 and 360 <= ny <= 900):
+                continue
+            ring = [(nx + 0.4 * edge_px * math.cos(b), ny + 0.4 * edge_px * math.sin(b)) for b in [k * math.pi / 6 for k in range(12)]]
+            if explored.contains_point((nx, ny)) or any(explored.contains_point(q) for q in ring):
+                continue
+            room = min(math.dist((nx, ny), o["xy"]) for o in nodes)
+            path_room = min(min(math.dist(o["xy"], (nd["xy"][0] + s * (nx - nd["xy"][0]), nd["xy"][1] + s * (ny - nd["xy"][1])))
+                                for s in (0.25, 0.5, 0.75)) for o in nodes if o is not nd)
+            if room < 1.2 * edge_px or path_room < 0.6 * edge_px:
+                continue
+            score = room - 0.6 * reach + (0.5 * edge_px if not nd["kids"] else 0) + 0.5 * edge_px * math.cos(a - out_dir)
+            if best is None or score > best[0]:
+                best = (score, nd, (nx, ny), reach)
+    assert best, "no study in the core can push out into uncharted waters here"
+    _, edge_nd, (nx, ny), reach = best
+    (px, py), push_ang = edge_nd["xy"], math.atan2(ny - edge_nd["xy"][1], nx - edge_nd["xy"][0])
+    push_art = (f'<line x1="{px + R_NODE * math.cos(push_ang):.1f}" y1="{py + R_NODE * math.sin(push_ang):.1f}" '
+                f'x2="{nx - (R_NODE + 2) * math.cos(push_ang):.1f}" y2="{ny - (R_NODE + 2) * math.sin(push_ang):.1f}" '
+                f'stroke="{INK}" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round"/>'
+                f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="{R_NODE + 1}" fill="{PAPER}" stroke="{INK}" stroke-width="2.5"/>')
+    mx, my, ring_r = (px + nx) / 2, (py + ny) / 2, reach / 2 + 20
+
     gem_shape = shore(gem, [nd for nd in nodes[1:] if nd not in gem], 0.8 * edge_px, (CX, CY), 0.3 * edge_px)
     gem_art = (f'<path d="{gem_shape}" fill="{SAPPHIRE_SOFT}" stroke="{SAPPHIRE}" stroke-width="3" stroke-linejoin="round"/>'
                + "".join(edge(nd, SAPPHIRE, 3) for nd in gem)
@@ -315,19 +347,26 @@ def render(nodes, edge_px, variant):
         if fresh:
             promoted.append(full("".join(edge(nd, RED) for nd in fresh) + "".join(disc(nd, RED) for nd in fresh),
                                  f"Step {k}: {len(fresh)} studies pass the promotion gate.", f"fade {k}"))
-    layers = charted + lakes + levels + promoted + [root, carve,
-             p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build=f"fade {STEPS}", extra="; font-style:italic")]
+    layers = charted + lakes + levels + promoted + [root, carve]
+    if variant == "strategy":
+        # the push into uncharted waters, then the circle around it, which the next slide magnifies
+        side = 1 if math.cos(push_ang) >= 0 else -1
+        lx = nx + 22 if side > 0 else nx - 22 - 260
+        layers += [full(push_art, "A study at the edge of the core pushes into uncharted waters.", f"fade {GEM_STEP + 1}"),
+                   p(lx, ny + (8 if math.sin(push_ang) > 0 else -44), 260, "uncharted waters", 28, MUTED, "left" if side > 0 else "right",
+                     family=SERIF, build=f"fade {GEM_STEP + 1}", extra="; font-style:italic"),
+                   full(f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{ring_r:.1f}" fill="none" stroke="{INK}" stroke-width="3"/>',
+                        "A circle around the push, to zoom into.", f"fade {GEM_STEP + 2}")]
+    else:
+        layers.append(p(128, 320, 320, "uncharted waters", 28, MUTED, family=SERIF, build=f"fade {STEPS}", extra="; font-style:italic"))
     if variant == "gem":
         # the final picture, for the conclusion slide
         snapshot = (charted[-1].split(">", 1)[1].rsplit("</svg>", 1)[0]
                     + f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>'
                     + "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in nodes[1:])
                     + "".join(disc(nd, RED if nd["core"] else STRAW) for nd in nodes[1:]) + gem_art)
-        # one ordinary thrust edge, midway out, for the many-agents slide to zoom into
-        out = sorted((nd for nd in rest if 3 <= nd["level"] <= 5), key=lambda nd: math.dist(nd["xy"], (CX, CY)))
-        focus = out[len(out) // 2]
-        (fx1, fy1), (fx2, fy2) = nodes[focus["parent"]]["xy"], focus["xy"]
-        SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot, "focus": [fx1, fy1, fx2, fy2]}))
+        SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot, "push": push_art,
+                                        "circle": [mx, my, ring_r]}))
 
     # the right-hand column
     C = 1350
@@ -345,7 +384,7 @@ def render(nodes, edge_px, variant):
                + legend(650, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
                         "carved out, audited for novelty and significance", f"fade {GEM_STEP}")
                + [p(C, 780, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build=f"fade {GEM_STEP}"),
-                  p(128, 950, 1664, "That's the map. But what makes each step along an edge trustworthy?", 30, RED, family=SERIF, build=f"fade {GEM_STEP + 1}",
+                  p(128, 950, 1664, "That's the map. But each thrust is a hard push into uncharted waters. How do we make it succeed?", 30, RED, family=SERIF, build=f"fade {GEM_STEP + 2}",
                     extra="; font-style:italic")])
     else:
         # four regions as a pipeline, coloured like the graph; the skills annotate the edges between them
@@ -389,7 +428,10 @@ def render(nodes, edge_px, variant):
                  "and that's how you stay in control. "
                  "Finally, a part of the core is carved out and audited again, for novelty and significance: is it scientifically "
                  "worthy? That's the paper, and that's the gem in the haystack. "
-                 "That's the map, the global strategy. But what makes each step along an edge trustworthy?")
+                 "That's the map, the global strategy. "
+                 "But look at one thrust at the edge, pushing out into uncharted waters. "
+                 "This is the frontier of research, and it's hard, even for a very capable model. How do we maximize the chance "
+                 "that it gets through, and that what it finds is correct?")
         return section("strategy", head + "\n" + "\n".join(layers), notes)
     notes = ("Let's put it all together, now that we've seen every piece. We start from one open-ended question. "
              "organize-research-project turns it into research thrusts, and inside each one, formulate, solve and learn. "

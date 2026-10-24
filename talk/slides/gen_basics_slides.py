@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 
 from gen_gem_slide import SAPPHIRE, SAPPHIRE_SOFT
-from gen_skill_slides import (BORDER, CORE, DARK, GRAY, INK, MONO, MUTED, PAPER, RED, SANS, SERIF,
+from gen_skill_slides import (BG, BORDER, CORE, DARK, GRAY, INK, MONO, MUTED, PAPER, RED, SANS, SERIF,
                               arrow, cross_badge, p, section, svg, tick_badge, transition)
 
 SLIDES = Path(__file__).resolve().parent / "slides"
@@ -178,21 +178,33 @@ def engine():
     agents (three miss the flaw, one catches it), and agents in opposition (an author and a critic
     exchanging rounds until the objections are resolved)."""
     L = [heading("03 · Inside one thrust", "The engine: many agents.")]
-    # the map in miniature, with one edge highlighted
+    # the map in miniature with the circled push, and below it the same circle magnified, as in a textbook figure
     snap = json.loads((Path(__file__).resolve().parent / "gem_snapshot.json").read_text())
     vx, vy, vw, vh = snap["viewBox"]
-    fx1, fy1, fx2, fy2 = snap["focus"]
-    mx, my = (fx1 + fx2) / 2, (fy1 + fy2) / 2
-    IW = 340
-    IH = round(IW * vh / vw)
-    ring = (f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="46" fill="none" stroke="{RED}" stroke-width="6"/>'
-            f'<line x1="{fx1:.1f}" y1="{fy1:.1f}" x2="{fx2:.1f}" y2="{fy2:.1f}" stroke="{RED}" stroke-width="9" stroke-linecap="round"/>')
-    L.append(f'  <svg aria-label="The map from the strategy slide, with one research-thrust edge highlighted." '
-             f'style="position:absolute; top:300px; left:128px; width:{IW}px; height:{IH}px; opacity:0.95" width="{IW}" height="{IH}" '
-             f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snap["svg"]}{ring}</svg>')
-    L.append(p(128, 300 + IH + 14, IW, "One edge of the map, zoomed in.", 24, INK, 600, family=SERIF))
-    L.append(p(128, 300 + IH + 92, IW, "Most of the skills work here, on a single thrust, and they run on many agents.", 22, MUTED,
-               extra="; line-height:1.4"))
+    mx, my, cr = snap["circle"]
+    IW, IX, IY = 340, 128, 296
+    s = IW / vw
+    IH = round(vh * s)
+    L.append(f'  <svg aria-label="The map from the strategy slide, with the push into uncharted waters circled." '
+             f'style="position:absolute; top:{IY}px; left:{IX}px; width:{IW}px; height:{IH}px" width="{IW}" height="{IH}" '
+             f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snap["svg"]}{snap["push"]}'
+             f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{cr:.1f}" fill="none" stroke="{INK}" stroke-width="{3 / s:.1f}"/></svg>')
+    sx, sy, sr = IX + (mx - vx) * s, IY + (my - vy) * s, cr * s          # the small circle on the slide
+    BR = 132
+    bx, by = IX + IW / 2, IY + IH + 26 + BR                              # the magnified circle
+    zoom = 1.25 * cr                                                     # half-width of the region it shows
+    lines = (f'<line x1="{sx - sr:.1f}" y1="{sy:.1f}" x2="{bx - BR:.1f}" y2="{by:.1f}" stroke="{INK}" stroke-width="1.5"/>'
+             f'<line x1="{sx + sr:.1f}" y1="{sy:.1f}" x2="{bx + BR:.1f}" y2="{by:.1f}" stroke="{INK}" stroke-width="1.5"/>')
+    L.append(svg(0, 0, 1920, 1080, lines, "Lines joining the small circle to its magnified view."))
+    L.append(f'  <svg aria-label="The circled push, magnified: a study at the edge of the core reaching into uncharted waters." '
+             f'style="position:absolute; top:{by - BR:.0f}px; left:{bx - BR:.0f}px; width:{2 * BR}px; height:{2 * BR}px" '
+             f'width="{2 * BR}" height="{2 * BR}" viewBox="{mx - zoom:.1f} {my - zoom:.1f} {2 * zoom:.1f} {2 * zoom:.1f}">'
+             f'<defs><clipPath id="lens"><circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}"/></clipPath></defs>'
+             f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}" fill="{BG}"/>'
+             f'<g clip-path="url(#lens)">{snap["svg"]}{snap["push"]}</g>'
+             f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom - 1.5 * zoom / BR:.1f}" fill="none" stroke="{INK}" stroke-width="{3 * zoom / BR:.2f}"/></svg>')
+    L.append(p(128, by + BR + 14, IW, "One push into uncharted waters. The frontier is hard: how do we make it succeed, and correctly?",
+               22, DARK, extra="; line-height:1.4"))
 
     PW_, PT, PH_ = 412, 300, 580
     lefts = [520, 950, 1380]
@@ -263,8 +275,9 @@ def engine():
     L.append(words(2, 450, "In the skills: the hostile audit of formulate-problem; separate checks of a candidate proof; "
                    "a fresh review after every correction.", 11, 20, MUTED))
     L.append(transition("Easier said than done. How do we run this in practice?", 12))
-    notes = ("That's the map, the global strategy. Now let's zoom into one edge of it, one thrust, because most of the skills work "
-             "right here, and here the engine is many agents. Compare three ways of working. "
+    notes = ("Let's zoom into that one push. It's a hard research barrier, out in uncharted waters, and even a very capable model can "
+             "fail here. How do we maximize the chance it gets through, and correctly? The answer is many agents. "
+             "Compare three ways of working. "
              "One long thread accumulates everything: every dead end, every earlier claim, every sentiment. "
              "Once it makes an early mistake, "
              "everything after it is anchored to it, and telling it to be unbiased can't undo that. "
