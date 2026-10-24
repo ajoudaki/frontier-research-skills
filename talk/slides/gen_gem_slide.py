@@ -312,10 +312,14 @@ def render(nodes, edge_px, variant):
     assert best, "no study in the core can push out into uncharted waters here"
     _, edge_nd, (nx, ny), reach = best
     (px, py), push_ang = edge_nd["xy"], math.atan2(ny - edge_nd["xy"][1], nx - edge_nd["xy"][0])
-    push_art = (f'<line x1="{px + R_NODE * math.cos(push_ang):.1f}" y1="{py + R_NODE * math.sin(push_ang):.1f}" '
-                f'x2="{nx - (R_NODE + 2) * math.cos(push_ang):.1f}" y2="{ny - (R_NODE + 2) * math.sin(push_ang):.1f}" '
+    # a dashed shaft ending in an arrowhead, pointing out into uncharted waters
+    ux, uy = math.cos(push_ang), math.sin(push_ang)
+    head_len, head_w = 16, 9
+    bx, by = nx - ux * head_len, ny - uy * head_len
+    push_art = (f'<line x1="{px + R_NODE * ux:.1f}" y1="{py + R_NODE * uy:.1f}" x2="{bx:.1f}" y2="{by:.1f}" '
                 f'stroke="{INK}" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round"/>'
-                f'<circle cx="{nx:.1f}" cy="{ny:.1f}" r="{R_NODE + 1}" fill="{PAPER}" stroke="{INK}" stroke-width="2.5"/>')
+                f'<polygon points="{nx:.1f},{ny:.1f} {bx - uy * head_w:.1f},{by + ux * head_w:.1f} {bx + uy * head_w:.1f},{by - ux * head_w:.1f}" '
+                f'fill="{INK}" stroke="{INK}" stroke-width="1.5" stroke-linejoin="round"/>')
     mx, my, ring_r = (px + nx) / 2, (py + ny) / 2, reach / 2 + 20
 
     gem_shape = shore(gem, [nd for nd in nodes[1:] if nd not in gem], 0.8 * edge_px, (CX, CY), 0.3 * edge_px)
