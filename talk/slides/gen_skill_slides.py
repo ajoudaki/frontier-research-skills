@@ -6,7 +6,6 @@ order lives in talk/slides/deck.json.
 Usage: python talk/slides/gen_skill_slides.py
 """
 
-import json
 import math
 import re
 from pathlib import Path
@@ -180,39 +179,20 @@ def formulate():
         r = 1 + 0.08 * math.sin(5 * a) + 0.05 * math.sin(9 * a + 1)
         pts.append((cx + rx * r * math.cos(a), cy + ry * r * math.sin(a)))
     cloud = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
-    # step 0: the push into uncharted waters, magnified exactly as on the strategy slide, turned to run left to right
+    # step 0: the push from the organize slide's zoom: an established node, a dashed arrow, and a vague question
     ox_, tx_ = 150, 520
-    snap = json.loads((HERE / "gem_snapshot.json").read_text())
-    gx1, gy1, gx2, gy2 = snap["push_line"]
-    gmx, gmy, gring = snap["circle"]
-    turn = math.degrees(math.atan2(gy2 - gy1, gx2 - gx1))
-    lr = 260                                              # the same size as the lens on the strategy slide
-    sc = lr / (1.25 * gring)
-    lx = 300
-    L.append(svg(OX, OY, W, H, f'<defs><clipPath id="lens7"><circle cx="{lx:.1f}" cy="{cy}" r="{lr:.1f}"/></clipPath></defs>'
-                 f'<circle cx="{lx:.1f}" cy="{cy}" r="{lr:.1f}" fill="{BG}"/>'
-                 f'<g clip-path="url(#lens7)"><g transform="translate({lx:.1f},{cy}) rotate({-turn:.2f}) scale({sc:.4f}) translate({-gmx:.1f},{-gmy:.1f})">'
-                 f'{snap["svg"]}{snap["push"]}</g></g>'
-                 f'<circle cx="{lx:.1f}" cy="{cy}" r="{lr - 1.5:.1f}" fill="none" stroke="{INK}" stroke-width="3"/>',
-                 "The push into uncharted waters from the strategy slide, magnified and turned to run left to right."))
-    L.append(p(OX + lx + lr + 50, OY + cy - 40, 620, "Remember this push into uncharted waters?", 32, INK, 600, family=SERIF,
-               extra="; font-style:italic"))
-    # step 1: in reality, the next node is a vague question
-    L.append(svg(OX, OY, W, H, f'<circle cx="{lx:.1f}" cy="{cy}" r="{lr + 4:.1f}" fill="{BG}"/>', "The magnified view gives way.", "fade 1"))
-    L.append(f'  <div data-build-in="fade 1" style="position:absolute; top:{OY + cy - 48}px; left:{OX + lx + lr + 40:.0f}px; width:650px; '
-             f'height:60px; background:{BG}"></div>')
     L.append(svg(OX, OY, W, H, f'<line x1="{ox_ + 20}" y1="{cy}" x2="{tx_ - 34}" y2="{cy}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
                  f'<polygon points="{tx_ - 20},{cy} {tx_ - 36},{cy - 9} {tx_ - 36},{cy + 9}" fill="{INK}"/>'
                  f'<circle cx="{ox_}" cy="{cy}" r="18" fill="{RED}"/>',
-                 "The same push: an established node and a dashed arrow.", "fade 1"))
-    L.append(p(OX + ox_ - 90, OY + cy + 30, 180, "established", 20, RED, 600, "center", build="fade 1"))
+                 "The same push: an established node and a dashed arrow."))
+    L.append(p(OX + ox_ - 90, OY + cy + 30, 180, "established", 20, RED, 600, "center"))
     L.append(svg(OX, OY, W, H, f'<polygon points="{cloud}" fill="#EFEBE2" stroke="{GRAY}" stroke-width="3" stroke-dasharray="10 8"/>',
-                 "In reality, the next question is vague: a soft dashed cloud.", "fade 1"))
+                 "In reality, the next question is vague: a soft dashed cloud."))
     L.append(p(OX + cx - 200, OY + cy - 20, 400, "A vague question", 30, MUTED, 400, "center", family=SERIF,
-               build="fade 1", extra="; font-style:italic"))
-    # step 7: the vague boundary fades into the background, still visible
-    L.append(svg(OX, OY, W, H, f'<polygon points="{cloud}" fill="{BG}" opacity="0.7"/>', "The vague boundary fades into the background.", "fade 7"))
-    # steps 2-6: each contract field rules out one easier question, a point on the vague edge, labelled where it sits
+               extra="; font-style:italic"))
+    # step 6: the vague boundary fades into the background, still visible
+    L.append(svg(OX, OY, W, H, f'<polygon points="{cloud}" fill="{BG}" opacity="0.7"/>', "The vague boundary fades into the background.", "fade 6"))
+    # steps 1-5: each contract field rules out one easier question, a point on the vague edge, labelled where it sits
     rows = [("Question", "rules out an easier target", 210, "left"),
             ("Definitions", "rules out a drifting definition", 245, "left"),
             ("Quantifiers", "rules out ‘for all’ weakened to ‘there exists’", 300, "right"),
@@ -220,7 +200,7 @@ def formulate():
             ("Scope", "rules out one example for a whole class", 125, "below")]
     dots = []
     for i, (field, rule, deg, side) in enumerate(rows):
-        k = i + 2
+        k = i + 1
         a = math.radians(deg)
         dx, dy = cx + 0.98 * rx * math.cos(a), cy + 0.98 * ry * math.sin(a)
         dots.append((dx, dy))
@@ -232,25 +212,24 @@ def formulate():
                             "below": (OX + dx - lw / 2, OY + dy + 26, "center")}[side]
         L.append(p(left, top, lw, field, 28, INK, 600, align, build=f"fade {k}"))
         L.append(p(left, top + 38, lw, rule, 22, MUTED, 400, align, build=f"fade {k}"))
-    # step 7: the true boundary emerges, a sharp circle with a thick edge; every point lies outside it
+    # step 6: the true boundary emerges, a sharp circle with a thick edge; every point lies outside it
     R = 196
     crosses = "".join(cross_badge(dx, dy, RED, 16) for dx, dy in dots)
     L.append(svg(OX, OY, W, H, f'<circle cx="{cx}" cy="{cy}" r="{R}" fill="{PAPER}" stroke="{INK}" stroke-width="6"/>' + crosses,
-                 "The sharp conjecture: a crisp circle, with every point outside it.", "fade 7"))
+                 "The sharp conjecture: a crisp circle, with every point outside it.", "fade 6"))
     # the arrow now reaches the sharp circle, still dashed: decided, not proved
     L.append(svg(OX, OY, W, H, f'<rect x="{tx_ - 40}" y="{cy - 14}" width="26" height="28" fill="{BG}"/>'
                  f'<line x1="{tx_ - 46}" y1="{cy}" x2="{cx - R - 24}" y2="{cy}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
                  f'<polygon points="{cx - R - 8},{cy} {cx - R - 26},{cy - 10} {cx - R - 26},{cy + 10}" fill="{INK}"/>',
-                 "The dashed arrow now reaches the sharp question.", "fade 7"))
+                 "The dashed arrow now reaches the sharp question.", "fade 6"))
     L.append(p(OX + cx - 170, OY + cy - 52, 340, "For every <i>x</i> in <i>D</i><br>with <i>H</i>(<i>x</i>), <i>C</i>(<i>x</i>) holds.",
-               30, INK, 400, "center", build="fade 7", family=SERIF))
-    L.append(p(OX + cx - 170, OY + cy + 52, 340, "the sharp conjecture", 18, MUTED, 600, "center", build="fade 7",
+               30, INK, 400, "center", build="fade 6", family=SERIF))
+    L.append(p(OX + cx - 170, OY + cy + 52, 340, "the sharp conjecture", 18, MUTED, 600, "center", build="fade 6",
                extra="; letter-spacing:3px; text-transform:uppercase"))
-    # step 8: frozen
-    L.append(p(OX + cx + 96, OY + cy + 128, 200, "Frozen", 30, RED, 600, "center", build="pop 8",
+    # step 7: frozen
+    L.append(p(OX + cx + 96, OY + cy + 128, 200, "Frozen", 30, RED, 600, "center", build="pop 7",
                extra=f"; letter-spacing:4px; text-transform:uppercase; border:4px solid {RED}; border-radius:10px; background:{PAPER}; transform:rotate(-8deg)"))
-    notes = ("Remember this push into uncharted waters? We said the thrusts are hard. It's even harder than that. "
-             "In reality, the target isn't a sharp node at all. It's a vague question, and a lot of time goes into pinning down what we "
+    notes = ("Here's one thrust. In reality, the target isn't a sharp node at all. It's a vague question, and a lot of time goes into pinning down what we "
              "even want. The danger is that a vague question leaves room for answers to an easier question, and an agent will happily "
              "take them. The goal is the steelman, not the straw man: the strongest version that stays faithful to what you meant. "
              "So formulate-problem writes a research contract, and each field rules something out. "

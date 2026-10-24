@@ -139,7 +139,8 @@ DEVELOP_NOTES = (
     "that's the signal-to-noise ratio. "
     "The third idea: you build on the core. New studies can rely on promoted results, "
     "and they can be promoted in turn, so the core keeps growing. "
-    "That's the organization, and it already has a lot of value. But each thrust is itself a hard research question."
+    "That's the organization, and it already has a lot of value. But let's zoom in on one thrust. "
+    "Each one is a hard research question, a push into the unknown. How do we push through?"
 )
 
 
@@ -155,6 +156,51 @@ def core_snapshot():
         out.append(study_edge(n, RED if n in promote else GRAY) + f'<circle cx="{x}" cy="{y}" r="{R_NODE}" fill="{fill}" stroke="{color}" stroke-width="4"/>')
     out.append(f'<circle cx="{CENTER[0]}" cy="{CENTER[1]}" r="{R_CENTER}" fill="#1B1F2A"/>')
     return "".join(out)
+
+
+ZOOM = 17                       # the last step: one thrust, magnified, the rest blurred
+SMALL = ((70, 327), 100)        # around the edge from B to H, in the diagram's coordinates
+LENS = ((1150, 575), 285)       # on the slide
+
+
+def tangents(c1, r1, c2, r2):
+    """The two outer tangent segments between two circles."""
+    dx, dy = c2[0] - c1[0], c2[1] - c1[1]
+    d = math.hypot(dx, dy)
+    base, spread = math.atan2(dy, dx), math.acos((r1 - r2) / d)
+    out = []
+    for a in (base + spread, base - spread):
+        nx, ny = math.cos(a), math.sin(a)
+        out.append((c1[0] + r1 * nx, c1[1] + r1 * ny, c2[0] + r2 * nx, c2[1] + r2 * ny))
+    return out
+
+
+def zoom():
+    """Blur the slide, keep a small circle around one thrust sharp, and magnify it into a lens."""
+    (sx, sy), sr = SMALL
+    sx, sy = sx + OX, sy + OY
+    (lx, ly), lr = LENS
+    letters = "".join(f'<text x="{x}" y="{y + 8}" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" font-size="24" '
+                      f'font-weight="600" fill="{"#f6f4ef" if n == "B" else "#4a4f5c"}">{n}</text>' for n, (x, y) in NODES.items() if n in "BH")
+    content = f'<g transform="translate({OX},{OY})">{core_snapshot()}{letters}</g>'
+    lines = "".join(f'<line x1="{a:.1f}" y1="{b:.1f}" x2="{c:.1f}" y2="{d:.1f}" stroke="#1b1f2a" stroke-width="1.5"/>'
+                    for a, b, c, d in tangents((sx, sy), sr, (lx, ly), lr))
+    m = lr / sr
+    art = (f'<defs><clipPath id="zs"><circle cx="{sx}" cy="{sy}" r="{sr}"/></clipPath>'
+           f'<clipPath id="zl"><circle cx="{lx}" cy="{ly}" r="{lr}"/></clipPath></defs>{lines}'
+           f'<circle cx="{sx}" cy="{sy}" r="{sr}" fill="#f6f4ef"/><g clip-path="url(#zs)">{content}</g>'
+           f'<circle cx="{sx}" cy="{sy}" r="{sr}" fill="none" stroke="#1b1f2a" stroke-width="3"/>'
+           f'<circle cx="{lx}" cy="{ly}" r="{lr}" fill="#f6f4ef"/>'
+           f'<g clip-path="url(#zl)"><g transform="translate({lx},{ly}) scale({m:.3f}) translate({-sx},{-sy})">{content}</g></g>'
+           f'<circle cx="{lx}" cy="{ly}" r="{lr}" fill="none" stroke="#1b1f2a" stroke-width="3"/>')
+    return "\n".join([
+        f'  <div data-build-in="fade {ZOOM}" style="position:absolute; top:280px; left:0; width:1920px; height:800px; '
+        f'background:rgba(246,244,239,0.7); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px)"></div>',
+        f'  <svg data-build-in="fade {ZOOM}" aria-label="One thrust, from B out to H, magnified." style="position:absolute; top:0; left:0; '
+        f'width:1920px; height:1080px; overflow:visible" viewBox="0 0 1920 1080">{art}</svg>',
+        f'  <h3 data-build-in="fade {ZOOM}" style="position:absolute; top:{ly + lr + 40}px; left:128px; width:1664px; {SERIF}; '
+        f'font-size:48px; font-weight:600; text-align:center; color:#1b1f2a">Each thrust is hard. How do we push through?</h3>',
+    ])
 
 
 def render(sid, eyebrow, title, chip, notes, promote, panel):
@@ -208,6 +254,7 @@ def render(sid, eyebrow, title, chip, notes, promote, panel):
   </div>{chip_tag(chip)}
 {chr(10).join(layers)}
 {panel}
+{zoom()}
   <aside>{notes}</aside>
 </section>
 '''
