@@ -90,6 +90,14 @@ SPOKEN = [
 ]
 
 
+TAG = re.compile(r"<\|[a-z_]+:[a-z_]+\|>")
+
+
+def plain(text):
+    """The text without inline Higgs control tags (emotion, prosody, ...)."""
+    return re.sub(r"\s+", " ", TAG.sub("", text)).strip()
+
+
 def spoken(text):
     for pat, rep in SPOKEN:
         text = re.sub(pat, rep, text)
@@ -113,11 +121,11 @@ def build_segments(slide_no, notes):
     for sentence in sentences(notes):
         while k < len(anchors):
             step, phrase = anchors[k]
-            if sentence.startswith(phrase):
+            if plain(sentence).startswith(phrase):
                 segments.append([step, [sentence], []])
                 k += 1
                 continue
-            if phrase in sentence and not any(sentence.startswith(p) for _, p in anchors[k + 1:]):
+            if phrase in plain(sentence) and not any(plain(sentence).startswith(p) for _, p in anchors[k + 1:]):
                 if not segments[-1][1] or segments[-1][1][-1] != sentence:
                     segments[-1][1].append(sentence)
                 segments[-1][2].append((step, phrase))
@@ -273,11 +281,11 @@ def main():
                     seed += 1
                     audio = generate(text, seed)
                     secs = len(audio) / SR
-                    rate = len(text.split()) / max(secs, 0.1) * 60  # words per minute
+                    rate = len(plain(text).split()) / max(secs, 0.1) * 60  # words per minute
                     with torch.cuda.device(torch.device(args.asr_device)):
                         res = asr.transcribe(to16k(audio), language="en", word_timestamps=True)
                     heard = res["text"]
-                    err = error_rate(text, heard)
+                    err = error_rate(plain(text), heard)
                     ok = err <= MAX_ERR and 110 <= rate <= 220
                     score = err + (0 if 110 <= rate <= 220 else 1)
                     if best is None or score < best[0]:
@@ -287,8 +295,8 @@ def main():
                         break
                 _, audio, err, rate, tries, heard, hw = best
                 secs = len(audio) / SR
-                for st, phrase in [x for x in pending if x[1] in chunk]:
-                    at, how = phrase_time(phrase, chunk, hw, secs)
+                for st, phrase in [x for x in pending if x[1] in plain(chunk)]:
+                    at, how = phrase_time(phrase, plain(chunk), hw, secs)
                     slide_cues[st] = round(max(t, t + at - LEAD), 3)
                     pending.remove((st, phrase))
                     print(f"  inline step {st} at +{at:.2f}s ({how}): {phrase!r}", flush=True)
