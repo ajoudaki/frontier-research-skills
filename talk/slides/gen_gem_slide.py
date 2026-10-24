@@ -183,7 +183,7 @@ def main():
             f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">10 · The gem in the haystack</p>\n'
             f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">From the haystack to the gem.</h2>\n  </div>')
     layers = outline + fill + grow + judge + question + [dim] + core_again + col
-    notes = ("Let's go back to where we started: the gem in the haystack. Here's what a real project looks like over time. "
+    notes = ("Remember the gem in the haystack? Here's what a real project looks like over time. "
              "From the research question, studies branch out. "
              "Some pass the gate and join the core; most don't. "
              "New studies branch off what passed, level by level. "
