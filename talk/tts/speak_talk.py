@@ -274,7 +274,8 @@ def main():
                     audio = generate(text, seed)
                     secs = len(audio) / SR
                     rate = len(text.split()) / max(secs, 0.1) * 60  # words per minute
-                    res = asr.transcribe(to16k(audio), language="en", word_timestamps=True)
+                    with torch.cuda.device(torch.device(args.asr_device)):
+                        res = asr.transcribe(to16k(audio), language="en", word_timestamps=True)
                     heard = res["text"]
                     err = error_rate(text, heard)
                     ok = err <= MAX_ERR and 110 <= rate <= 220
