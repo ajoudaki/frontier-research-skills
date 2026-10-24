@@ -1,4 +1,6 @@
-"""Generate talk/slides/slides/project.html, the animated promotion-gate slide.
+"""Generate talk/slides/slides/project.html and develop.html, the animated promotion-gate slide.
+
+develop.html is the same diagram with a closer-look header and its own notes.
 
 Build order: studies appear one by one; the promotion-gate card comes in;
 A, B, C are promoted one by one (edge and node turn orange, a tick appears on
@@ -147,6 +149,23 @@ NOTES = (
     "paper. That's the whole toolkit, so let me wrap up."
 )
 
+DEVELOP_NOTES = (
+    "So far, that's one question. A real project is many of them, and that's where develop-project comes in. From the research "
+    "question, studies branch out. Each study has its own question, its permitted inputs, an owner and its own folder, and a study "
+    "that should be independent doesn't get to see the others' work. Inside each study, the agents formulate, solve and learn. "
+    "When a study has a result, it doesn't go straight into the project. It goes through a promotion gate: an independent review "
+    "of the full argument and code, an integration check on notation, interfaces and tests, and your approval. Pass, and the "
+    "result joins the established core, which grows with every promotion. Fail, and the study stays outside, but its evidence "
+    "and its status are kept. What passes becomes something you can build on: new studies branch off it and rely on it as an "
+    "accepted result. And when the core is ready to become a paper, it goes to the last skill."
+)
+
+# (id, eyebrow, title, chip, notes): the talk's slide, and its closer-look twin at the end.
+VARIANTS = (
+    ("project", "06 · A whole project", "Develop in isolation, then audit cold.", None, NOTES),
+    ("develop", "A closer look · Develop", "Grow a core, one gate at a time.", "develop-project", DEVELOP_NOTES),
+)
+
 
 def main():
     layers = []
@@ -197,19 +216,23 @@ def main():
     audit = card(AUDIT_CARD, 705, "Audit", "review-paper",
                  f'    <p style="{SANS}; font-size:24px; line-height:1.4; color:#1b1f2a">A fresh reviewer gets the finished paper, not its history.</p>')
 
-    html = f'''<section id="project" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; padding:128px 128px 160px; background:#f6f4ef">
+    for sid, eyebrow, title, chip, notes in VARIANTS:
+        chip_html = (f'\n  <p style="position:absolute; top:136px; right:128px; padding:6px 20px; {MONO}; font-size:28px; '
+                     f'color:#b04a33; background:{CORE}; border-radius:8px">{chip}</p>') if chip else ""
+        html = f'''<section id="{sid}" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; padding:128px 128px 160px; background:#f6f4ef">
   <div style="display:flex; flex-direction:column; gap:16px">
-    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">06 · A whole project</p>
-    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">Develop in isolation, then audit cold.</h2>
-  </div>
+    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">{eyebrow}</p>
+    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">{title}</h2>
+  </div>{chip_html}
 {chr(10).join(layers)}
 {develop}
 {audit}
-  <aside>{NOTES}</aside>
+  <aside>{notes}</aside>
 </section>
 '''
-    OUT.write_text(html)
-    print(f"wrote {OUT}")
+        out = OUT.parent / f"{sid}.html"
+        out.write_text(html)
+        print(f"wrote {out}")
 
 
 if __name__ == "__main__":

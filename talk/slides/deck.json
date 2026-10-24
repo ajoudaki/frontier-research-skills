@@ -18,6 +18,7 @@
     "formulate",
     "solve",
     "teach",
+    "develop",
     "review"
   ],
   "sections": {
@@ -36,6 +37,10 @@
     "s4": {
       "description": "The conclusion.",
       "start": "close"
+    },
+    "s5": {
+      "description": "A closer look at each skill.",
+      "start": "formulate"
     }
   },
   "faces": {
