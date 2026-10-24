@@ -1,6 +1,7 @@
 """Generate talk/slides/slides/project.html and develop.html, the animated promotion-gate slide.
 
-develop.html is the same diagram with a closer-look header and its own notes.
+develop.html is the closer-look twin: the same diagram, a panel of three ideas
+synced with it instead of the two cards, and one more step where G is promoted.
 
 Build order: studies appear one by one; the promotion-gate card comes in;
 A, B, C are promoted one by one (edge and node turn orange, a tick appears on
@@ -69,7 +70,8 @@ def study_edge(n, color):
 
 
 def badge_point(n, t):
-    start, tip = endpoints(CENTER, R_CENTER, NODES[n])
+    src, r_src = (NODES[PARENT[n]], R_NODE) if n in PARENT else (CENTER, R_CENTER)
+    start, tip = endpoints(src, r_src, NODES[n])
     return start[0] + (tip[0] - start[0]) * t, start[1] + (tip[1] - start[1]) * t
 
 
@@ -114,7 +116,7 @@ def hull(circles, pad=16, samples=72):
 
 def svg(content, label, build=None):
     b = f' data-build-in="{build}"' if build else ""
-    return (f'  <svg aria-label="{label}"{b} style="position:absolute; top:{OY}px; left:{OX}px; width:{W}px; height:{H}px" '
+    return (f'  <svg aria-label="{label}"{b} style="position:absolute; top:{OY}px; left:{OX}px; width:{W}px; height:{H}px; overflow:visible" '
             f'width="{W}" height="{H}" viewBox="0 0 {W} {H}">{content}</svg>')
 
 
@@ -149,37 +151,42 @@ NOTES = (
     "paper. That's the whole toolkit, so let me wrap up."
 )
 
+STAGES = ("Formulate", "Solve", "Learn", "Develop", "Audit")
+TRACKER = " · ".join(f'<span style="color:{RED if s == "Develop" else "#B9B4A8"}">{s}</span>' for s in STAGES)
+
 DEVELOP_NOTES = (
-    "So far, that's one question. A real project is many of them, and that's where develop-project comes in. From the research "
-    "question, studies branch out. Each study has its own question, its permitted inputs, an owner and its own folder, and a study "
-    "that should be independent doesn't get to see the others' work. Inside each study, the agents formulate, solve and learn. "
-    "When a study has a result, it doesn't go straight into the project. It goes through a promotion gate: an independent review "
-    "of the full argument and code, an integration check on notation, interfaces and tests, and your approval. Pass, and the "
-    "result joins the established core, which grows with every promotion. Fail, and the study stays outside, but its evidence "
-    "and its status are kept. What passes becomes something you can build on: new studies branch off it and rely on it as an "
-    "accepted result. And when the core is ready to become a paper, it goes to the last skill."
+    "So far, that's one question. A real project is many of them, and that's develop-project. It rests on three ideas. "
+    "From the research question, studies branch out, and the first idea is isolation: each study has its own question, "
+    "inputs and folder, and never sees the others' work. "
+    "That way, an agent stuck on one failed idea can't drag the others into it, and you get the widest exploration. "
+    "Inside each study, the agents formulate, solve and learn. "
+    "The second idea is the promotion gate. A result enters the project's core only if it's correct, by an independent review; "
+    "coherent, in notation, interfaces and tests; and relevant, which means your approval. "
+    "These pass, and the core grows with each one. "
+    "These fail and stay outside, with their evidence kept. So whatever is in the core is worth your time: "
+    "that's the signal-to-noise ratio. "
+    "The third idea: you build on the core. New studies can rely on promoted results, "
+    "and they can be promoted in turn, so the core keeps growing. "
+    "And when the core is ready to become a paper, it goes to the last skill."
 )
 
-# (id, eyebrow, title, chip, notes): the talk's slide, and its closer-look twin at the end.
-VARIANTS = (
-    ("project", "06 · A whole project", "Develop in isolation, then audit cold.", None, NOTES),
-    ("develop", "A closer look · Develop", "Grow a core, one gate at a time.", "develop-project", DEVELOP_NOTES),
-)
 
-
-def main():
+def render(sid, eyebrow, title, chip, notes, promote, panel):
     layers = []
     # The core grows: one outline per promotion, each enclosing the last, under everything else.
     promoted = []
     core_ring = None
-    for n, build in PROMOTE.items():
+    label_ring = None
+    for n, build in promote.items():
         promoted.append(n)
         core_ring = hull([(CENTER, R_CENTER)] + [(NODES[m], R_NODE) for m in promoted])
+        if n == "C":
+            label_ring = core_ring
         path = " ".join(f"{x:.1f},{y:.1f}" for x, y in core_ring)
         layers.append(svg(f'<polygon points="{path}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>',
                           f"The established core grows to include study {n}.", f"fade {build}"))
-    bottom = max(y for _, y in core_ring)
-    core_x = sum(x for x, _ in core_ring) / len(core_ring)
+    bottom = max(y for _, y in label_ring)
+    core_x = sum(x for x, _ in label_ring) / len(label_ring)
     layers.append(f'  <p data-build-in="fade {PROMOTE["C"]}" style="position:absolute; top:{OY + bottom + 6:.0f}px; '
                   f'left:{OX + core_x - 150:.0f}px; width:300px; {SANS}; font-size:24px; font-weight:600; letter-spacing:3px; '
                   f'text-align:center; text-transform:uppercase; color:{RED}">Established core</p>')
@@ -190,7 +197,7 @@ def main():
                           f"Study {n}" + (f", branching off established study {PARENT[n]}." if n in PARENT else ", a thrust out from the research question."),
                           f"fade {build}"))
         layers.append(text(n, "#4a4f5c", f"fade {build}"))
-    for n, build in PROMOTE.items():
+    for n, build in promote.items():
         x, y = NODES[n]
         layers.append(svg(study_edge(n, RED) + f'<circle cx="{x}" cy="{y}" r="{R_NODE}" fill="{RED}"/>' + tick(n),
                           f"Study {n} passes the promotion gate.", f"fade {build}"))
@@ -208,6 +215,30 @@ def main():
     layers.append(f'  <p data-build-in="fade 6" style="position:absolute; top:810px; left:128px; width:820px; {SANS}; '
                   f'font-size:24px; line-height:1.4; color:#6b6f7a">Inside each study: formulate, solve, learn.</p>')
 
+    html = f'''<section id="{sid}" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; padding:128px 128px 160px; background:#f6f4ef">
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">{eyebrow}</p>
+    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">{title}</h2>
+  </div>{chip_tag(chip)}
+{chr(10).join(layers)}
+{panel}
+  <aside>{notes}</aside>
+</section>
+'''
+    out = OUT.parent / f"{sid}.html"
+    out.write_text(html)
+    print(f"wrote {out}")
+
+
+def chip_tag(chip):
+    if not chip:
+        return ""
+    return (f'\n  <p style="position:absolute; top:120px; right:128px; padding:6px 20px; {MONO}; font-size:28px; '
+            f'color:#b04a33; background:{CORE}; border-radius:8px">{chip}</p>')
+
+
+def talk_cards():
+    """The talk's slide: the promotion-gate card, then the audit card."""
     develop = card(DEVELOP_CARD, 300, "Develop", "develop-project", f'''    <p style="{SERIF}; font-size:32px; font-weight:600; color:#1b1f2a">The promotion gate</p>
     <p style="{SANS}; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">1</span>  Independent audit</p>
     <p style="{SANS}; font-size:28px; line-height:1.4; color:#1b1f2a"><span style="color:#b04a33">2</span>  Integration: notation, tests, interfaces</p>
@@ -215,24 +246,42 @@ def main():
     <p style="{SANS}; font-size:24px; line-height:1.4; color:#4a4f5c"><span style="color:#b04a33">✓ Pass:</span> joins the core.  <span style="color:#1b1f2a">✕ Fail:</span> stays outside, evidence kept.</p>''')
     audit = card(AUDIT_CARD, 705, "Audit", "review-paper",
                  f'    <p style="{SANS}; font-size:24px; line-height:1.4; color:#1b1f2a">A fresh reviewer gets the finished paper, not its history.</p>')
+    return develop + "\n" + audit
 
-    for sid, eyebrow, title, chip, notes in VARIANTS:
-        chip_html = (f'\n  <p style="position:absolute; top:136px; right:128px; padding:6px 20px; {MONO}; font-size:28px; '
-                     f'color:#b04a33; background:{CORE}; border-radius:8px">{chip}</p>') if chip else ""
-        html = f'''<section id="{sid}" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; padding:128px 128px 160px; background:#f6f4ef">
-  <div style="display:flex; flex-direction:column; gap:16px">
-    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:#b04a33">{eyebrow}</p>
-    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:#1b1f2a">{title}</h2>
-  </div>{chip_html}
-{chr(10).join(layers)}
-{develop}
-{audit}
-  <aside>{notes}</aside>
-</section>
-'''
-        out = OUT.parent / f"{sid}.html"
-        out.write_text(html)
-        print(f"wrote {out}")
+
+def three_ideas():
+    """The closer look: the three ideas, each line arriving with its step of the animation."""
+    PX, PW = 1040, 752
+
+    def ln(top, build, text, size=24, color="#1b1f2a", weight=400, family=SANS):
+        return (f'  <p data-build-in="fade {build}" style="position:absolute; top:{top}px; left:{PX + 48}px; width:{PW - 88}px; '
+                f'{family}; font-size:{size}px; font-weight:{weight}; line-height:1.4; color:{color}">{text}</p>')
+
+    def head(top, build, num, text):
+        return (f'  <p data-build-in="fade {build}" style="position:absolute; top:{top}px; left:{PX + 48}px; width:{PW - 88}px; '
+                f'{SERIF}; font-size:32px; font-weight:600; color:#1b1f2a"><span style="color:#b04a33">{num}</span>  {text}</p>')
+
+    rows = [
+        f'  <div data-build-in="fade 1" style="position:absolute; top:300px; left:{PX}px; width:{PW}px; height:600px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px"></div>',
+        head(330, 1, 1, "Isolated studies"),
+        ln(380, 1, "Each thrust has its own question, inputs and folder, and never sees the others\u2019 work."),
+        ln(448, 6, "→ the widest exploration", color="#b04a33", weight=600),
+        head(518, 7, 2, "A promotion gate"),
+        ln(568, 7, "<b>Correct:</b> an independent review"),
+        ln(604, 7, "<b>Coherent:</b> notation, interfaces, tests"),
+        ln(640, 7, "<b>Relevant:</b> your approval"),
+        ln(688, 13, "→ only what passes enters: high signal-to-noise", color="#b04a33", weight=600),
+        head(758, 14, 3, "Build on the core"),
+        ln(808, 14, "New studies rely on promoted results,"),
+        ln(842, 16, "and can be promoted in turn."),
+    ]
+    return "\n".join(rows)
+
+
+def main():
+    render("project", "06 · A whole project", "Develop in isolation, then audit cold.", None, NOTES, PROMOTE, talk_cards())
+    render("develop", TRACKER, "Develop in isolation, build on what passes.", "develop-project", DEVELOP_NOTES,
+           {**PROMOTE, "G": 16}, three_ideas())
 
 
 if __name__ == "__main__":
