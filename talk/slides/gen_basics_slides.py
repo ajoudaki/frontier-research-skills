@@ -51,12 +51,13 @@ def text(x, y, s, size=22, color=INK, weight=400, anchor="start", family="IBM Pl
 PX, PY, PW, PH = 688, 300, 1104, 620      # the detail panel
 CARDS = [("Context", "A coding agent on one workstation"),
          ("Persistence", "Everything under version control"),
-         ("Reuse", "Projects and skills")]
+         ("Reuse", "Projects and skills"),
+         ("Use them", "Install the skills today")]
 
 
-def card(i, highlight, build):
+def card(i, highlight, build, cards=None):
     top = 300 + i * 158
-    key, what = CARDS[i]
+    key, what = (cards or CARDS)[i]
     border = f"3px solid {RED}" if highlight else f"1px solid {BORDER}"
     bg = "#FBF3EF" if highlight else PAPER
     b = f' data-build-in="{build}"' if build else ""
@@ -171,31 +172,60 @@ def panel_reuse(build):
     return L
 
 
-# ---------- 03 · inside one thrust: many agents ----------
+def panel_install(build):
+    """How to use the skills today: clone, install everywhere or per project, make one the project default."""
+    L = [panel(build, "Use them today: one repo of skills")]
+    code = f"{MONO}; font-size:20px; line-height:1.4; color:{INK}; background:#EFEBE2; border-radius:10px; padding:12px 18px; white-space:pre"
+    rows = [("Get them", "git clone https://github.com/ajoudaki/personal-skills"),
+            ("Everywhere on your machine", "ln -s $PWD/personal-skills/organize-research-project ~/.claude/skills/\n# or ~/.codex/skills/, for Codex"),
+            ("In one project only", "cp -r personal-skills/organize-research-project my-project/.claude/skills/"),
+            ("On by default for a project", "# my-project/AGENTS.md  (or CLAUDE.md), read by every agent there\nUse organize-research-project for every study.")]
+    top = PY + 80
+    for k, (label_, snippet) in enumerate(rows):
+        L.append(p(PX + 40, top, PW - 80, label_, 22, RED, 600, build=f"fade {build}"))
+        L.append(f'  <p data-build-in="fade {build}" style="position:absolute; top:{top + 34}px; left:{PX + 40}px; width:{PW - 80}px; {code}">{snippet}</p>')
+        top += 104 + 28 * snippet.count("\n")
+    L.append(p(PX + 40, PY + PH - 60, PW - 80, "After that, a skill loads when you name it, or when a task matches its description.", 22, DARK,
+               build=f"fade {build}"))
+    return L
+
+
+# ---------- 03 · inside one thrust: the multi-agent engine ----------
+
+ENGINE_CARDS = [("One thread", "Why one long thread fails"),
+                ("Independence", "Fresh agents, different angles"),
+                ("Opposition", "An author and a critic"),
+                ("Cost", "A pyramid, and cheap checks")]
+
 
 def engine():
-    """Zoom into one edge of the map; three ways of working side by side: one long thread, independent
-    agents (three miss the flaw, one catches it), and agents in opposition (an author and a critic
-    exchanging rounds until the objections are resolved)."""
-    L = [heading("03 · Inside one thrust", "The engine: many agents.")]
-    # the map in miniature with the circled push, and below it the same circle magnified, as in a textbook figure
+    """Four stacked cards on the left, one highlighted at a time; the big panel on the right opens on the
+    magnified push into uncharted waters, then shows each card's details in turn."""
+    L = [heading("03 · Inside one thrust", "The multi-agent engine behind every thrust.")]
+    for i in range(4):
+        L.append(card(i, False, None, ENGINE_CARDS))
+
+    # step 0: the panel opens on the push into uncharted waters, magnified
     snap = json.loads((Path(__file__).resolve().parent / "gem_snapshot.json").read_text())
     vx, vy, vw, vh = snap["viewBox"]
     mx, my, cr = snap["circle"]
-    IW, IX, IY = 340, 128, 296
+    L.append(f'  <div style="position:absolute; top:{PY}px; left:{PX}px; width:{PW}px; height:{PH}px; background:{PAPER}; '
+             f'border:1px solid {BORDER}; border-radius:16px"></div>')
+    L.append(p(PX + 40, PY + 32, PW - 80, "The frontier, magnified", 22, RED, 600, extra="; letter-spacing:3px; text-transform:uppercase"))
+    IW, IX, IY = 420, PX + 40, PY + 110
     s = IW / vw
     IH = round(vh * s)
     L.append(f'  <svg aria-label="The map from the strategy slide, with the push into uncharted waters circled." '
              f'style="position:absolute; top:{IY}px; left:{IX}px; width:{IW}px; height:{IH}px" width="{IW}" height="{IH}" '
              f'viewBox="{vx:.0f} {vy:.0f} {vw:.0f} {vh:.0f}">{snap["svg"]}{snap["push"]}'
              f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{cr:.1f}" fill="none" stroke="{INK}" stroke-width="{3 / s:.1f}"/></svg>')
-    sx, sy, sr = IX + (mx - vx) * s, IY + (my - vy) * s, cr * s          # the small circle on the slide
-    BR = 132
-    bx, by = IX + IW / 2, IY + IH + 26 + BR                              # the magnified circle
-    zoom = 1.25 * cr                                                     # half-width of the region it shows
-    lines = (f'<line x1="{sx - sr:.1f}" y1="{sy:.1f}" x2="{bx - BR:.1f}" y2="{by:.1f}" stroke="{INK}" stroke-width="1.5"/>'
-             f'<line x1="{sx + sr:.1f}" y1="{sy:.1f}" x2="{bx + BR:.1f}" y2="{by:.1f}" stroke="{INK}" stroke-width="1.5"/>')
-    L.append(svg(0, 0, 1920, 1080, lines, "Lines joining the small circle to its magnified view."))
+    sx, sy, sr = IX + (mx - vx) * s, IY + (my - vy) * s, cr * s
+    BR = 200
+    bx, by = PX + PW - 60 - BR, PY + 70 + BR
+    zoom = 1.25 * cr
+    L.append(svg(0, 0, 1920, 1080, f'<line x1="{sx:.1f}" y1="{sy - sr:.1f}" x2="{bx:.1f}" y2="{by - BR:.1f}" stroke="{INK}" stroke-width="1.5"/>'
+                 f'<line x1="{sx:.1f}" y1="{sy + sr:.1f}" x2="{bx:.1f}" y2="{by + BR:.1f}" stroke="{INK}" stroke-width="1.5"/>',
+                 "Lines joining the small circle to its magnified view."))
     L.append(f'  <svg aria-label="The circled push, magnified: a study at the edge of the core reaching into uncharted waters." '
              f'style="position:absolute; top:{by - BR:.0f}px; left:{bx - BR:.0f}px; width:{2 * BR}px; height:{2 * BR}px" '
              f'width="{2 * BR}" height="{2 * BR}" viewBox="{mx - zoom:.1f} {my - zoom:.1f} {2 * zoom:.1f} {2 * zoom:.1f}">'
@@ -203,44 +233,44 @@ def engine():
              f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom:.1f}" fill="{BG}"/>'
              f'<g clip-path="url(#lens)">{snap["svg"]}{snap["push"]}</g>'
              f'<circle cx="{mx:.1f}" cy="{my:.1f}" r="{zoom - 1.5 * zoom / BR:.1f}" fill="none" stroke="{INK}" stroke-width="{3 * zoom / BR:.2f}"/></svg>')
-    L.append(p(128, by + BR + 14, IW, "One push into uncharted waters. The frontier is hard: how do we make it succeed, and correctly?",
-               22, DARK, extra="; line-height:1.4"))
+    L.append(p(PX + 40, PY + PH - 92, PW - 80, "One push into uncharted waters. The frontier is hard, even for a very capable model: "
+               "how do we make it succeed, and correctly?", 24, DARK, extra="; line-height:1.4"))
 
-    PW_, PT, PH_ = 412, 300, 580
-    lefts = [520, 950, 1380]
+    W = PW - 80
+    R = 16
 
-    def frame(i, title, color, b):
-        return (f'  <div data-build-in="fade {b}" style="position:absolute; top:{PT}px; left:{lefts[i]}px; width:{PW_}px; height:{PH_}px; '
-                f'background:{PAPER}; border:2px solid {color}; border-radius:16px"></div>\n'
-                + p(lefts[i] + 24, PT + 22, PW_ - 48, title, 20, color, 600, build=f"fade {b}", extra="; letter-spacing:3px; text-transform:uppercase"))
+    def show(i, step, title):
+        out = [card(i, True, f"fade {step}", ENGINE_CARDS)]
+        if i:
+            out.append(card(i - 1, False, f"fade {step}", ENGINE_CARDS))
+        out.append(panel(step, title))
+        return out
 
-    def words(i, top, s, b, size=22, color=DARK, weight=400):
-        return p(lefts[i] + 24, PT + top, PW_ - 48, s, size, color, weight, build=f"fade {b}", extra="; line-height:1.4")
-
-    R, SW = 12, PW_ - 48
     # 1. one long thread: the first steps, the mistake, then everything after it
-    L.append(frame(0, "One long thread", MUTED, 1))
-    xs = [18 + 52 * k for k in range(7)]
-    base = f'<line x1="{xs[0]}" y1="40" x2="{xs[-1]}" y2="40" stroke="{GRAY}" stroke-width="3"/>' + dot(xs[0], 40, INK, r=R) + dot(xs[1], 40, SOFT, r=R)
-    L.append(svg(lefts[0] + 24, PT + 80, SW, 100, base, "One thread: the main agent's first steps.", "fade 1"))
-    L.append(svg(lefts[0] + 24, PT + 80, SW, 100, dot(xs[2], 40, RED, r=R) + text(xs[2], 84, "one mistake", 20, RED, 600, "middle"),
-                 "The third step is a mistake.", "fade 2"))
-    L.append(svg(lefts[0] + 24, PT + 80, SW, 100, "".join(dot(x, 40, TAINT, r=R) for x in xs[3:]) + text(xs[-1] + R, 84, "…never recovers", 20, MUTED, 400, "end"),
+    L += show(0, 1, "One long thread")
+    xs = [30 + 74 * k for k in range(13)]
+    base = f'<line x1="{xs[0]}" y1="60" x2="{xs[-1]}" y2="60" stroke="{GRAY}" stroke-width="3"/>' + dot(xs[0], 60, INK, r=R) + "".join(dot(x, 60, SOFT, r=R) for x in xs[1:3])
+    L.append(svg(PX + 40, PY + 110, W, 140, base, "One thread: the main agent's first steps.", "fade 1"))
+    L.append(svg(PX + 40, PY + 110, W, 140, dot(xs[3], 60, RED, r=R) + text(xs[3], 112, "one mistake", 24, RED, 600, "middle"),
+                 "The fourth step is a mistake.", "fade 2"))
+    L.append(svg(PX + 40, PY + 110, W, 140, "".join(dot(x, 60, TAINT, r=R) for x in xs[4:]) + text(xs[-1] + R, 112, "…and it never recovers", 24, MUTED, 400, "end"),
                  "Every later step inherits the mistake.", "fade 3"))
-    L.append(words(0, 300, "Everything piles into one context. An early mistake anchors everything after it, and asking the thread "
-                   "to be unbiased can't undo that.", 3))
+    L += bullets(3, ["Everything piles into one context: every dead end, every claim, every sentiment",
+                     "An early mistake anchors everything after it",
+                     "Asking the thread to be unbiased can't undo that"], PY + 330)
+
     # 2. independent agents: one branch at a time, the last one catching the flaw
-    L.append(frame(1, "Independent agents", RED, 4))
-    root = (SW / 2, 26)
-    cols = [SW / 2 - 132, SW / 2 - 44, SW / 2 + 44, SW / 2 + 132]
-    lv = [92, 152]
+    L += show(1, 4, "Independence: fresh agents, different angles")
+    root = (W / 2, 36)
+    cols = [W / 2 - 330, W / 2 - 110, W / 2 + 110, W / 2 + 330]
+    lv = [116, 196]
     tree = [[(0, 0, 0), (1, 0, 0)],
-            [(0, 0, 0), (1, -20, 0), (1, 20, 0)],
+            [(0, 0, 0), (1, -30, 0), (1, 30, 0)],
             [(0, 0, 0)],
-            [(0, -18, None), (0, 18, None), (1, 18, 18)]]
-    CAUGHT = (3, 1, 18)
-    L.append(svg(lefts[1] + 24, PT + 70, SW, 230, dot(*root, INK, r=R), "The main agent starts fresh agents.", "fade 4"))
-    labels = ["missed", "missed", "missed", "caught"]
+            [(0, -28, None), (0, 28, None), (1, 28, 28)]]
+    CAUGHT = (3, 1, 28)
+    L.append(svg(PX + 40, PY + 90, W, 290, dot(*root, INK, r=R), "The main agent starts fresh agents.", "fade 4"))
+    labels = ["missed", "missed", "missed", "caught it"]
     for b, nodes in enumerate(tree):
         art = ""
         for level, dx, pdx in nodes:
@@ -249,76 +279,109 @@ def engine():
             on_path = b == CAUGHT[0] and dx == CAUGHT[2]
             art += f'<line x1="{px:.1f}" y1="{py}" x2="{x:.1f}" y2="{y - R}" stroke="{RED if on_path else SOFT}" stroke-width="3"/>'
             if (b, level, dx) == CAUGHT:
-                art += dot(x, y, RED, r=R) + (f'<polyline points="{x - 6},{y} {x - 2},{y + 4} {x + 6},{y - 5}" fill="none" '
-                                              f'stroke="{PAPER}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>')
+                art += dot(x, y, RED, r=R) + (f'<polyline points="{x - 8},{y} {x - 2},{y + 6} {x + 8},{y - 7}" fill="none" '
+                                              f'stroke="{PAPER}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>')
             else:
                 art += dot(x, y, PAPER, GRAY, R)
-        art += text(cols[b], 200, labels[b], 20, RED if b == 3 else MUTED, 600 if b == 3 else 400, "middle")
-        L.append(svg(lefts[1] + 24, PT + 70, SW, 230, art, f"Fresh agent {b + 1} explores its own branch and {labels[b]} the flaw.", f"fade {4 + b}"))
-    L.append(words(1, 300, "Fresh, isolated, from different angles. Several can miss; one catch is enough.", 7))
-    L.append(words(1, 420, "In the skills: parallel proof routes; independent reviews at the promotion gate.", 7, 20, MUTED))
+        art += text(cols[b], 256, labels[b], 24, RED if b == 3 else MUTED, 600 if b == 3 else 400, "middle")
+        L.append(svg(PX + 40, PY + 90, W, 290, art, f"Fresh agent {b + 1} explores its own branch and {labels[b]} the flaw.", f"fade {4 + b}"))
+    L += bullets(7, ["Each starts clean, isolated, and sees only its own folder",
+                     "Several can miss; one catch is enough",
+                     "In the skills: parallel proof routes; independent reviews at the promotion gate"], PY + 420)
+
     # 3. agents in opposition: an author and a critic, round by round
-    L.append(frame(2, "Agents in opposition", INK, 8))
-    ax, cx = 70, SW - 70
-    head = (f'<line x1="{ax}" y1="56" x2="{ax}" y2="256" stroke="{BORDER}" stroke-width="3" stroke-dasharray="6 6"/>'
-            f'<line x1="{cx}" y1="56" x2="{cx}" y2="256" stroke="{BORDER}" stroke-width="3" stroke-dasharray="6 6"/>'
-            + dot(ax, 40, INK, r=R) + dot(cx, 40, RED, r=R)
-            + text(ax, 18, "author", 20, INK, 600, "middle") + text(cx, 18, "critic", 20, RED, 600, "middle"))
-    L.append(svg(lefts[2] + 24, PT + 70, SW, 270, head, "An author and a critic.", "fade 8"))
-    rounds = [("claim", ax, cx, INK, 96), ("objection", cx, ax, RED, 148), ("repair", ax, cx, INK, 200)]
-    for k, (name, x1, x2, color, y) in enumerate(rounds):
-        art = arrow(x1 + (10 if x2 > x1 else -10), y, x2 - (10 if x2 > x1 else -10), y, color, 3) + text((ax + cx) / 2, y - 10, name, 20, color, 600, "middle")
-        L.append(svg(lefts[2] + 24, PT + 70, SW, 270, art, f"The {name}.", f"fade {8 + k}"))
-    done = tick_badge(cx, 246, RED, 15) + text(cx - 26, 252, "resolved", 20, RED, 600, "end")
-    L.append(svg(lefts[2] + 24, PT + 70, SW, 270, done, "The critic re-checks: the objection is resolved.", "fade 11"))
-    L.append(words(2, 360, "Opposing roles, round after round. A single thread can't argue with itself.", 11))
-    L.append(words(2, 450, "In the skills: the hostile audit of formulate-problem; separate checks of a candidate proof; "
-                   "a fresh review after every correction.", 11, 20, MUTED))
-    L.append(transition("Easier said than done. How do we run this in practice?", 12))
+    L += show(2, 8, "Opposition: an author and a critic")
+    ax, cx = 220, W - 220
+    head = (f'<line x1="{ax}" y1="74" x2="{ax}" y2="290" stroke="{BORDER}" stroke-width="3" stroke-dasharray="6 6"/>'
+            f'<line x1="{cx}" y1="74" x2="{cx}" y2="290" stroke="{BORDER}" stroke-width="3" stroke-dasharray="6 6"/>'
+            + dot(ax, 54, INK, r=R) + dot(cx, 54, RED, r=R)
+            + text(ax, 24, "author", 24, INK, 600, "middle") + text(cx, 24, "critic", 24, RED, 600, "middle"))
+    L.append(svg(PX + 40, PY + 84, W, 310, head, "An author and a critic.", "fade 8"))
+    for k, (name, x1, x2, color, y) in enumerate([("claim", ax, cx, INK, 120), ("objection", cx, ax, RED, 180), ("repair", ax, cx, INK, 240)]):
+        sgn = 1 if x2 > x1 else -1
+        art = arrow(x1 + 12 * sgn, y, x2 - 12 * sgn, y, color, 3) + text((ax + cx) / 2, y - 12, name, 24, color, 600, "middle")
+        L.append(svg(PX + 40, PY + 84, W, 310, art, f"The {name}.", f"fade {8 + k}"))
+    L.append(svg(PX + 40, PY + 84, W, 310, tick_badge(cx, 286, RED, 17) + text(cx - 30, 294, "re-checked: resolved", 24, RED, 600, "end"),
+                 "The critic re-checks: the objection is resolved.", "fade 11"))
+    L += bullets(11, ["Opposing roles, round after round; a single thread can't argue with itself",
+                      "In the skills: the hostile audit of formulate-problem",
+                      "Separate checks of a candidate proof; a fresh review after every correction"], PY + 430)
+
+    # 4. cost: the pyramid, and cheap checks
+    L += show(3, 12, "Cost: a pyramid, and cheap checks")
+    tiers = [("you", "judgment, approval", INK, PAPER),
+             ("most capable models", "reviews, final checks, hardest steps", RED, PAPER),
+             ("capable models", "drafting, derivations", "#D98A72", INK),
+             ("cheaper models", "code, routine runs", "#EBC3B5", INK)]
+    PWid, top, th = 680, 24, 86
+    art = ""
+    for k, (who, what, fill, fg) in enumerate(tiers):
+        y = top + k * (th + 6)
+        half_top, half_bot = 60 + k * (PWid / 2 - 60) / 4, 60 + (k + 1) * (PWid / 2 - 60) / 4
+        c = PWid / 2
+        art += (f'<polygon points="{c - half_top:.1f},{y} {c + half_top:.1f},{y} {c + half_bot:.1f},{y + th} {c - half_bot:.1f},{y + th}" fill="{fill}"/>')
+        art += text(c, y + 38, who, 23, fg, 600, "middle") + text(c, y + 66, what, 20, fg, 400, "middle")
+    L.append(svg(PX + 40, PY + 80, PWid, 380, art, "A cost pyramid: you at the top, the most capable models just below for what is mission-critical, "
+                 "capable models below them, and cheaper models at the base.", "fade 12"))
+    up = arrow(20, 340, 20, 30, RED, 3) + text(40, 190, "failures below", 22, RED, 600, "start") + text(40, 218, "are caught above", 22, RED, 600, "start")
+    L.append(svg(PX + 40 + PWid + 20, PY + 80, 300, 380, up, "Failures at a lower level are caught by the audits above it.", "fade 13"))
+    L.append(f'  <div data-build-in="fade 14" style="position:absolute; top:{PY + 480}px; left:{PX + 40}px; width:{W}px; display:flex; flex-direction:column; '
+             f'gap:6px; padding:18px 22px; background:#FBF3EF; border:2px solid {RED}; border-radius:14px">\n'
+             f'    <p style="{SANS}; font-size:22px; font-weight:600; color:{RED}">And when a claim can be tested, test it</p>\n'
+             f'    <p style="{SANS}; font-size:22px; line-height:1.4; color:{DARK}">A short script can refute a false claim in seconds; re-checking a '
+             f'proof takes far longer. In the skills: sanity checks on small cases, and a counterexample search.</p>\n  </div>')
+    L.append(transition("How do we implement all this in practice?", 15))
     notes = ("Let's zoom into that one push. It's a hard research barrier, out in uncharted waters, and even a very capable model can "
-             "fail here. How do we maximize the chance it gets through, and correctly? The answer is many agents. "
-             "Compare three ways of working. "
-             "One long thread accumulates everything: every dead end, every earlier claim, every sentiment. "
+             "fail here. How do we maximize the chance it gets through, and correctly? The answer is a multi-agent engine. "
+             "First, why not one long thread? It accumulates everything: every dead end, every earlier claim, every sentiment. "
              "Once it makes an early mistake, "
              "everything after it is anchored to it, and telling it to be unbiased can't undo that. "
-             "Independent agents start fresh, isolated, and from different angles. The first one misses the flaw. "
+             "Independent agents start fresh, isolated, from different angles. The first one misses the flaw. "
              "So does the second. "
              "And the third. "
              "The fourth catches it, and one catch is all you need. That's how the skills run parallel proof routes and "
              "independent reviews. "
-             "And agents can also work against each other. An author makes a claim. "
+             "Agents can also work against each other. An author makes a claim. "
              "A critic objects. "
              "The author repairs it. "
              "And the critic checks again, round after round, until the objections are resolved. A single thread can't argue "
-             "with itself like that. That's the hostile audit in formulate-problem, the separate checks on a candidate proof, and "
-             "the fresh review after every correction. "
-             "But this is easier said than done. How do we run it in practice?")
+             "with itself like that. "
+             "And it has to be cost-effective. Think of it as a pyramid. You're at the top: judgment and approval. Just below you, "
+             "the most capable and most expensive models, for what's mission-critical: reviews, final checks, the hardest steps. "
+             "Below them, capable models for drafting and derivations; at the base, cheaper models for code and routine runs. "
+             "The pyramid is built so that a failure at a lower level gets caught by the audits above it. "
+             "And when a claim can be tested, test it: a short script can refute a false claim in seconds, while re-checking a proof "
+             "takes far longer. "
+             "So how do we implement all this in practice?")
     return section("agents", "\n".join(L), notes)
 
 
 # ---------- 04 · the foundations ----------
 
 def foundations():
-    L = [heading("04 · The foundations", "Three foundations that make it practical.")]
-    for i in range(3):
+    L = [heading("04 · The foundations", "Four foundations that make it practical.")]
+    for i in range(4):
         L.append(card(i, False, None))
     # each foundation in turn: its card lights up (a plain copy covers the previous one) and its panel opens
-    for i, make in enumerate([panel_context, panel_persistence, panel_reuse]):
+    for i, make in enumerate([panel_context, panel_persistence, panel_reuse, panel_install]):
         step = i + 1
         L.append(card(i, True, f"fade {step}"))
         if i:
             L.append(card(i - 1, False, f"fade {step}"))
         L += make(step)
-    L.append(transition("In fact, everything we'll talk about from here is a skill. Here are the five.", 4))
-    notes = ("You can simply ask the main thread to start agents. What makes it practical are three foundations. "
+    L.append(transition("In fact, everything we'll talk about from here is a skill. Here are the five.", 5))
+    notes = ("You can simply ask the main thread to start agents. What makes it practical are a few foundations. "
              "Context: a coding agent, not a chat, on one always-on workstation. Then the theory, the LaTeX, the code, the results and "
              "the figures are all in reach. Agents work overnight, and even if you dispatch jobs elsewhere, the results come back. "
              "Persistence: everything under version control, and everything in the same place, theory included. Every snapshot holds "
              "the theory, the code, the audits and the paper together, so when an agent's refactor goes wrong, or you change your mind, "
              "you roll all of it back. "
-             "And reuse. A project is just a folder with a file every agent in it reads, so the project's rules load by default. "
+             "Reuse. A project is just a folder with a file every agent in it reads, so the project's rules load by default. "
              "Prompts you type again and again become skills, which load by name or when a task matches them, and they're plain "
              "files, so they move with you to another model. "
+             "And this is practical today. Clone the repo. Link a skill into your agent's skills folder to have it everywhere, or copy "
+             "it into one project's skills folder. To make it the default for a project, point to it from that project's AGENTS.md "
+             "or CLAUDE.md, which every agent there reads. "
              "In fact, everything we'll talk about from here is a skill. Here are the five.")
     return section("foundations", "\n".join(L), notes)
 
