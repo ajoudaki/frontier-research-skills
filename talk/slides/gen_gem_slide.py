@@ -465,7 +465,7 @@ def render(nodes, edge_px, variant):
         U = GEM_STEP + 1
         col += [f'  <div data-build-in="rise {U}" style="position:absolute; top:440px; left:1220px; width:572px; height:470px; '
                 f'background:{PAPER}; border:1px solid #DCD6CA; border-radius:16px"></div>',
-                p(1248, 466, 500, "Convinced? It's easy to use.", 30, INK, 600, family=SERIF, build=f"rise {U}"),
+                p(1248, 466, 500, "How to use it", 30, INK, 600, family=SERIF, build=f"rise {U}"),
                 p(1248, 520, 500, "Get the skills", 20, RED, 600, build=f"rise {U}"),
                 f'  <p data-build-in="rise {U}" style="position:absolute; top:550px; left:1248px; width:516px; {code}">git clone github.com/ajoudaki/personal-skills</p>',
                 p(1248, 616, 500, "Install one for every project", 20, RED, 600, build=f"rise {U}"),
@@ -509,7 +509,7 @@ def render(nodes, edge_px, variant):
              "Then review-paper audits the carved-out part as a whole paper: the claims, the literature, the novelty. Only a small part "
              "of everything we explored becomes the paper. Reading all of it would have been an enormous effort; reading and digesting "
              "this part is not. That's the gem in the haystack. "
-             "And if you're convinced, it's easy to use. Clone the repo, link a skill into your agent's skills folder, or make it a "
+             "Here's how to use it. Clone the repo, link a skill into your agent's skills folder, or make it a "
              "project's default from its AGENTS.md or CLAUDE.md. The README has the details. So let me wrap up.")
     return section("gem", head + "\n" + "\n".join(layers), notes)
 
