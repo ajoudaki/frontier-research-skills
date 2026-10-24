@@ -323,7 +323,11 @@ def render(nodes, edge_px, variant):
                     + f'<path d="{core_shape}" fill="{CORE}" stroke="{RED}" stroke-width="3" stroke-linejoin="round"/>'
                     + "".join(edge(nd, RED if nd["core"] else STRAW_EDGE) for nd in nodes[1:])
                     + "".join(disc(nd, RED if nd["core"] else STRAW) for nd in nodes[1:]) + gem_art)
-        SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot}))
+        # one ordinary thrust edge, midway out, for the many-agents slide to zoom into
+        out = sorted((nd for nd in rest if 3 <= nd["level"] <= 5), key=lambda nd: math.dist(nd["xy"], (CX, CY)))
+        focus = out[len(out) // 2]
+        (fx1, fy1), (fx2, fy2) = nodes[focus["parent"]]["xy"], focus["xy"]
+        SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot, "focus": [fx1, fy1, fx2, fy2]}))
 
     # the right-hand column
     C = 1350
@@ -341,7 +345,7 @@ def render(nodes, edge_px, variant):
                + legend(650, f'<g transform="scale(0.44)">{GEM.format(fill=SAPPHIRE, line=PAPER)}</g>', "The gem: a paper",
                         "carved out, audited for novelty and significance", f"fade {GEM_STEP}")
                + [p(C, 780, 442, "That's the gem in the haystack.", 30, SAPPHIRE, 600, family=SERIF, build=f"fade {GEM_STEP}"),
-                  p(128, 950, 1664, "Easier said than done. How do we actually achieve it?", 30, RED, family=SERIF, build=f"fade {GEM_STEP + 1}",
+                  p(128, 950, 1664, "That's the map. But what makes each step along an edge trustworthy?", 30, RED, family=SERIF, build=f"fade {GEM_STEP + 1}",
                     extra="; font-style:italic")])
     else:
         # four regions as a pipeline, coloured like the graph; the skills annotate the edges between them
@@ -368,7 +372,7 @@ def render(nodes, edge_px, variant):
         col[0] = col[0].replace(' data-build-in="fade 0"', "")
 
     eyebrow, title = (("02 · The strategy", "The strategy at a glance.") if variant == "strategy"
-                      else ("10 · Putting it all together", "From the haystack to the core to the gem."))
+                      else ("11 · Putting it all together", "From the haystack to the core to the gem."))
     head = (f'  <div style="display:flex; flex-direction:column; gap:12px">\n'
             f'    <p style="{SANS}; font-size:24px; font-weight:600; letter-spacing:4px; text-transform:uppercase; color:{RED}">{eyebrow}</p>\n'
             f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">{title}</h2>\n  </div>')
@@ -385,7 +389,7 @@ def render(nodes, edge_px, variant):
                  "and that's how you stay in control. "
                  "Finally, a part of the core is carved out and audited again, for novelty and significance: is it scientifically "
                  "worthy? That's the paper, and that's the gem in the haystack. "
-                 "But this is easier said than done. How do we actually achieve it?")
+                 "That's the map, the global strategy. But what makes each step along an edge trustworthy?")
         return section("strategy", head + "\n" + "\n".join(layers), notes)
     notes = ("Let's put it all together, now that we've seen every piece. We start from one open-ended question. "
              "organize-research-project turns it into research thrusts, and inside each one, formulate, solve and learn. "

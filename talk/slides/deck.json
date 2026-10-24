@@ -10,6 +10,7 @@
     "cover",
     "bottleneck",
     "strategy",
+    "agents",
     "foundations",
     "overview",
     "develop",
@@ -26,8 +27,8 @@
       "start": "cover"
     },
     "s2": {
-      "description": "The foundations under the strategy.",
-      "start": "foundations"
+      "description": "Inside one thrust: many agents, and the foundations that make it practical.",
+      "start": "agents"
     },
     "s3": {
       "description": "Five skills: organize, then each thrust, then the audit.",

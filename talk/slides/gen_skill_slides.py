@@ -94,7 +94,7 @@ def label(text, color=RED):
 
 
 STAGES = ("Organize", "Formulate", "Solve", "Learn", "Audit")
-NUMBER = {"Organize": "05", "Formulate": "06", "Solve": "07", "Learn": "08", "Audit": "09"}
+NUMBER = {"Organize": "06", "Formulate": "07", "Solve": "08", "Learn": "09", "Audit": "10"}
 FAINT = "#B9B4A8"
 
 
@@ -123,7 +123,7 @@ def title_block(eyebrow, title):
 # ---------- 04 · overview: the five skills, one block at a time ----------
 
 def overview():
-    L = [title_block("04 · Five skills", "Five skills: from open-ended question to paper.")]
+    L = [title_block("05 · Five skills", "Five skills: from open-ended question to paper.")]
 
     def card(left, top, stage, chip, desc, build):
         return (f'  <div data-build-in="rise {build}" style="position:absolute; top:{top}px; left:{left}px; width:406px; display:flex; '
