@@ -1,0 +1,362 @@
+{
+ "bottleneck": [
+  [
+   1,
+   "We're in the middle"
+  ],
+  [
+   2,
+   "The transition is hard"
+  ],
+  [
+   3,
+   "On top of that"
+  ],
+  [
+   4,
+   "So we end up"
+  ]
+ ],
+ "strategy": [
+  [
+   1,
+   "We organize it into research thrusts"
+  ],
+  [
+   2,
+   "Most go step by step"
+  ],
+  [
+   3,
+   "And with some lag"
+  ],
+  [
+   4,
+   "The thrusts keep pushing out"
+  ],
+  [
+   5,
+   "and the core follows"
+  ],
+  [
+   6,
+   "The explored region's shore"
+  ],
+  [
+   7,
+   "Instead of reading everything"
+  ],
+  [
+   8,
+   "Finally, a part of the core"
+  ],
+  [
+   9,
+   "But look at one thrust"
+  ],
+  [
+   10,
+   "pushing out into uncharted waters"
+  ]
+ ],
+ "agents": [
+  [
+   1,
+   "First, why not one long thread?"
+  ],
+  [
+   2,
+   "Once it makes an early mistake"
+  ],
+  [
+   3,
+   "everything after it is anchored"
+  ],
+  [
+   4,
+   "Independent agents start fresh"
+  ],
+  [
+   5,
+   "So does the second."
+  ],
+  [
+   6,
+   "And the third."
+  ],
+  [
+   7,
+   "The fourth catches it"
+  ],
+  [
+   8,
+   "Agents can also work against each other."
+  ],
+  [
+   9,
+   "A critic objects."
+  ],
+  [
+   10,
+   "The author repairs it."
+  ],
+  [
+   11,
+   "And the critic checks again"
+  ],
+  [
+   12,
+   "And it has to be cost-effective."
+  ],
+  [
+   13,
+   "The pyramid is built"
+  ],
+  [
+   14,
+   "And when a claim can be tested"
+  ]
+ ],
+ "foundations": [
+  [
+   1,
+   "Context:"
+  ],
+  [
+   2,
+   "Persistence:"
+  ],
+  [
+   3,
+   "Reuse."
+  ]
+ ],
+ "overview": [
+  [
+   1,
+   "organize-research-project is the main one"
+  ],
+  [
+   2,
+   "Inside each thrust"
+  ],
+  [
+   3,
+   "solve-problem solves it"
+  ],
+  [
+   4,
+   "and teach-material makes sure"
+  ],
+  [
+   5,
+   "Finally, review-paper audits"
+  ]
+ ],
+ "develop": [
+  [
+   1,
+   "From the research question, studies branch out"
+  ],
+  [
+   6,
+   "That way, an agent stuck"
+  ],
+  [
+   7,
+   "The second idea is the promotion gate."
+  ],
+  [
+   8,
+   "These pass"
+  ],
+  [
+   11,
+   "These fail"
+  ],
+  [
+   13,
+   "So whatever is in the core"
+  ],
+  [
+   14,
+   "The third idea"
+  ],
+  [
+   15,
+   "New studies can rely"
+  ],
+  [
+   16,
+   "and they can be promoted in turn"
+  ],
+  [
+   17,
+   "But let's zoom in on one thrust."
+  ]
+ ],
+ "formulate": [
+  [
+   1,
+   "The question itself is pinned down"
+  ],
+  [
+   2,
+   "The definitions are fixed"
+  ],
+  [
+   3,
+   "The quantifiers keep their order"
+  ],
+  [
+   4,
+   "The evidence standard"
+  ],
+  [
+   5,
+   "And the scope is explicit"
+  ],
+  [
+   6,
+   "Once they're ruled out"
+  ],
+  [
+   7,
+   "Then it's frozen."
+  ]
+ ],
+ "solve": [
+  [
+   1,
+   "With your go-ahead"
+  ],
+  [
+   2,
+   "Two routes that turn out"
+  ],
+  [
+   3,
+   "Mature routes can borrow"
+  ],
+  [
+   4,
+   "But a candidate isn't a proof yet."
+  ],
+  [
+   5,
+   "Only what survives"
+  ],
+  [
+   6,
+   "And now the arrow is solid"
+  ]
+ ],
+ "teach": [
+  [
+   1,
+   "First, notation."
+  ],
+  [
+   2,
+   "Then the idea"
+  ],
+  [
+   3,
+   "Then a toy example"
+  ],
+  [
+   4,
+   "And only then the details."
+  ]
+ ],
+ "review": [
+  [
+   1,
+   "review-paper reads the full submission"
+  ],
+  [
+   2,
+   "It lifts out"
+  ],
+  [
+   3,
+   "It re-derives"
+  ],
+  [
+   4,
+   "It retrieves the cited papers"
+  ],
+  [
+   5,
+   "It audits the code"
+  ],
+  [
+   6,
+   "It rates how plausible"
+  ],
+  [
+   7,
+   "Each flaw gets a severity"
+  ],
+  [
+   8,
+   "And a fatal flaw cascades"
+  ],
+  [
+   9,
+   "The verdict says"
+  ]
+ ],
+ "gem": [
+  [
+   1,
+   "organize-research-project turns it"
+  ],
+  [
+   2,
+   "The explored region grows fast"
+  ],
+  [
+   3,
+   "Behind it, with some lag"
+  ],
+  [
+   4,
+   "That's the balance"
+  ],
+  [
+   7,
+   "And every step raises"
+  ],
+  [
+   8,
+   "Then review-paper audits"
+  ],
+  [
+   9,
+   "Here's how to use it."
+  ]
+ ],
+ "close": [
+  [
+   1,
+   "We started from one"
+  ],
+  [
+   2,
+   "Everything we discussed has one goal"
+  ],
+  [
+   3,
+   "What's next?"
+  ],
+  [
+   4,
+   "And a last, more philosophical note."
+  ],
+  [
+   5,
+   "Everything is in the repo."
+  ]
+ ]
+}
