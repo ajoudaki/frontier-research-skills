@@ -80,8 +80,8 @@ def main():
          f'    <h2 style="{SERIF}; font-size:72px; font-weight:600; line-height:1.1; color:{INK}">Smart models fail beautifully.</h2>\n  </div>']
     for i, (s, top_) in enumerate(zip(points, (400, 480, 560))):
         L.append(p(128, top_, 920, f'<span style="color:{RED}">{i + 1}</span>  {s}', 32, DARK, build=f"rise {i + 1}", extra="; line-height:1.4"))
-    L.append(haystack())
-    L.append(p(1183, 196, 600, f'A <b style="color:{SAPPHIRE}">gem</b> in the haystack.', 48, INK, 600, "center", build="fade 4", family=SERIF))
+    L.append(haystack().replace(' data-build-in="fade 4"', ''))   # on the slide from the start
+    L.append(p(1183, 196, 600, f'A <b style="color:{SAPPHIRE}">gem</b> in the haystack.', 48, INK, 600, "center", family=SERIF))
     notes = ("Let's start with where we are today. We're in the middle of a fundamental transition: from writing every line of code, "
              "paper and theory ourselves, to delegating much more research to very capable models. "
              "The transition is hard, because in research, agents fail silently, and the smarter they get, the harder those failures "

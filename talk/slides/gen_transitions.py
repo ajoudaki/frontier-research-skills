@@ -138,10 +138,10 @@ COVER_NOTES = (
 def cover():
     hay = haystack().replace(' data-build-in="fade 4"', "").replace(
         "style=\"position:absolute; top:0; right:24.55px; width:816.38px; height:880.16px\"",
-        "style=\"position:absolute; top:190px; left:1400px; width:400px; height:431px\"")
+        "style=\"position:absolute; top:150px; left:1210px; width:580px; height:625px\"")
     return f'''<section id="cover" data-transition="fade" style="display:flex; flex-direction:column; gap:40px; justify-content:center; padding:128px; background:#f6f4ef">
-  <h1 style="font-family:'Source Serif 4', Georgia, serif; font-size:120px; font-weight:600; line-height:1.05; color:#1b1f2a">Open-ended research<br>with AI agents</h1>
-  <p style="font-family:'Source Serif 4', Georgia, serif; font-style:italic; font-size:52px; line-height:1.3; color:#2F6FC9">Finding a gem in a haystack</p>
+  <h1 style="font-family:'Source Serif 4', Georgia, serif; font-size:92px; font-weight:600; line-height:1.08; color:#1b1f2a">Open-ended research<br>with AI agents</h1>
+  <p style="font-family:'Source Serif 4', Georgia, serif; font-style:italic; font-size:48px; line-height:1.3; color:#4a4f5c">Finding a <span style="color:#2F6FC9; font-weight:600">gem</span> in a <span style="color:#B89C5E; font-weight:600">haystack</span></p>
 {hay}
   <div style="position:absolute; bottom:96px; left:128px; width:1664px; display:flex; flex-direction:column; gap:12px">
     <x-shape kind="line" style="width:120px; height:4px; flex:0 0 auto; background:#b04a33"></x-shape>

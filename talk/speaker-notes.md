@@ -12,9 +12,7 @@ Hi everyone, I'm Amir. Today's models are smart enough to do real research, but 
 
 **[2]** The transition is hard, because in research, agents fail silently, and the smarter they get, the harder those failures are to catch. The text looks flawless, the figures look great, even the math looks great at a glance. But the real failure is hidden on page 12, in some assumption that quietly absorbs all the complexity.
 
-**[3]** On top of that, they produce code, theory and papers far faster than we can read.
-
-**[4]** So we end up with a pile of results that may contain some gems, but finding them takes an enormous amount of time: a gem in a haystack. And noise isn't only mistakes: a result can be correct but irrelevant. You lose so much control that it can defeat the purpose of using them at all.
+**[3]** On top of that, they produce code, theory and papers far faster than we can read. So we end up with a pile of results that may contain some gems, but finding them takes an enormous amount of time: a gem in a haystack. And noise isn't only mistakes: a result can be correct but irrelevant. You lose so much control that it can defeat the purpose of using them at all.
 
 ## 3. → How do we find the gem?
 So how do we find the gem?
