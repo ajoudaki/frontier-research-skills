@@ -2,7 +2,7 @@
 name: organize-research-project
 description: Set up, adapt, or audit the organization of large research projects combining theory, code, and experiments. Use for project workflows, isolated study boundaries, shared established results, reproducible data and figures, and promotion into maintained theory or code. Do not use solely for an individual proof, experiment, paper lesson, or routine repair under an already clear workflow.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Organize Research Projects
@@ -72,11 +72,11 @@ Use an available specialized skill only when the actual task calls for it:
 
 | Responsibility | Existing skill, when available |
 |---|---|
-| Scientific reasoning within an investigation | `investigate-conjectures` |
-| Standalone proof work | `solve-math-rigorously` |
-| Mathematical notation and presentation | `explain-with-canonical-notation` |
-| Teaching source material | `teach-technical-math` |
-| Reviewing an external AI paper | `review-ai-paper` |
+| Scientific reasoning within an investigation | `formulate-problem` |
+| Standalone proof work | `solve-problem` |
+| Mathematical notation and presentation | `explain-canonically` |
+| Teaching source material | `teach-material` |
+| Reviewing an external AI paper | `review-paper` |
 
 These skills do not replace the project's source boundaries or acceptance
 policy. Their internal ledgers may be sections of the study's existing record;
