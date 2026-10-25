@@ -3,7 +3,7 @@
 Each slide's notes are split by build step: **[k]** is what to say once click k has brought in its part; **[k–m]** covers several clicks.
 
 ## 1. Open-ended research with AI agents
-Hi everyone, I'm Amir. Today's models are smart enough to do real research, but using them on open questions is surprisingly hard: they produce far more than we can check, and their mistakes are silent. In this short talk I'll share the practical habits I developed to do it without losing control. It isn't a principled framework, just what worked for me, mostly in theoretical research, and everything is in a repo linked at the end. Let me start with the problem.
+Hi everyone, I'm Amir. Today's models are smart enough to do real research, but using them on open questions is surprisingly hard: they produce far more than we can check, and their mistakes are silent. What comes out is a haystack, and somewhere in it there may be a gem. This talk is about finding that gem: the practical habits I developed to use these models on open questions without losing control. It isn't a principled framework, just what worked for me, mostly in theoretical research, and everything is in a repo linked at the end. Let me start with the problem.
 
 ## 2. Smart models fail beautifully.
 **[0]** Let's start with where we are today.
@@ -16,8 +16,8 @@ Hi everyone, I'm Amir. Today's models are smart enough to do real research, but 
 
 **[4]** So we end up with a pile of results that may contain some gems, but finding them takes an enormous amount of time: a gem in a haystack. And noise isn't only mistakes: a result can be correct but irrelevant. You lose so much control that it can defeat the purpose of using them at all.
 
-## 3. → How do we find the gem, and stay in control?
-So how do we find the gem, and stay in control?
+## 3. → How do we find the gem?
+So how do we find the gem?
 
 ## 4. The strategy at a glance.
 **[0]** Here's the strategy at a glance, and it answers both questions. Start from one open-ended research question.
@@ -127,7 +127,10 @@ Everything from here is a skill. Here are the five.
 
 **[17]** But let's zoom in on one thrust. Each one is a hard research question, a push into the unknown. How do we push through?
 
-## 12. Formulate the steelman, then freeze it.
+## 12. → First, what exactly is the question?
+Here's one thrust: from something we already know to the next result. But look at the target: it isn't a sharp question at all. It's vague, with fuzzy boundaries, and an agent will happily answer an easier one. So first: what exactly is the question?
+
+## 13. Formulate the steelman, then freeze it.
 **[0]** Here's one thrust. In reality, the target isn't a sharp node at all. It's a vague question, and a lot of time goes into pinning down what we even want. The danger is that a vague question leaves room for answers to an easier question, and an agent will happily take them. The goal is the steelman, not the straw man: the strongest version that stays faithful to what you meant. So formulate-problem writes a research contract, and each field rules something out.
 
 **[1]** The question itself is pinned down, so an easier target doesn't count.
@@ -144,10 +147,10 @@ Everything from here is a skill. Here are the five.
 
 **[7]** Then it's frozen. A material change needs your say, and results for a changed question never count as answers to the original. Now we know exactly where the arrow points.
 
-## 13. → Now, how do we solve it?
+## 14. → Now, how do we solve it?
 Now we have a frozen conjecture, and from what we know to it, a dashed arrow: the proof we still need. Now, how do we solve it?
 
-## 14. Solve by many routes, then audit the proof.
+## 15. Solve by many routes, then audit the proof.
 **[0]** Solving is the second hard push, and it starts from the frozen contract.
 
 **[1]** With your go-ahead, the proof search runs as parallel agents, one per route, and each route uses a genuinely different mechanism: duality, induction, an extremal argument. They all get the same contract, and none is told which strategy to favor, so they stay independent. After every round, a registry keeps score.
@@ -160,10 +163,10 @@ Now we have a frozen conjecture, and from what we know to it, a dashed arrow: th
 
 **[5]** Only what survives gets written up by solve-problem: the plan first, every nontrivial step derived, no 'clearly' in place of a reason, and an answer to exactly the question in the contract.
 
-## 15. → Solved. Do we understand it?
+## 16. → Solved. Do we understand it?
 Solved, most likely: the arrow is solid. But understanding is still the key: to judge the result, and to build on it, we have to understand it. Do we understand it?
 
-## 16. Learn the idea first, then every step.
+## 17. Learn the idea first, then every step.
 **[0]** A correct proof you don't understand isn't worth much. Here's the kind of line an agent, or a paper, might hand you: private symbols everywhere. teach-material, together with explain-canonically, teaches it in layers.
 
 **[1]** First, notation. It translates into the symbols the field already uses: the parameters theta, the loss L, its gradient. Only a few global symbols, each defined with its type before it's used.
@@ -174,10 +177,10 @@ Solved, most likely: the arrow is solid. But understanding is still the key: to 
 
 **[4]** And only then the details. When the argument invokes a theorem, it's stated right there, in the exact form needed, with its hypothesis checked and its conclusion spelled out for our objects. And if you're confused at any point, it rewrites the whole block rather than patching a sentence. Once you understand it, you can judge whether it joins the core. And that completes the loop for one thrust.
 
-## 17. → Is it a paper?
-So the core grows with results that are true and that we understand. Now we carve out a part of it as a paper. But is it a paper? Being correct isn't enough: a paper also needs novelty and significance, and it has to stand against the literature. That needs a different kind of audit.
+## 18. → Carved out of the core: is it a paper?
+So far, results enter the core when they're correct, coherent and relevant. Now we take one compact part of the core, the part that tells a story, and carve it out as a paper. But correct isn't enough for a paper: it also needs novelty and significance, and it has to stand against the literature. Is it a paper?
 
-## 18. Audit every claim against its evidence.
+## 19. Audit every claim against its evidence.
 **[0]** review-paper reads the full submission, code included.
 
 **[1]** It lifts out the three to five claims that matter most, into a ledger. Then it checks each one against its evidence.
@@ -196,10 +199,10 @@ So the core grows with results that are true and that we understand. Now we carv
 
 **[8]** The verdict says whether the central message stands, and the confidence reflects only what was actually checked. And its findings can start the next round of the project.
 
-## 19. → Putting it all together.
+## 20. → Putting it all together.
 Let's put it all together.
 
-## 20. From the haystack to the core to the gem.
+## 21. From the haystack to the core to the gem.
 **[0]** Now that we've seen every piece: we start from one open-ended question.
 
 **[1]** organize-research-project turns it into research thrusts, and inside each one, formulate, solve and learn.
@@ -216,7 +219,7 @@ Let's put it all together.
 
 **[9]** Here's how to use it. Clone the repo, link a skill into your agent's skills folder, or make it a project's default from its AGENTS.md or CLAUDE.md. The README has the details. So let me wrap up.
 
-## 21. From one question to a gem, and what's next.
+## 22. From one question to a gem, and what's next.
 **[0]** So to wrap up.
 
 **[1]** We started from one open-ended question, explored it in thrusts, built a core, and carved out a gem.

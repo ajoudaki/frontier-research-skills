@@ -415,6 +415,7 @@ def render(nodes, edge_px, variant):
                                       "How do we make each push succeed?")
     if variant == "gem":
         SNAPSHOT.write_text(json.dumps({"viewBox": [x0, y0, x1 - x0, y1 - y0], "svg": snapshot, "push": push_art,
+                                        "base": snapshot[:-len(gem_art)], "gem": gem_art,
                                         "circle": [mx, my, ring_r], "push_line": [px, py, nx, ny]}))
 
     # the right-hand column
