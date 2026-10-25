@@ -10,7 +10,9 @@ timer) that stays in sync with the deck. F toggles fullscreen.
 Usage: python talk/build_deck.py
 """
 
+import html
 import json
+import re
 from pathlib import Path
 
 TALK = Path(__file__).resolve().parent
@@ -158,8 +160,11 @@ __SLIDES__
     slides.forEach((s, i) => s.classList.toggle('current', i === slide));
     const shown = steps[slide].slice(0, step);
     builds[slide].forEach(b => b.el.classList.toggle('pending', !shown.includes(b.order)));
+    // The notes for the current step: the last part that starts at or before it.
     const aside = slides[slide].querySelector('aside');
-    notes.textContent = aside ? aside.textContent : '';
+    const parts = aside ? [...aside.querySelectorAll('[data-step]')] : [];
+    const part = parts.filter(d => Number(d.dataset.step) <= step).pop();
+    notes.textContent = part ? part.textContent : (aside ? aside.textContent : '');
     counter.textContent = `${slide + 1}/${slides.length} · step ${step}/${steps[slide].length}`
       + (presenter ? ` · ${clock()}` : '');
     history.replaceState(null, '', `#${slide + 1}.${step}`);
@@ -255,9 +260,60 @@ __SLIDES__
 """
 
 
+def note_parts(text, anchors):
+    """Split a slide's notes where each build step's anchor phrase begins: [(step, text)]."""
+    cuts, pos = [], 0
+    for step, phrase in anchors:
+        i = text.find(phrase, pos)
+        if i < 0:
+            raise SystemExit(f"anchor {phrase!r} not found after position {pos}")
+        cuts.append((step, i))
+        pos = i + len(phrase)
+    bounds = [(0, 0)] + cuts + [(None, len(text))]
+    parts = [(bounds[k][0], text[bounds[k][1]:bounds[k + 1][1]].strip()) for k in range(len(bounds) - 1)]
+    return [(st, t) for st, t in parts if t]
+
+
+def split_notes(section, anchors):
+    """Rewrite the slide's <aside> as one block per build step; return the section and its parts."""
+    m = re.search(r"(<aside[^>]*>)(.*?)(</aside>)", section, re.S)
+    if not m:
+        return section, []
+    text = html.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", m.group(2)))).strip()
+    parts = note_parts(text, anchors) if anchors else [(0, text)]
+    inner = "".join(f'<div data-step="{st}">{html.escape(t)}</div>' for st, t in parts)
+    return section[:m.start()] + m.group(1) + inner + m.group(3) + section[m.end():], parts
+
+
+def write_notes(deck, sections, all_parts):
+    """speaker-notes.md: each slide's notes, split at the clicks that bring in each build step."""
+    out = ["# Research with AI Agents: speaker notes", "",
+           "Each slide's notes are split by build step: **[k]** is what to say once click k has brought "
+           "in its part; **[k–m]** covers several clicks.", ""]
+    for i, (sid, sec, parts) in enumerate(zip(deck["order"], sections, all_parts), 1):
+        m = re.search(r"<h[12][^>]*>(.*?)</h[12]>", sec, re.S)
+        title = " ".join(html.unescape(re.sub(r"<[^>]+>", " ", m.group(1))).split()) if m else sid
+        out.append(f"## {i}. {'→ ' if sid.startswith('q-') else ''}{title}")
+        steps = sorted({int(o) for o in re.findall(r'data-build-in="\S+ (\d+)"', sec)})
+        n = len(steps)
+        for k, (st, t) in enumerate(parts):
+            end = (parts[k + 1][0] - 1) if k + 1 < len(parts) else n
+            if len(parts) == 1 and st == 0:
+                out.append(t)
+            else:
+                label = f"{st}" if end <= st else f"{st}–{end}"
+                out.append(f"**[{label}]** {t}")
+            out.append("")
+    (TALK / "speaker-notes.md").write_text("\n".join(out))
+
+
 def main():
     deck = json.loads((SLIDES / "deck.json").read_text())
     sections = [(SLIDES / "slides" / f"{sid}.html").read_text().strip() for sid in deck["order"]]
+    anchors = json.loads((SLIDES / "note_steps.json").read_text())
+    split = [split_notes(sec, anchors.get(sid, [])) for sid, sec in zip(deck["order"], sections)]
+    sections = [sec for sec, _ in split]
+    write_notes(deck, sections, [parts for _, parts in split])
     html = TEMPLATE.replace("__TITLE__", "Open-ended research with AI agents")
     html = html.replace("__SLIDES__", "\n".join(sections))
     OUT.write_text(html)
