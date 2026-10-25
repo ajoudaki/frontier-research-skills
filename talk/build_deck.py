@@ -167,7 +167,8 @@ __SLIDES__
     notes.textContent = part ? part.textContent : (aside ? aside.textContent : '');
     counter.textContent = `${slide + 1}/${slides.length} · step ${step}/${steps[slide].length}`
       + (presenter ? ` · ${clock()}` : '');
-    history.replaceState(null, '', `#${slide + 1}.${step}`);
+    // Sandboxed viewers (e.g. an embedded srcdoc frame) refuse URL changes; the deck works without them.
+    try { history.replaceState(null, '', `#${slide + 1}.${step}`); } catch (e) {}
     if (preview) {
       const n = nextState();
       preview.style.visibility = n ? 'visible' : 'hidden';

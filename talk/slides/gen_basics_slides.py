@@ -266,43 +266,46 @@ def engine():
     # 4. cost: the pyramid, and cheap checks
     L += show(3, 12, "Cost: a pyramid, and cheap checks")
     tiers = [("you", "judgment, approval", INK, PAPER),
-             ("most capable models", "reviews, final checks, hardest steps", RED, PAPER),
+             ("most capable models", "reviews, final checks", RED, PAPER),
              ("capable models", "drafting, derivations", "#D98A72", INK),
-             ("cheaper models", "code, routine runs", "#EBC3B5", INK)]
+             ("cheaper models", "code, routine runs", "#EBC3B5", INK),
+             ("computation", "CPU, GPU: tests, simulations, runs", "#E4DED2", INK)]
     # one true pyramid with straight sides: a pointed top tier (taller, so its label fits), the rest following the slope
     PWid, y0, gap = 700, 6, 6
-    heights = [128, 78, 78, 78]
+    heights = [156, 78, 78, 78, 78]
     y_end = y0 + sum(heights) + gap * (len(heights) - 1)
     c = PWid / 2
 
     def half(y):
         return (y - y0) / (y_end - y0) * (PWid / 2)
 
-    art, y = "", y0
+    art, base, y = "", "", y0
     for k, ((who, what, fill, fg), h) in enumerate(zip(tiers, heights)):
         a_, b_ = half(y), half(y + h)
         if k == 0:
-            art += f'<polygon points="{c:.1f},{y:.1f} {c + b_:.1f},{y + h:.1f} {c - b_:.1f},{y + h:.1f}" fill="{fill}"/>'
+            tier = f'<polygon points="{c:.1f},{y:.1f} {c + b_:.1f},{y + h:.1f} {c - b_:.1f},{y + h:.1f}" fill="{fill}"/>'
         else:
-            art += f'<polygon points="{c - a_:.1f},{y:.1f} {c + a_:.1f},{y:.1f} {c + b_:.1f},{y + h:.1f} {c - b_:.1f},{y + h:.1f}" fill="{fill}"/>'
-        art += text(c, y + h - 38, who, 23, fg, 600, "middle") + text(c, y + h - 13, what, 20, fg, 400, "middle")
+            tier = f'<polygon points="{c - a_:.1f},{y:.1f} {c + a_:.1f},{y:.1f} {c + b_:.1f},{y + h:.1f} {c - b_:.1f},{y + h:.1f}" fill="{fill}"/>'
+        tier += text(c, y + h - 38, who, 23, fg, 600, "middle") + text(c, y + h - 13, what, 20, fg, 400, "middle")
+        if who == "computation":
+            base += tier          # the cheapest layer arrives last
+        else:
+            art += tier
         y += h + gap
-    L.append(svg(PX + 40, PY + 80, PWid, 380, art, "A cost pyramid: you at the top, the most capable models just below for what is mission-critical, "
-                 "capable models below them, and cheaper models at the base.", "fade 12"))
+    L.append(svg(PX + 40, PY + 80, PWid, 500, art, "A cost pyramid: you at the top, the most capable models just below for what is mission-critical, "
+                 "capable models below them, and cheaper models below those.", "fade 12"))
+    L.append(svg(PX + 40, PY + 80, PWid, 500, base, "The base of the pyramid, the cheapest layer: computation on CPUs and GPUs, "
+                 "for tests, simulations and runs.", "fade 14"))
     # two parallel arrows: reliability and cost rise together up the pyramid; the main point sits beside them
     def side_arrow(x, label, color):
-        return (arrow(x, 336, x, 28, color, 3)
-                + f'<text transform="translate({x - 10},182) rotate(-90)" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" '
+        return (arrow(x, 456, x, 28, color, 3)
+                + f'<text transform="translate({x - 10},242) rotate(-90)" text-anchor="middle" font-family="IBM Plex Sans, Arial, sans-serif" '
                   f'font-size="19" font-weight="600" fill="{color}">{label}</text>')
     up = (side_arrow(26, "more reliable", INK) + side_arrow(76, "more expensive", MUTED)
-          + text(51, 362, "cheaper", 19, MUTED, 600, "middle")
-          + text(104, 168, "failures below", 23, RED, 600, "start") + text(104, 198, "are caught above", 23, RED, 600, "start"))
-    L.append(svg(PX + 40 + PWid + 6, PY + 80, 318, 380, up, "Two parallel arrows: going up the pyramid, models are more reliable and more "
+          + text(51, 482, "cheaper", 19, MUTED, 600, "middle")
+          + text(104, 228, "failures below", 23, RED, 600, "start") + text(104, 258, "are caught above", 23, RED, 600, "start"))
+    L.append(svg(PX + 40 + PWid + 6, PY + 80, 318, 500, up, "Two parallel arrows: going up the pyramid, models are more reliable and more "
                  "expensive; failures at a lower level are caught by the audits above it.", "fade 13"))
-    L.append(f'  <div data-build-in="fade 14" style="position:absolute; top:{PY + 480}px; left:{PX + 40}px; width:{W}px; display:flex; flex-direction:column; '
-             f'gap:6px; padding:18px 22px; background:#FBF3EF; border:2px solid {RED}; border-radius:14px">\n'
-             f'    <p style="{SANS}; font-size:22px; font-weight:600; color:{RED}">If a claim can be tested, test it</p>\n'
-             f'    <p style="{SANS}; font-size:22px; line-height:1.4; color:{DARK}">A script refutes in seconds. Skills: small-case checks, counterexample search.</p>\n  </div>')
     notes = ("The answer is a multi-agent engine: many agents, organized well, are what make a push into the research frontier "
              "feasible. It has four parts. "
              "First, why not one long thread? It accumulates everything: every dead end, every earlier claim, every sentiment. "
@@ -322,8 +325,8 @@ def engine():
              "the most capable and most expensive models, for what's mission-critical: reviews, final checks, the hardest steps. "
              "Below them, capable models for drafting and derivations; at the base, cheaper models for code and routine runs. "
              "The pyramid is built so that a failure at a lower level gets caught by the audits above it. "
-             "And when a claim can be tested, test it: a short script can refute a false claim in seconds, while re-checking a proof "
-             "takes far longer.")
+             "And at the base, the cheapest layer of all: computation. Whatever can run mechanically on a CPU or GPU, a test, a "
+             "simulation, a small case, costs far less than generating tokens: a short script can refute a false claim in seconds.")
     return section("agents", "\n".join(L), notes)
 
 
@@ -387,7 +390,7 @@ def close():
     L.append(p(R0, 860, RW, "Thank you.", 48, INK, 600, family=SERIF, build="fade 5"))
     notes = ("So to wrap up. We started from one open-ended question, explored it in thrusts, built a core, and carved out a gem. "
              "Everything we discussed has one goal: raise the signal-to-noise ratio, and save your time in every possible way, so you "
-             "get what you're really after. In my own project, that meant about two hundred and thirty-five studies in eleven weeks, "
+             "get what you're really after. In my own project, that meant more than two hundred studies, "
              "and only a small fraction of them ever made it into the core. "
              "What's next? These skills are very theory-oriented, but there's no reason they can't be adapted to other domains, and I "
              "hope people do. Two things I'd have liked to add: evaluations for skills, because right now, when you change a skill, it's "

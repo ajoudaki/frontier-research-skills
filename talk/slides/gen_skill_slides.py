@@ -251,15 +251,6 @@ def solve():
     L = [header(tracker("Solve"), "Solve by many routes, then audit the proof.", "solve-problem")]
     lanes = [470, 575, 680, 785]
     mid = sum(lanes) / 4
-    # the thrust across the top: from what we know to the frozen question; the arrow between them is the proof we need
-    TY, TX0, TX1 = 336, 150, 1010
-    L.append(svg(0, 0, 1920, 1080, f'<line x1="{TX0 + 18}" y1="{TY}" x2="{TX1 - 42}" y2="{TY}" stroke="{INK}" stroke-width="3" stroke-dasharray="8 6"/>'
-                 f'<polygon points="{TX1 - 28},{TY} {TX1 - 44},{TY - 9} {TX1 - 44},{TY + 9}" fill="{INK}"/>'
-                 f'<circle cx="{TX0}" cy="{TY}" r="16" fill="{RED}"/>'
-                 f'<circle cx="{TX1}" cy="{TY}" r="24" fill="{PAPER}" stroke="{INK}" stroke-width="6"/>',
-                 "The thrust: from an established node to the frozen question, with a dashed arrow still to prove."))
-    L.append(p(TX0 + 40, TY - 44, TX1 - TX0 - 120, "the arrow: the proof we still need", 21, MUTED, 400, "center", extra="; font-style:italic"))
-    L.append(p(TX1 - 150, TY + 30, 220, "the frozen question", 18, MUTED, 600, "center"))
     # the frozen contract (static)
     L.append(box(128, int(mid - 58), 220, line("∀ <i>x</i> ∈ <i>D</i>:  <i>C</i>(<i>x</i>)", 28, INK, family=SERIF) + "\n" +
                  line("frozen contract", 18, RED, 600, extra="; letter-spacing:2px; text-transform:uppercase"), border=INK, pad=18))
@@ -307,15 +298,7 @@ def solve():
         L.append(p(AX + 34, 680 + i * 50, AW - 60, "· " + c, 24, INK, 400, build="rise 5"))
     L.append(p(128, 880, 920, f'Search and audit: <span style="{MONO}; color:{RED}">formulate-problem</span>  ·  '
                f'write-up: <span style="{MONO}; color:{RED}">solve-problem</span>', 22, MUTED, 400, build="fade 5"))
-    # step 6: the proof is written, so the arrow turns solid: this thrust is done
-    L.append(f'  <div data-build-in="fade 6" style="position:absolute; top:{TY - 48}px; left:{TX0 + 40}px; width:{TX1 - TX0 - 120}px; '
-             f'height:36px; background:{BG}"></div>')
-    L.append(svg(0, 0, 1920, 1080, f'<line x1="{TX0 + 18}" y1="{TY}" x2="{TX1 - 42}" y2="{TY}" stroke="{RED}" stroke-width="5"/>'
-                 f'<polygon points="{TX1 - 28},{TY} {TX1 - 46},{TY - 11} {TX1 - 46},{TY + 11}" fill="{RED}"/>'
-                 + tick_badge((TX0 + TX1) / 2, TY, RED, 17), "The arrow turns solid: the thrust is proved.", "fade 6"))
-    L.append(p(TX0 + 40, TY - 44, TX1 - TX0 - 120, "proved: this thrust is done", 21, RED, 600, "center", build="fade 6"))
-    notes = ("Here's the thrust again: from what we know to the frozen question. The arrow between them is the proof, and it's "
-             "still dashed. Solving is the second hard push, and it starts from the frozen contract. "
+    notes = ("Solving is the second hard push, and it starts from the frozen contract. "
              "With your go-ahead, the proof search runs as parallel agents, one per route, and each route uses a genuinely different mechanism: "
              "duality, induction, an extremal argument. They all get the same contract, and none is told which strategy to favor, so they stay independent. "
              "After every round, a registry keeps score. Two routes that turn out to use the same idea are merged. "
@@ -324,8 +307,7 @@ def solve():
              "But a candidate isn't a proof yet. Separate checks rebuild every implication from the contract, check each cited theorem and its hypotheses, "
              "and hunt for counterexamples at the boundary and in degenerate cases. "
              "Only what survives gets written up by solve-problem: the plan first, every nontrivial step derived, no 'clearly' in place of a reason, "
-             "and an answer to exactly the question in the contract. "
-             "And now the arrow is solid: the thrust is done, most likely correctly.")
+             "and an answer to exactly the question in the contract.")
     return section("solve", "\n".join(L), notes)
 
 
@@ -440,11 +422,7 @@ def review():
     L.append(box(128, 830, 902, line("Verdict: central message <b>unsupported</b> until C1 is repaired", 28, INK, 400, family=SERIF), build="rise 8", border=INK, pad=20))
     L.append(svg(EX, 860, 502, 18, meter, "Confidence meter, lowered by one unverifiable source.", "fade 8"))
     L.append(p(EX, 886, 502, "confidence: lowered for the unchecked", 22, MUTED, 400, build="fade 8"))
-    notes = ("So now we know how to run organize-research-project: we make the thrusts, formulate them, solve them, understand "
-             "them, and promote what's true and relevant into the established core. But is that a scientific result? Not yet. "
-             "Some results matter more than others, and a paper is judged on more than truth: novelty, significance, the literature. "
-             "So we carve out the high-value part, and that needs a different kind of audit. "
-             "review-paper reads the full submission, code included. "
+    notes = ("review-paper reads the full submission, code included. "
              "It lifts out the three to five claims that matter most, into a ledger. "
              "Then it checks each one against its evidence. It re-derives the key proofs: here, the key lemma's proof fails. "
              "It retrieves the cited papers and checks that each citation is used correctly: one holds, and one source can't be verified. "
@@ -454,19 +432,6 @@ def review():
              "And a fatal flaw cascades to every claim that depends on it: the main theorem falls with the lemma. "
              "The verdict says whether the central message stands, and the confidence reflects only what was actually checked. "
              "And its findings can start the next round of the project.")
-    # step 0 is a reminder of the project's established core; the paper replaces it at step 1
-    L = [re.sub(r'data-build-in="(\w+) (\d+)"', lambda m: f'data-build-in="{m[1]} {int(m[2]) + 1}"', el) for el in L]
-    from gen_project_slide import core_snapshot
-    s = 1.1
-    SX, SY = 960 - 350 * s, 330
-    L.insert(1, svg(SX, SY, 700 * s, 490 * s, f'<g transform="translate(0,{10 * s}) scale({s})">{core_snapshot()}</g>',
-                    "The project's established core, as built on the organize slide."))
-    L.insert(2, p(SX, SY + 490 * s + 16, 700 * s, "the established core", 28, RED, 600, "center", extra="; letter-spacing:3px; text-transform:uppercase"))
-    L.insert(3, f'  <div data-build-in="fade 1" style="position:absolute; top:290px; left:0; width:1920px; height:790px; background:{BG}"></div>')
-    i = next(k for k, el in enumerate(L) if "The submitted paper." in el)
-    L[i] = L[i].replace('aria-label="The submitted paper."', 'aria-label="The submitted paper." data-build-in="fade 1"')
-    i = next(k for k, el in enumerate(L) if "the paper, read in full" in el)
-    L[i] = L[i].replace("<p style=", '<p data-build-in="fade 1" style=').replace(f"color:{MUTED}\"", f"color:{MUTED}; background:{BG}\"")
     return section("review", "\n".join(L), notes)
 
 
