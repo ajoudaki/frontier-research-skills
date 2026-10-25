@@ -114,7 +114,7 @@
   ],
   [
    14,
-   "And when a claim can be tested"
+   "And at the base, the cheapest layer"
   ]
  ],
  "foundations": [
@@ -164,7 +164,7 @@
   ],
   [
    7,
-   "The second idea is the promotion gate."
+   "The second idea is the established core"
   ],
   [
    8,
@@ -180,11 +180,11 @@
   ],
   [
    14,
-   "The third idea"
+   "And you build on the core"
   ],
   [
    15,
-   "New studies can rely"
+   "new studies can rely"
   ],
   [
    16,
@@ -245,10 +245,6 @@
   [
    5,
    "Only what survives"
-  ],
-  [
-   6,
-   "And now the arrow is solid"
   ]
  ],
  "teach": [
@@ -272,38 +268,34 @@
  "review": [
   [
    1,
-   "review-paper reads the full submission"
-  ],
-  [
-   2,
    "It lifts out"
   ],
   [
-   3,
+   2,
    "It re-derives"
   ],
   [
-   4,
+   3,
    "It retrieves the cited papers"
   ],
   [
-   5,
+   4,
    "It audits the code"
   ],
   [
-   6,
+   5,
    "It rates how plausible"
   ],
   [
-   7,
+   6,
    "Each flaw gets a severity"
   ],
   [
-   8,
+   7,
    "And a fatal flaw cascades"
   ],
   [
-   9,
+   8,
    "The verdict says"
   ]
  ],

@@ -5,7 +5,7 @@ promotion gate comes in (7); A, B, C are promoted one by one (edge and node
 turn orange, a tick appears on the edge, and the established core grows to
 enclose them); D, E, F fail one by one (cross on the edge); new studies branch
 off the established A and B (14, 15); G is promoted and the core grows (16).
-The three-idea panel on the right builds in step with the diagram.
+The two-idea panel on the right builds in step with the diagram.
 
 Usage: python talk/slides/gen_project_slide.py
 """
@@ -127,17 +127,17 @@ def text(n, color, build):
 
 DEVELOP_NOTES = (
     "The main one is the architecture: organize-research-project. A project is one big open question, "
-    "and the skill rests on three ideas. "
+    "and the skill rests on two ideas. "
     "From the research question, studies branch out, and the first idea is isolation: each study has its own question, "
     "inputs and folder, and by default it doesn't see the others' work. With your approval, one study can build on another. "
     "That way, an agent stuck on one failed idea can't drag the others into it, and you get the widest exploration. "
     "Inside each study, the agents formulate, solve and learn. "
-    "The second idea is the promotion gate. A result enters the project's core only if it's correct, by an independent review; "
+    "The second idea is the established core: the studies that pass a promotion gate. A result enters only if it's correct, by an independent review; "
     "coherent, in notation, interfaces and tests; and relevant, which means your approval. "
     "These pass, and the core grows with each one. "
     "These fail and stay outside, with their evidence kept. So whatever is in the core is worth your time: "
     "that's the signal-to-noise ratio. "
-    "The third idea: you build on the core. New studies can rely on promoted results, "
+    "And you build on the core: new studies can rely on promoted results, "
     "and they can be promoted in turn, so the core keeps growing. "
     "That's the organization, and it already has a lot of value. But let's zoom in on one thrust. "
     "Each one is a hard research question, a push into the unknown. How do we push through?"
@@ -270,8 +270,8 @@ def chip_tag(chip):
             f'color:#b04a33; background:{CORE}; border-radius:8px">{chip}</p>')
 
 
-def three_ideas():
-    """The closer look: the three ideas, each line arriving with its step of the animation."""
+def two_ideas():
+    """The closer look: the two ideas, each line arriving with its step of the animation."""
     PX, PW = 1040, 752
 
     def ln(top, build, text, size=24, color="#1b1f2a", weight=400, family=SANS):
@@ -283,25 +283,23 @@ def three_ideas():
                 f'{SERIF}; font-size:32px; font-weight:600; color:#1b1f2a"><span style="color:#b04a33">{num}</span>  {text}</p>')
 
     rows = [
-        f'  <div data-build-in="fade 1" style="position:absolute; top:300px; left:{PX}px; width:{PW}px; height:600px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px"></div>',
-        head(330, 1, 1, "Isolated studies"),
-        ln(380, 1, "Own question, inputs and folder; blind to the others by default."),
-        ln(448, 6, "→ the widest exploration", color="#b04a33", weight=600),
-        head(518, 7, 2, "A promotion gate"),
-        ln(568, 7, "<b>Correct:</b> an independent review"),
-        ln(604, 7, "<b>Coherent:</b> notation, interfaces, tests"),
-        ln(640, 7, "<b>Relevant:</b> your approval"),
-        ln(688, 13, "→ high signal-to-noise", color="#b04a33", weight=600),
-        head(758, 14, 3, "Build on the core"),
-        ln(808, 14, "New studies build on promoted results,"),
-        ln(842, 16, "and get promoted in turn."),
+        f'  <div data-build-in="fade 1" style="position:absolute; top:300px; left:{PX}px; width:{PW}px; height:530px; background:#fdfcf9; border:1px solid #dcd6ca; border-radius:16px"></div>',
+        head(340, 1, 1, "Isolated studies"),
+        ln(390, 1, "Own question, inputs and folder; blind to the others by default."),
+        ln(458, 6, "→ the widest exploration", color="#b04a33", weight=600),
+        head(538, 7, 2, "Established core"),
+        ln(588, 7, "Studies that passed the promotion gate:", color="#6b6f7a"),
+        ln(628, 7, "<b>Correct:</b> an independent review"),
+        ln(664, 7, "<b>Coherent:</b> notation, interfaces, tests"),
+        ln(700, 7, "<b>Relevant:</b> your approval"),
+        ln(756, 13, "→ high signal-to-noise", color="#b04a33", weight=600),
     ]
     return "\n".join(rows)
 
 
 def main():
     render("develop", tracker("Organize"), "Organize: isolated thrusts, a gated core.", "organize-research-project", DEVELOP_NOTES,
-           {**PROMOTE, "G": 16}, three_ideas())
+           {**PROMOTE, "G": 16}, two_ideas())
 
 
 if __name__ == "__main__":

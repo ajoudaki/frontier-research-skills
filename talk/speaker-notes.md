@@ -74,7 +74,7 @@ Let's zoom in. This is the frontier, and it's hard, even for a very capable mode
 
 **[13]** The pyramid is built so that a failure at a lower level gets caught by the audits above it.
 
-**[14]** And when a claim can be tested, test it: a short script can refute a false claim in seconds, while re-checking a proof takes far longer.
+**[14]** And at the base, the cheapest layer of all: computation. Whatever can run mechanically on a CPU or GPU, a test, a simulation, a small case, costs far less than generating tokens: a short script can refute a false claim in seconds.
 
 ## 7. → How do we do this in practice?
 So how do we do this in practice?
@@ -105,13 +105,13 @@ Everything from here is a skill. Here are the five.
 **[5]** Finally, review-paper audits the part of the core that becomes a paper, and its findings can start the next round. Let's start with the main one.
 
 ## 11. Organize: isolated thrusts, a gated core.
-**[0]** The main one is the architecture: organize-research-project. A project is one big open question, and the skill rests on three ideas.
+**[0]** The main one is the architecture: organize-research-project. A project is one big open question, and the skill rests on two ideas.
 
 **[1–5]** From the research question, studies branch out, and the first idea is isolation: each study has its own question, inputs and folder, and by default it doesn't see the others' work. With your approval, one study can build on another.
 
 **[6]** That way, an agent stuck on one failed idea can't drag the others into it, and you get the widest exploration. Inside each study, the agents formulate, solve and learn.
 
-**[7]** The second idea is the promotion gate. A result enters the project's core only if it's correct, by an independent review; coherent, in notation, interfaces and tests; and relevant, which means your approval.
+**[7]** The second idea is the established core: the studies that pass a promotion gate. A result enters only if it's correct, by an independent review; coherent, in notation, interfaces and tests; and relevant, which means your approval.
 
 **[8–10]** These pass, and the core grows with each one.
 
@@ -119,9 +119,9 @@ Everything from here is a skill. Here are the five.
 
 **[13]** So whatever is in the core is worth your time: that's the signal-to-noise ratio.
 
-**[14]** The third idea: you build on the core.
+**[14]** And you build on the core:
 
-**[15]** New studies can rely on promoted results,
+**[15]** new studies can rely on promoted results,
 
 **[16]** and they can be promoted in turn, so the core keeps growing. That's the organization, and it already has a lot of value.
 
@@ -145,10 +145,10 @@ Everything from here is a skill. Here are the five.
 **[7]** Then it's frozen. A material change needs your say, and results for a changed question never count as answers to the original. Now we know exactly where the arrow points.
 
 ## 13. → Now, how do we solve it?
-Now, how do we solve it?
+Now we have a frozen conjecture, and from what we know to it, a dashed arrow: the proof we still need. Now, how do we solve it?
 
 ## 14. Solve by many routes, then audit the proof.
-**[0]** Here's the thrust again: from what we know to the frozen question. The arrow between them is the proof, and it's still dashed. Solving is the second hard push, and it starts from the frozen contract.
+**[0]** Solving is the second hard push, and it starts from the frozen contract.
 
 **[1]** With your go-ahead, the proof search runs as parallel agents, one per route, and each route uses a genuinely different mechanism: duality, induction, an extremal argument. They all get the same contract, and none is told which strategy to favor, so they stay independent. After every round, a registry keeps score.
 
@@ -160,10 +160,8 @@ Now, how do we solve it?
 
 **[5]** Only what survives gets written up by solve-problem: the plan first, every nontrivial step derived, no 'clearly' in place of a reason, and an answer to exactly the question in the contract.
 
-**[6]** And now the arrow is solid: the thrust is done, most likely correctly.
-
 ## 15. → Solved. Do we understand it?
-Solved, most likely. But we still have to judge it, and to judge it, we have to understand it.
+Solved, most likely: the arrow is solid. But understanding is still the key: to judge the result, and to build on it, we have to understand it. Do we understand it?
 
 ## 16. Learn the idea first, then every step.
 **[0]** A correct proof you don't understand isn't worth much. Here's the kind of line an agent, or a paper, might hand you: private symbols everywhere. teach-material, together with explain-canonically, teaches it in layers.
@@ -177,28 +175,26 @@ Solved, most likely. But we still have to judge it, and to judge it, we have to 
 **[4]** And only then the details. When the argument invokes a theorem, it's stated right there, in the exact form needed, with its hypothesis checked and its conclusion spelled out for our objects. And if you're confused at any point, it rewrites the whole block rather than patching a sentence. Once you understand it, you can judge whether it joins the core. And that completes the loop for one thrust.
 
 ## 17. → Is it a paper?
-We can judge what joins the core now. But is it a paper?
+So the core grows with results that are true and that we understand. Now we carve out a part of it as a paper. But is it a paper? Being correct isn't enough: a paper also needs novelty and significance, and it has to stand against the literature. That needs a different kind of audit.
 
 ## 18. Audit every claim against its evidence.
-**[0]** So now we know how to run organize-research-project: we make the thrusts, formulate them, solve them, understand them, and promote what's true and relevant into the established core. But is that a scientific result? Not yet. Some results matter more than others, and a paper is judged on more than truth: novelty, significance, the literature. So we carve out the high-value part, and that needs a different kind of audit.
+**[0]** review-paper reads the full submission, code included.
 
-**[1]** review-paper reads the full submission, code included.
+**[1]** It lifts out the three to five claims that matter most, into a ledger. Then it checks each one against its evidence.
 
-**[2]** It lifts out the three to five claims that matter most, into a ledger. Then it checks each one against its evidence.
+**[2]** It re-derives the key proofs: here, the key lemma's proof fails.
 
-**[3]** It re-derives the key proofs: here, the key lemma's proof fails.
+**[3]** It retrieves the cited papers and checks that each citation is used correctly: one holds, and one source can't be verified.
 
-**[4]** It retrieves the cited papers and checks that each citation is used correctly: one holds, and one source can't be verified.
+**[4]** It audits the code: these baselines are unfair.
 
-**[5]** It audits the code: these baselines are unfair.
+**[5]** It rates how plausible each conclusion is separately from how sound its argument is.
 
-**[6]** It rates how plausible each conclusion is separately from how sound its argument is.
+**[6]** Each flaw gets a severity: fatal, major or minor.
 
-**[7]** Each flaw gets a severity: fatal, major or minor.
+**[7]** And a fatal flaw cascades to every claim that depends on it: the main theorem falls with the lemma.
 
-**[8]** And a fatal flaw cascades to every claim that depends on it: the main theorem falls with the lemma.
-
-**[9]** The verdict says whether the central message stands, and the confidence reflects only what was actually checked. And its findings can start the next round of the project.
+**[8]** The verdict says whether the central message stands, and the confidence reflects only what was actually checked. And its findings can start the next round of the project.
 
 ## 19. → Putting it all together.
 Let's put it all together.
