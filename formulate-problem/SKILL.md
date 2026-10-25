@@ -1,9 +1,11 @@
 ---
-name: investigate-conjectures
-description: Develop, refine, and adversarially test open mathematical, computational, or mechanistic conjectures through bounded theory–experiment and multi-route proof-search programs. Use when Codex must formulate a non-vacuous research conjecture, recover or update a long-running research program, orchestrate an explicitly authorized search across independent proof approaches, separate proof obligations and evidence levels, audit loopholes or competing explanations, design a discriminating experiment, interpret new evidence, or synthesize a supersession-aware research state. Do not use for teaching a technical source, solving an isolated mathematical problem, reviewing an external paper, or summarizing material that needs no research-state reconciliation.
+name: formulate-problem
+description: Turn an open-ended research question into a precise, non-vacuous, frozen research contract, then pursue it adversarially through claim maps, evidence ledgers, hostile audits, decisive experiments, and bounded multi-route proof search. Use when the agent must formulate a non-vacuous research conjecture, recover or update a long-running research program, orchestrate an explicitly authorized search across independent proof approaches, separate proof obligations and evidence levels, audit loopholes or competing explanations, design a discriminating experiment, interpret new evidence, or synthesize a supersession-aware research state. Do not use for teaching a technical source, solving an isolated mathematical problem, reviewing an external paper, or summarizing material that needs no research-state reconciliation.
+metadata:
+  version: "0.2.0"
 ---
 
-# Investigate Conjectures
+# Formulate Problem
 
 ## Purpose
 

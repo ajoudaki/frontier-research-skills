@@ -1,7 +1,7 @@
 interface:
-  display_name: Solve Mathematics Rigorously
+  display_name: "Solve Problem"
   short_description: Compact, complete, and rigorous math solutions
-  default_prompt: Use $solve-math-rigorously to solve this mathematical problem with
+  default_prompt: Use $solve-problem to solve this mathematical problem with
     a complete, carefully checked argument.
 policy:
   products:

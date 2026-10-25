@@ -1,9 +1,11 @@
 ---
-name: review-ai-paper
+name: review-paper
 description: Conduct autonomous, evidence-backed peer reviews of AI and machine-learning research papers and their supplementary code. Use when the user asks to review, referee, audit, red-team, or score a paper or submission; verify its claims, proofs, citations, baselines, experiments, or code; reproduce results; or fill a conference review form. Resolve the review format from a user-supplied rubric or current official venue instructions, otherwise ask one concise clarification or use a venue-neutral unscored format. Inventory and read the full submission, enforce confidentiality and AI-use policies, retrieve critical sources, audit code safely, build a claim ledger, calibrate flaw severity, and produce evidence_log.md, code_audit.md when code exists, claim_ledger.md, and review.md. Do not use for an incremental teaching lesson without review intent.
+metadata:
+  version: "0.2.0"
 ---
 
-# Review AI Papers
+# Review Paper
 
 Review adversarially but fairly. Try to falsify important claims, not to manufacture objections. Distinguish a false claim, an unsupported claim, an unverified dependency, and an inconclusive experiment. Give genuine strengths full credit and ground every criticism in evidence.
 

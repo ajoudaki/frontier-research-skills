@@ -1,0 +1,11 @@
+interface:
+  display_name: "Formulate Problem"
+  short_description: "Precise research contracts and adversarial proof search"
+  default_prompt: "Use $formulate-problem to formulate, test, or run a bounded multi-route proof search for this conjecture."
+policy:
+  allow_implicit_invocation: false
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas

@@ -1,9 +1,11 @@
 ---
-name: solve-math-rigorously
+name: solve-problem
 description: Produce compact but complete solutions to standalone mathematical questions and proof requests. Use when the user asks to solve, prove, derive, analyze, verify, or correct a mathematical problem that is not primarily an incremental lesson about supplied technical documents. Infer the strongest reasonable interpretation without inventing assumptions, establish a minimal setup, use minimal notation, expose every nontrivial step, state and verify external theorem hypotheses, give proof architecture when useful, and silently audit the draft before answering.
+metadata:
+  version: "0.2.0"
 ---
 
-# Solve Mathematics Rigorously
+# Solve Problem
 
 Produce a complete mathematical answer rather than a staged document lesson, unless the user explicitly requests incremental pacing. Optimize simultaneously for correctness, rigor, clarity, and economy.
 

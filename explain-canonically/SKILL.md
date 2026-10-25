@@ -1,9 +1,11 @@
 ---
-name: explain-with-canonical-notation
+name: explain-canonically
 description: Use when explaining, deriving, writing, or reviewing mathematics, including proofs, research notes, and scientific interpretations of experiments. Govern symbol introduction, explicit definitions, self-contained presentation, and compact canonical notation. Applies beyond teaching; skip purely operational work with no mathematical content.
+metadata:
+  version: "0.2.0"
 ---
 
-# Explain with canonical notation
+# Explain Canonically
 
 Minimize the reader's translation work between the explanation and the thing
 being explained. Make the mechanism visible through familiar objects and a

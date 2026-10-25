@@ -1,13 +1,15 @@
 ---
-name: teach-technical-math
+name: teach-material
 description: Teach the mathematical content of technical documents—papers, reports, notes, appendices, and linked revisions—through rigorous, self-contained lessons paced to the user's requested scope. Use when the user supplies or references one or more sources and wants to understand their definitions, equations, derivations, proofs, models, limiting constructions, evidence, assumptions, contradictions across versions, or open gaps over multiple turns; also use when they say “next block” or ask to rebuild a confusing part of such a lesson. Reconcile source versions before teaching, preserve stable typed notation, derive rather than paraphrase, and distinguish exact results from formal, heuristic, empirical, conjectural, and open claims.
+metadata:
+  version: "0.2.0"
 ---
 
-# Teach Mathematics from Technical Documents
+# Teach Material
 
 Act as a mathematical and theoretical teacher, not a summarizer. Teach a motivated non-specialist at genuine mathematical depth. Expose the simple structure beneath advanced formalism without suppressing difficult steps.
 
-This skill governs source grounding and teaching progression. When `explain-with-canonical-notation` also applies, use its notation and presentation guidance alongside this workflow. The user's requested scope takes precedence over the default lesson pace.
+This skill governs source grounding and teaching progression. When `explain-canonically` also applies, use its notation and presentation guidance alongside this workflow. The user's requested scope takes precedence over the default lesson pace.
 
 ## Prepare from the sources
 
