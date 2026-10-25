@@ -390,7 +390,7 @@ def close():
     L.append(p(R0, 860, RW, "Thank you.", 48, INK, 600, family=SERIF, build="fade 5"))
     notes = ("So to wrap up. We started from one open-ended question, explored it in thrusts, built a core, and carved out a gem. "
              "Everything we discussed has one goal: raise the signal-to-noise ratio, and save your time in every possible way, so you "
-             "get what you're really after. In my own project, that meant about two hundred and thirty-five studies in eleven weeks, "
+             "get what you're really after. In my own project, that meant more than two hundred studies, "
              "and only a small fraction of them ever made it into the core. "
              "What's next? These skills are very theory-oriented, but there's no reason they can't be adapted to other domains, and I "
              "hope people do. Two things I'd have liked to add: evaluations for skills, because right now, when you change a skill, it's "

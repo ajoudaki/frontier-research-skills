@@ -222,7 +222,7 @@ Let's put it all together.
 
 **[1]** We started from one open-ended question, explored it in thrusts, built a core, and carved out a gem.
 
-**[2]** Everything we discussed has one goal: raise the signal-to-noise ratio, and save your time in every possible way, so you get what you're really after. In my own project, that meant about two hundred and thirty-five studies in eleven weeks, and only a small fraction of them ever made it into the core.
+**[2]** Everything we discussed has one goal: raise the signal-to-noise ratio, and save your time in every possible way, so you get what you're really after. In my own project, that meant more than two hundred studies, and only a small fraction of them ever made it into the core.
 
 **[3]** What's next? These skills are very theory-oriented, but there's no reason they can't be adapted to other domains, and I hope people do. Two things I'd have liked to add: evaluations for skills, because right now, when you change a skill, it's not clear whether it really improved; and what I'd call live skills: a process under the hood that watches your chats, adapts your skills, maybe even writes new ones, and uses those evaluations to check.
 
